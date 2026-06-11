@@ -1029,3 +1029,4 @@ function setupViewNavigation() {
 setupViewNavigation()
 loadDashboardData()
 setInterval(loadDashboardData, REFRESH_MS)
+}
