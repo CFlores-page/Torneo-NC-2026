@@ -169,7 +169,8 @@ body::before {
 .main {
   position: relative;
   padding: 22px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .main::before {
