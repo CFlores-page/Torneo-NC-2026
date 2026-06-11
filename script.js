@@ -776,7 +776,6 @@ function summaryRowsToObject(rows) {
     finishedMatches: map["Partidos finalizados"] || 0,
     currentLeader: map["Líder actual"] || "",
 
-    // Estos extra son para que Match Center también pueda leerlo como objeto simple
     "Fase actual": map["Fase actual"] || "",
     "Estado del torneo": map["Estado del torneo"] || "",
     "Última actualización": map["Última actualización"] || ""
@@ -1235,6 +1234,10 @@ function setupViewNavigation() {
 
       views.forEach(view => view.classList.add("hidden"))
       targetView.classList.remove("hidden")
+
+      if (viewId === "matchCenterView") {
+        loadMatchCenterData()
+      }
     })
   })
 }
