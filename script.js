@@ -250,17 +250,17 @@ function renderLiveMatches(matches) {
 
           <div class="match-teams">
             <div class="match-team">
-              <img class="team-flag-large" src="${teamA.flagUrl}" alt="Bandera de ${teamA.name}">
+              <img class="team-flag-large" src="${driveImage(teamA.flagUrl)}" alt="Bandera de ${teamA.name}">
               <div class="match-team-name">${teamA.name}</div>
-              <div class="match-score">${match.pointsA}</div>
+              <div class="match-score">${match.pointsA ?? 0}</div>
             </div>
 
             <div class="match-vs">VS</div>
 
             <div class="match-team">
-              <img class="team-flag-large" src="${teamB.flagUrl}" alt="Bandera de ${teamB.name}">
+              <img class="team-flag-large" src="${driveImage(teamB.flagUrl)}" alt="Bandera de ${teamB.name}">
               <div class="match-team-name">${teamB.name}</div>
-              <div class="match-score">${match.pointsB}</div>
+              <div class="match-score">${match.pointsB ?? 0}</div>
             </div>
           </div>
 
