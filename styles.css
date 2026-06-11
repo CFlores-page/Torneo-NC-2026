@@ -357,6 +357,7 @@ body::before {
   align-items: stretch;
 }
 
+
 .panel {
   border: 1px solid var(--border);
   background: var(--bg-panel);
@@ -367,24 +368,37 @@ body::before {
 
 .standings-panel {
   grid-area: standings;
+  min-height: 420px;
 }
 
 .live-panel {
     grid-area: live;
+    min-height: 420px;
 }
 
 .upcoming-panel{
     grid-area:upcoming;
+    min-height: 420px;
 }
 
-.standings-panel,
-.live-panel,
-.upcoming-panel {
-  height: 430px;
-  overflow: hidden;
+.standings-panel {
+  grid-area: standings;
   display: flex;
   flex-direction: column;
 }
+
+.live-panel {
+  grid-area: live;
+  display: flex;
+  flex-direction: column;
+}
+
+.upcoming-panel {
+  grid-area: upcoming;
+  display: flex;
+  flex-direction: column;
+}
+
 
 .hype-panel {
   grid-area: hype;
@@ -584,8 +598,21 @@ td {
   display: none;
 }
 
+.standings-scroll,
+#liveMatches,
+#upcomingMatches {
+  flex: 1;
+  min-height: 0;
+}
+
+
 .standings-scroll {
-  border-radius: 12px;
+  margin-top: 14px;
+}
+
+#liveMatches,
+#upcomingMatches {
+  margin-top: 14px;
 }
 
 .standings-scroll thead th {
@@ -594,6 +621,18 @@ td {
   z-index: 2;
   background: rgba(10, 24, 46, 0.98);
   backdrop-filter: blur(10px);
+}
+
+.standings-panel,
+.live-panel,
+.upcoming-panel {
+  padding: 18px 18px 16px;
+}
+
+.standings-panel .panel-header,
+.live-panel .panel-header,
+.upcoming-panel .panel-header {
+  margin-bottom: 6px;
 }
 
 .match-more-banner {
