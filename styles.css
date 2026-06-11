@@ -1422,11 +1422,6 @@ td {
   font-weight: 700;
 }
 
-.mc-strip-footer strong {
-  color: #ffffff;
-  font-weight: 800;
-}
-
 .mc-stage-shell {
   padding: 0;
   overflow: hidden;
