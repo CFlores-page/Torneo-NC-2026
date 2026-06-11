@@ -895,7 +895,7 @@ td {
 
 .player-card {
   position: relative;
-  min-height: 610px;
+  min-height: 560px;
   border-radius: 22px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--team-accent) 32%, rgba(255,255,255,0.14));
@@ -941,15 +941,15 @@ td {
 .player-photo-wrap {
   position: relative;
   z-index: 3;
-  height: 340px;
+  height: 350px;
   display: grid;
   place-items: end center;
   padding-top: 34px;
 }
 
 .player-photo {
-  width: 255px;
-  height: 315px;
+  width: 260px;
+  height: 320px;
   object-fit: contain;
   object-position: center bottom;
   filter:
@@ -1075,8 +1075,8 @@ td {
 .player-card-body {
   position: relative;
   z-index: 4;
-  width: calc(100% - 48px);
-  margin: -26px auto 18px;
+  width: calc(100% - 56px);
+  margin: -34px auto 18px;
   padding: 14px;
   border-radius: 18px;
   background:
@@ -1090,7 +1090,7 @@ td {
 
 .player-card-body h4 {
   margin: 0;
-  font-size: 23px;
+  font-size: 22px;
   line-height: 1.05;
   font-weight: 900;
   color: #ffffff;
@@ -1101,10 +1101,10 @@ td {
   display: flex;
   align-items: center;
   gap: 9px;
-  margin-top: 9px;
+  margin-top: 8px;
   color: #ffffff;
   font-weight: 800;
-  font-size: 14px;
+  font-size: 14px;  
 }
 
 .player-team-line img {
@@ -1136,8 +1136,8 @@ td {
 }
 
 .player-record {
-  margin-top: 10px;
-  padding: 10px 11px;
+  margin-top: 12px;
+  padding: 10px 12px;
   border-radius: 14px;
   background: rgba(0,0,0,0.24);
   border: 1px solid rgba(255,255,255,0.08);
@@ -1150,7 +1150,7 @@ td {
 .player-record span {
   display: block;
   color: #98a9c3;
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1164,7 +1164,7 @@ td {
 
 .player-record em {
   color: var(--team-accent);
-  font-size: 12px;
+  font-size: 11px;
   font-style: normal;
   font-weight: 900;
 }
@@ -1205,7 +1205,7 @@ td {
 }
 
 .player-performance {
-  margin-top: 10
+  margin-top: 10px;
 }
 .player-performance > div:first-child {
   display: flex;
@@ -1220,7 +1220,7 @@ td {
 
 .performance-track {
   height: 8px;
-  margin-top: 7px;
+  margin-top: 6px;
   border-radius: 999px;
   background: rgba(255,255,255,0.11);
   overflow: hidden;

@@ -664,11 +664,6 @@ function renderPlayerCard(player, rank) {
           <strong>${player.unit}</strong>
         </div>
 
-        <div class="player-meta-line">
-          <span>Rol: Integrante</span>
-          <span>${player.isCaptain ? "Capitán del equipo" : "Jugador"}</span>
-        </div>
-
         <div class="player-record">
           <div>
             <span>Récord en el torneo</span>
@@ -705,11 +700,6 @@ function renderPlayerCard(player, rank) {
           <div class="performance-track">
             <div class="performance-fill" style="width: ${performance}%"></div>
           </div>
-        </div>
-
-        <div class="player-last-match">
-          <span>Último partido</span>
-          <p>Actividad pendiente de registrar</p>
         </div>
       </div>
     </article>
