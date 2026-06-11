@@ -377,6 +377,12 @@ td {
   border: 1px solid rgba(55,240,140,0.24);
 }
 
+.status.eliminated {
+  color: #ff7b7b;
+  background: rgba(255, 80, 80, 0.12);
+  border: 1px solid rgba(255, 80, 80, 0.24);
+}
+
 .empty-state {
   min-height: 160px;
   border: 1px dashed rgba(255,255,255,0.18);
@@ -474,4 +480,43 @@ td {
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 0 18px rgba(255,255,255,0.18);
+}
+
+.matches-list {
+  display: grid;
+  gap: 12px;
+}
+
+.match-card {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.match-card span {
+  display: block;
+  color: #68a7ff;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.match-card strong {
+  display: block;
+  font-size: 16px;
+  color: white;
+  margin-bottom: 6px;
+}
+
+.match-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.match-card.live {
+  border-color: rgba(40, 209, 124, 0.3);
+  background: rgba(40, 209, 124, 0.08);
 }
