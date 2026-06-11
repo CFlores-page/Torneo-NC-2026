@@ -303,6 +303,7 @@ body::before {
   display: grid;
   grid-template-columns: 1.35fr 1fr 1fr;
   gap: 18px;
+  align-items: start;
 }
 
 .panel {
@@ -413,25 +414,37 @@ td {
   margin: 8px auto 0;
 }
 
-.unit-list {
+.unit-panel {
+  grid-column: span 2;
+  align-self: start;
+}
+
+.unit-grid {
   display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
-.unit-list div {
+.unit-card {
+  min-height: 92px;
   padding: 14px;
   border-radius: 14px;
   background: rgba(255,255,255,0.045);
   border: 1px solid rgba(255,255,255,0.07);
 }
 
-.unit-list strong {
+.unit-card strong {
+  display: block;
   color: #6daeff;
+  font-size: 15px;
+  margin-bottom: 8px;
 }
 
-.unit-list p {
-  margin: 8px 0 0;
+.unit-card p {
+  margin: 0;
   color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.25;
 }
 
 .hype-panel h2 {
@@ -469,6 +482,19 @@ td {
   .standings-panel,
   .hype-panel {
     grid-column: auto;
+  }
+  .unit-panel {
+    grid-column: auto;
+    }
+  .unit-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 700px) {
+  .unit-grid {
+    grid-template-columns: 1fr;
   }
 }
 
