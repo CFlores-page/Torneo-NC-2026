@@ -1915,6 +1915,39 @@ td {
   background: color-mix(in srgb, var(--team-b-primary) 72%, black);
 }
 
+.mc-showcase-card.empty {
+  min-height: 250px;
+  justify-content: center;
+}
+
+.mc-showcase-empty {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 8px;
+  color: var(--text-soft);
+}
+
+.mc-showcase-empty span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-soft);
+}
+
+.mc-showcase-empty strong {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.mc-showcase-empty p {
+  margin: 0;
+  max-width: 260px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #aebbd0;
+}
 
 @media (max-width: 1300px) {
   .mc-body-grid {
