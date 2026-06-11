@@ -368,21 +368,6 @@ body::before {
 
 .standings-panel {
   grid-area: standings;
-  min-height: 420px;
-}
-
-.live-panel {
-    grid-area: live;
-    min-height: 420px;
-}
-
-.upcoming-panel{
-    grid-area:upcoming;
-    min-height: 420px;
-}
-
-.standings-panel {
-  grid-area: standings;
   display: flex;
   flex-direction: column;
 }
@@ -412,7 +397,7 @@ body::before {
   justify-content: space-between;
   gap: 16px;
   align-items: flex-start;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .panel-header h2 {
@@ -599,10 +584,13 @@ td {
 }
 
 .standings-scroll,
+.matches-scroll,
 #liveMatches,
 #upcomingMatches {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 
@@ -626,7 +614,11 @@ td {
 .standings-panel,
 .live-panel,
 .upcoming-panel {
-  padding: 18px 18px 16px;
+  padding: 18px;
+  height: 360px;
+  min-height: 360px;
+  max-height: 360px;
+  overflow: hidden;
 }
 
 .standings-panel .panel-header,
