@@ -196,13 +196,32 @@ function renderUpcomingMatches(matches) {
 
   container.className = "matches-list";
   container.innerHTML = matches
-    .map(match => `
-      <div class="match-card">
-        <span>${match.phase}</span>
-        <strong>${match.teamA} vs ${match.teamB}</strong>
-        <p>${match.startDate} — ${match.endDate}</p>
-      </div>
-    `)
+    .map(match => {
+      const teamA = getTeamInfo(match.teamA);
+      const teamB = getTeamInfo(match.teamB);
+
+      return `
+        <div class="match-card">
+          <span>${match.phase}</span>
+
+          <div class="match-teams">
+            <div class="match-team">
+              <img class="team-flag-large" src="${teamA.flagUrl}" alt="Bandera de ${teamA.name}">
+              <div class="match-team-name">${teamA.name}</div>
+            </div>
+
+            <div class="match-vs">VS</div>
+
+            <div class="match-team">
+              <img class="team-flag-large" src="${teamB.flagUrl}" alt="Bandera de ${teamB.name}">
+              <div class="match-team-name">${teamB.name}</div>
+            </div>
+          </div>
+
+          <p>${match.startDate} — ${match.endDate}</p>
+        </div>
+      `;
+    })
     .join("");
 }
 
@@ -221,14 +240,93 @@ function renderLiveMatches(matches) {
 
   container.className = "matches-list";
   container.innerHTML = matches
-    .map(match => `
-      <div class="match-card live">
-        <span>${match.phase}</span>
-        <strong>${match.teamA} ${match.pointsA} - ${match.pointsB} ${match.teamB}</strong>
-        <p>En vivo</p>
-      </div>
-    `)
+    .map(match => {
+      const teamA = getTeamInfo(match.teamA);
+      const teamB = getTeamInfo(match.teamB);
+
+      return `
+        <div class="match-card live">
+          <span>${match.phase}</span>
+
+          <div class="match-teams">
+            <div class="match-team">
+              <img class="team-flag-large" src="${teamA.flagUrl}" alt="Bandera de ${teamA.name}">
+              <div class="match-team-name">${teamA.name}</div>
+              <div class="match-score">${match.pointsA}</div>
+            </div>
+
+            <div class="match-vs">VS</div>
+
+            <div class="match-team">
+              <img class="team-flag-large" src="${teamB.flagUrl}" alt="Bandera de ${teamB.name}">
+              <div class="match-team-name">${teamB.name}</div>
+              <div class="match-score">${match.pointsB}</div>
+            </div>
+          </div>
+
+          <p>En vivo</p>
+        </div>
+      `;
+    })
     .join("");
+}
+
+const TEAM_CATALOG = {
+  GER: {
+    name: "Alemania",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1bdZarcqh1gN8rbwTOWMf3kmM-hzI1oh_"
+  },
+  ARG: {
+    name: "Argentina",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1PMc9W1fIr5L5R8fNYHDKn_Shkh_H2Kch"
+  },
+  BRA: {
+    name: "Brasil",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1SGrCOcxjIDnAq_7QtErUzO7wg_qIOrK6"
+  },
+  COL: {
+    name: "Colombia",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1L2wM1hPHu3geSRYg1MZ2q6KlgITYp_08"
+  },
+  FRA: {
+    name: "Francia",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1aHEfFBFwP85eXYRnvKY2gVDkWMFtg9PE"
+  },
+  ESP: {
+    name: "España",
+    flagUrl: "https://drive.google.com/uc?export=view&id=19NiP935osC8beYjr9_a9feinHtGfigh3"
+  },
+  USA: {
+    name: "Estados Unidos",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1c9K8-XaTzPRjEYsJWR7AlfiCO9odttEx"
+  },
+  NED: {
+    name: "Holanda",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1MCv5Jkvp_Z0RP2ca5gS24EjKg8xFyEYT"
+  },
+  ENG: {
+    name: "Inglaterra",
+    flagUrl: "https://drive.google.com/uc?export=view&id=14O9LRg1Nuf0kq5rLVnDMsvsaassAngDb"
+  },
+  MAR: {
+    name: "Marruecos",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1_fcfOQBQ8Y4Gqrxyqq9UH2RzTuCs39Ij"
+  },
+  MEX: {
+    name: "México",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1lCrMZOTyNsTpltjKXWbrgixgqJegzX84"
+  },
+  POR: {
+    name: "Portugal",
+    flagUrl: "https://drive.google.com/uc?export=view&id=1sK08Xt5j6uc0afI5qGJ9Rl__0vczLoaA"
+  }
+};
+
+function getTeamInfo(teamId) {
+  return TEAM_CATALOG[teamId] || {
+    name: teamId,
+    flagUrl: ""
+  };
 }
 
 loadDashboardData();
