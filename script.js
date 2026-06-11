@@ -438,18 +438,29 @@ function renderTopContributorShowcase(player, teamName, sideClass) {
 
   return `
     <div class="mc-showcase-card ${sideClass}">
-      <div class="mc-showcase-figure">
+      <div class="mc-showcase-stage">
         ${
           image
-            ? `<img class="mc-showcase-img" src="${image}" alt="${player.displayName}">`
-            : `<div class="mc-showcase-placeholder">${getInitials(player.displayName)}</div>`
+            ? `
+              <div class="mc-showcase-bg-figure">
+                <img class="mc-showcase-bg-img" src="${image}" alt="${player.displayName}">
+              </div>
+            `
+            : `
+              <div class="mc-showcase-bg-figure no-image">
+                <div class="mc-showcase-placeholder">${getInitials(player.displayName)}</div>
+              </div>
+            `
         }
-      </div>
 
-      <div class="mc-showcase-copy">
-        <span class="mc-showcase-label">Top Contributor</span>
-        <strong class="mc-showcase-name">${player.displayName}</strong>
-        <div class="mc-showcase-points">${formatNumber(player.points)} pts</div>
+        <div class="mc-showcase-result">
+          <span class="mc-showcase-label">Top Contributor</span>
+          <strong class="mc-showcase-name">${player.displayName}</strong>
+          <div class="mc-showcase-points">
+            <strong>${formatNumber(player.points)}</strong>
+            <span>pts</span>
+          </div>
+        </div>
       </div>
     </div>
   `
