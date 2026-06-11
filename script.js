@@ -282,30 +282,50 @@ function rowsToPlayerObjects(rows) {
   }
 
   return dataRows
-    .filter(row => row[idx.playerId] || row[idx.displayName])
+    .filter(row => {
+      const playerId = idx.playerId >= 0 ? row[idx.playerId] : ""
+      const displayName = idx.displayName >= 0 ? row[idx.displayName] : ""
+      const teamId = idx.teamId >= 0 ? row[idx.teamId] : ""
+
+      return playerId && displayName && teamId
+    })
     .map(row => ({
-      playerId: row[idx.playerId] || "",
-      displayName: row[idx.displayName] || row[idx.playerId] || "Jugador",
-      unit: row[idx.unit] || "",
-      teamId: row[idx.teamId] || "",
-      isCaptain: /^(SI|SÍ|YES|TRUE|CAPITAN|CAPITÁN)$/i.test(String(row[idx.captain] || "").trim()),
-      photoUrl: row[idx.photo] || "",
-      flagUrl: row[idx.flag] || "",
-      points: parseNumber(row[idx.points]),
-      sales: parseNumber(row[idx.sales]),
-      volume: parseNumber(row[idx.volume]),
-      average: parseNumber(row[idx.average])
+      playerId: idx.playerId >= 0 ? row[idx.playerId] || "" : "",
+      displayName: idx.displayName >= 0 ? row[idx.displayName] || row[idx.playerId] || "Jugador" : "Jugador",
+      unit: idx.unit >= 0 ? normalizeId(row[idx.unit]) : "",
+      teamId: idx.teamId >= 0 ? normalizeId(row[idx.teamId]) : "",
+      isCaptain: idx.captain >= 0
+        ? /^(SI|SÍ|YES|TRUE|CAPITAN|CAPITÁN)$/i.test(String(row[idx.captain] || "").trim())
+        : false,
+      photoUrl: idx.photo >= 0 ? row[idx.photo] || "" : "",
+      flagUrl: idx.flag >= 0 ? row[idx.flag] || "" : "",
+      points: idx.points >= 0 ? parseNumber(row[idx.points]) : 0,
+      sales: idx.sales >= 0 ? parseNumber(row[idx.sales]) : 0,
+      volume: idx.volume >= 0 ? parseNumber(row[idx.volume]) : 0,
+      average: idx.average >= 0 ? parseNumber(row[idx.average]) : 0
     }))
 }
 
 function buildRosterList(teamId, players) {
+  const cleanTeamId = normalizeId(teamId)
+
   const teamPlayers = players
-    .filter(player => player.teamId === teamId)
+    .filter(player => normalizeId(player.teamId) === cleanTeamId)
     .sort((a, b) => {
       if (a.isCaptain && !b.isCaptain) return -1
       if (!a.isCaptain && b.isCaptain) return 1
-      return b.points - a.points
+      if (b.points !== a.points) return b.points - a.points
+      if (b.sales !== a.sales) return b.sales - a.sales
+      return String(a.displayName || "").localeCompare(String(b.displayName || ""))
     })
+
+  if (!teamPlayers.length) {
+    return `
+      <div class="mc-empty-roster">
+        Roster pendiente de cargar
+      </div>
+    `
+  }
 
   return teamPlayers.map(player => {
     const photo = driveImage(player.photoUrl)
@@ -316,10 +336,12 @@ function buildRosterList(teamId, players) {
     return `
       <div class="mc-player-row">
         ${avatar}
+
         <div class="mc-player-meta">
           <div class="mc-player-name">${player.displayName}</div>
-          <div class="mc-player-sub">${player.isCaptain ? "Capitán" : "Jugador"}</div>
+          <div class="mc-player-sub">${player.isCaptain ? "Capitán" : `${formatNumber(player.sales)} ventas`}</div>
         </div>
+
         <div class="mc-player-points">${formatNumber(player.points)}</div>
       </div>
     `
@@ -362,10 +384,36 @@ function renderMatchStripCard(match, active = false) {
 function formatMatchDate(value) {
   if (!value) return "Pendiente"
 
-  const date = new Date(value)
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    return value.toLocaleDateString("es-MX", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    })
+  }
+
+  const raw = String(value).trim()
+
+  const gvizMatch = raw.match(/^Date\((\d+),(\d+),(\d+)\)$/)
+
+  if (gvizMatch) {
+    const year = Number(gvizMatch[1])
+    const month = Number(gvizMatch[2])
+    const day = Number(gvizMatch[3])
+
+    const date = new Date(year, month, day)
+
+    return date.toLocaleDateString("es-MX", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    })
+  }
+
+  const date = new Date(raw)
 
   if (isNaN(date.getTime())) {
-    return String(value)
+    return raw
   }
 
   return date.toLocaleDateString("es-MX", {
@@ -382,8 +430,8 @@ function renderMatchCenterStage(match, players) {
   const teamAColors = getTeamColors(match.teamA)
   const teamBColors = getTeamColors(match.teamB)
 
-  const teamAPlayers = players.filter(player => player.teamId === match.teamA)
-  const teamBPlayers = players.filter(player => player.teamId === match.teamB)
+  const teamAPlayers = players.filter(player => normalizeId(player.teamId) === normalizeId(match.teamA))
+  const teamBPlayers = players.filter(player => normalizeId(player.teamId) === normalizeId(match.teamB))
 
   const pointsA = parseNumber(match.scoreA)
   const pointsB = parseNumber(match.scoreB)
@@ -422,7 +470,7 @@ function renderMatchCenterStage(match, players) {
 
           <div class="mc-score-center">
             <div class="mc-phase-line">${match.phase || "Partido en vivo"}</div>
-            <div class="mc-time-line">${match.final || ""}</div>
+            <div class="mc-time-line">Termina: ${formatMatchDate(match.endDate)}</div>
             <div class="mc-main-score">${formatNumber(pointsA)} - ${formatNumber(pointsB)}</div>
           </div>
 
@@ -520,7 +568,7 @@ function renderMatchCenterStage(match, players) {
                 <h4>About This Match</h4>
                 <div class="mc-info-list">
                   <div class="mc-info-row"><span>Fase</span><strong>${match.phase || "—"}</strong></div>
-                  <div class="mc-info-row"><span>Match ID</span><strong>${match.matchId || "—"}</strong></div>
+                  <div class="mc-info-row"><span>Finaliza</span><strong>${formatMatchDate(match.endDate)}</strong></div>
                   <div class="mc-info-row"><span>Estado</span><strong>Live</strong></div>
                 </div>
               </div>
