@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Netcenter Americas FIFA Cup 2026</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🏆</div>
+        <div>
+          <h1>NETCENTER</h1>
+          <h2>AMERICAS</h2>
+          <p>FIFA CUP 2026</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <button class="menu-item active">Dashboard</button>
+        <button class="menu-item">Teams</button>
+        <button class="menu-item">Match Center</button>
+        <button class="menu-item">Bracket</button>
+        <button class="menu-item">Placings / MVP</button>
+        <button class="menu-item">Tournament Rules</button>
+      </nav>
+
+      <div class="prize-card">
+        <span>Prize Pool</span>
+        <h3>Champion takes it all</h3>
+        <p>1st Place: <strong>$7,000 MXN</strong></p>
+        <p>2nd Place: <strong>$3,000 MXN</strong></p>
+        <p>3rd Place: <strong>TBD</strong></p>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Panel principal del torneo</p>
+          <h1>NETCENTER AMERICAS FIFA CUP 2026</h1>
+          <p class="subtitle">Cada venta cuenta. Cada punto pesa. Una nación levanta la copa.</p>
+        </div>
+
+        <div class="update-card">
+          <span>Última actualización</span>
+          <strong id="lastUpdate">Pendiente</strong>
+          <small>Charlie · cada 15 minutos</small>
+        </div>
+      </header>
+
+      <section class="summary-grid">
+        <article class="summary-card blue">
+          <span>Fase actual</span>
+          <strong id="faseActual">Clasificación</strong>
+          <p>Estado general del torneo</p>
+        </article>
+
+        <article class="summary-card green">
+          <span>Equipos activos</span>
+          <strong id="equiposActivos">12</strong>
+          <p>Equipos todavía en competencia</p>
+        </article>
+
+        <article class="summary-card purple">
+          <span>Ventas registradas</span>
+          <strong id="ventasRegistradas">0</strong>
+          <p>BOOKED confirmadas</p>
+        </article>
+
+        <article class="summary-card gold">
+          <span>Líder actual</span>
+          <strong id="liderActual">Pendiente</strong>
+          <p id="puntosLider">0 pts</p>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+
+        <article class="panel standings-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Tabla rápida</h2>
+              <p>Equipos activos primero. Eliminados al final.</p>
+            </div>
+            <span class="panel-link">Ver Placings / MVP</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Equipo</th>
+                <th>Unidad</th>
+                <th>Puntos</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="standingsBody">
+              <tr>
+                <td>1</td>
+                <td>🇲🇦 Marruecos</td>
+                <td>LOYALTY</td>
+                <td>2</td>
+                <td><span class="status active">Activo</span></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>🇲🇽 México</td>
+                <td>PREMIER</td>
+                <td>1</td>
+                <td><span class="status active">Activo</span></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>🇨🇴 Colombia</td>
+                <td>ELITE</td>
+                <td>1</td>
+                <td><span class="status active">Activo</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Partidos en vivo</h2>
+              <p>Marcadores actuales</p>
+            </div>
+            <span class="panel-link">Match Center</span>
+          </div>
+
+          <div id="liveMatches" class="empty-state">
+            <strong>Información pendiente</strong>
+            <p>Los partidos aparecerán aquí cuando sean definidos.</p>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Próximos partidos</h2>
+              <p>Calendario del torneo</p>
+            </div>
+            <span class="panel-link">Bracket</span>
+          </div>
+
+          <div id="upcomingMatches" class="empty-state">
+            <strong>Calendario pendiente</strong>
+            <p>Los próximos partidos se mostrarán cuando se publiquen oficialmente.</p>
+          </div>
+        </article>
+
+        <article class="panel unit-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Equipos por unidad</h2>
+              <p>Distribución oficial</p>
+            </div>
+            <span class="panel-link">Teams</span>
+          </div>
+
+          <div class="unit-list">
+            <div>
+              <strong>ELITE</strong>
+              <p>Estados Unidos · Colombia · Francia</p>
+            </div>
+            <div>
+              <strong>PREMIER</strong>
+              <p>Holanda · Inglaterra · Portugal · México · Argentina</p>
+            </div>
+            <div>
+              <strong>BALFER</strong>
+              <p>Alemania · Brasil</p>
+            </div>
+            <div>
+              <strong>LOYALTY</strong>
+              <p>España · Marruecos</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel hype-panel">
+          <h2>Mensaje del torneo</h2>
+          <h3>Esto no es solo una tabla. Es el Mundial de la oficina.</h3>
+          <p>
+            Cada equipo representa a una nación. Cada venta suma. Cada match puede cambiar el camino a la final.
+          </p>
+        </article>
+
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
