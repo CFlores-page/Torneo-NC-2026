@@ -335,18 +335,15 @@ function renderMatchStripCard(match, active = false) {
 
   return `
     <button class="mc-strip-card ${active ? "active" : ""}" data-match-id="${match.matchId}">
-      <div class="mc-strip-card-top">
-        <span>${match.phase || "Match"}</span>
-        <span class="mc-live-pill">LIVE</span>
-      </div>
-
       <div class="mc-strip-vs">
         <div class="mc-strip-team">
           ${flagA ? `<img src="${flagA}" alt="${teamA.name}">` : ""}
           <span>${teamA.name}</span>
         </div>
 
-        <div class="mc-strip-score">${formatNumber(match.scoreA)} - ${formatNumber(match.scoreB)}</div>
+        <div class="mc-strip-score">
+          <strong>${formatNumber(match.scoreA)} - ${formatNumber(match.scoreB)}</strong>
+        </div>
 
         <div class="mc-strip-team right">
           <span>${teamB.name}</span>
@@ -355,7 +352,8 @@ function renderMatchStripCard(match, active = false) {
       </div>
 
       <div class="mc-strip-footer">
-        ${match.matchId || "MATCH"} · ${match.final || ""}
+        <span>${match.phase || "Partido en vivo"}</span>
+        <strong>Termina: ${formatMatchDate(match.endDate)}</strong>
       </div>
     </button>
   `

@@ -1306,14 +1306,18 @@ td {
 }
 
 .mc-strip-card {
+  flex: 0 0 360px;
+  scroll-snap-align: start;
+  min-height: 118px;
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.1);
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)),
     rgba(5, 12, 22, 0.74);
   padding: 14px;
   cursor: pointer;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  color: #fff;
 }
 
 .mc-strip-card:hover {
@@ -1357,8 +1361,7 @@ td {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 12px;
 }
 
 .mc-strip-team {
@@ -1374,14 +1377,15 @@ td {
 }
 
 .mc-strip-team img {
-  width: 28px;
-  height: 20px;
+  width: 34px;
+  height: 24px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 5px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.16);
 }
 
 .mc-strip-team span {
-  font-weight: 700;
+  font-weight: 800;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -1389,17 +1393,38 @@ td {
 }
 
 .mc-strip-score {
-  font-size: 28px;
-  font-weight: 900;
-  color: #fff;
-  line-height: 1;
+  min-width: 82px;
   text-align: center;
 }
 
+.mc-strip-score strong {
+  display: block;
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
 .mc-strip-footer {
-  margin-top: 12px;
-  font-size: 12px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
   color: var(--text-soft);
+  font-size: 12px;
+}
+
+.mc-strip-footer span {
+  color: #8fb5ff;
+  font-weight: 700;
+}
+
+.mc-strip-footer strong {
+  color: #ffffff;
+  font-weight: 800;
 }
 
 .mc-stage-shell {
