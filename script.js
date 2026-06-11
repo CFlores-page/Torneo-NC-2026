@@ -847,7 +847,7 @@ async function loadDashboardData() {
       teamRows,
       playerRows
     ] = await Promise.all([
-      getSheet("B1:B1", "DASHBOARD"),
+      getSheet("B4:B4", "DASHBOARD"),
       getSheet("A2:B25", "DASHBOARD"),
       getSheet("A28:G40", "DASHBOARD"),
       getSheet("A44:F49", "DASHBOARD"),
