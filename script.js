@@ -361,6 +361,22 @@ function renderMatchStripCard(match, active = false) {
   `
 }
 
+function formatMatchDate(value) {
+  if (!value) return "Pendiente"
+
+  const date = new Date(value)
+
+  if (isNaN(date.getTime())) {
+    return String(value)
+  }
+
+  return date.toLocaleDateString("es-MX", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  })
+}
+
 function renderMatchCenterStage(match, players) {
   const teamA = getTeamInfo(match.teamA)
   const teamB = getTeamInfo(match.teamB)
@@ -533,13 +549,18 @@ function renderMatchCenterStage(match, players) {
 
 async function loadMatchCenterData() {
   try {
-    const [liveRows, playerRows, summaryRows] = await Promise.all([
-      getSheetFrom("DASHBOARD", "A53:G200"),
+    const [partidosRows, playerRows, summaryRows] = await Promise.all([
+      getSheetFrom("PARTIDOS", "A2:K200"),
       getSheetFrom("JUGADORES", "A1:Z500"),
       getSheetFrom("DASHBOARD", "A2:B25")
     ])
 
-    const matches = liveRowsToObjects(liveRows).filter(match => match.teamA && match.teamB)
+    const matches = partidosRowsToObjects(partidosRows)
+      .filter(match => {
+        const status = String(match.status || "").toUpperCase()
+        return status === "EN VIVO" || status === "LIVE" || status === "ACTIVO"
+      })
+
     const players = rowsToPlayerObjects(playerRows)
     const summary = summaryRowsToObject(summaryRows)
 
@@ -560,7 +581,18 @@ async function loadMatchCenterData() {
   } catch (error) {
     console.error("Error loading Match Center:", error)
 
+    const strip = document.getElementById("matchCenterStrip")
     const stage = document.getElementById("matchCenterStage")
+
+    if (strip) {
+      strip.innerHTML = `
+        <div class="empty-state">
+          <strong>Error cargando partidos</strong>
+          <p>${error.message}</p>
+        </div>
+      `
+    }
+
     if (stage) {
       stage.innerHTML = `
         <div class="empty-state">
@@ -717,14 +749,14 @@ async function loadDashboardData() {
 }
 
 function summaryRowsToObject(rows) {
-  const map = {}
+  const obj = {}
 
   rows.forEach(row => {
     const key = String(row[0] || "").trim()
-    const value = row[1]
+    const value = row[1] || ""
 
     if (key) {
-      map[key] = value
+      obj[key] = value
     }
   })
 
@@ -1351,6 +1383,26 @@ function parsePercent(value) {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(Number(value) || 0, min), max)
+}
+
+function partidosRowsToObjects(rows) {
+  if (!rows || !rows.length) return []
+
+  return rows
+    .filter(row => row[0] && row[3] && row[4])
+    .map(row => ({
+      matchId: String(row[0] || "").trim(),
+      phase: String(row[1] || "").trim(),
+      matchday: String(row[2] || "").trim(),
+      teamA: String(row[3] || "").trim().toUpperCase(),
+      teamB: String(row[4] || "").trim().toUpperCase(),
+      startDate: row[5] || "",
+      endDate: row[6] || "",
+      status: String(row[7] || "").trim(),
+      scoreA: parseNumber(row[8]),
+      scoreB: parseNumber(row[9]),
+      winner: String(row[10] || "").trim().toUpperCase()
+    }))
 }
 
 function getInitials(name) {
