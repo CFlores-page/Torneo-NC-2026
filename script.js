@@ -166,18 +166,18 @@ function liveRowsToObjects(rows) {
 async function loadDashboardData() {
   try {
     const [summaryRows, standingsRows, upcomingRows, liveRows, teamRows, playerRows] = await Promise.all([
-     getSheet("A2:B25"),
-     getSheet("A28:G40"),
-     getSheet("A44:F49"),
-     getSheet("A53:G58"),
-     getSheet("A2:H50", "EQUIPOS"),
-     getSheet("A2:M300", "JUGADORES")
-    ])
+        getSheet("A2:B25"),
+        getSheet("A28:G40"),
+        getSheet("A44:F49"),
+        getSheet("A53:G58"),
+        getSheet("A2:H50", "EQUIPOS"),
+        getSheet("A2:M300", "JUGADORES")
+        ])
 
-    const summary = summaryRowsToObject(summaryRows);
-    const standings = standingsRowsToObjects(standingsRows);
-    const upcomingMatches = upcomingRowsToObjects(upcomingRows);
-    const liveMatches = liveRowsToObjects(liveRows);
+    const summary = summaryRowsToObject(summaryRows)
+    const standings = standingsRowsToObjects(standingsRows)
+    const upcomingMatches = upcomingRowsToObjects(upcomingRows)
+    const liveMatches = liveRowsToObjects(liveRows)
     const teams = teamRowsToObjects(teamRows)
     const players = playerRowsToObjects(playerRows)
 
@@ -185,6 +185,7 @@ async function loadDashboardData() {
     renderStandings(standings);
     renderUpcomingMatches(upcomingMatches);
     renderLiveMatches(liveMatches);
+    renderTeamsPage(teams, players)
     dashboardState = {
      summary,
      standings,
@@ -206,7 +207,50 @@ async function loadDashboardData() {
   } catch (error) {
     console.error("Error cargando DASHBOARD:", error);
   }
-}
+  
+function renderTeamsPage(teams, players) {
+  const container = document.getElementById("teamsContainer")
+  if (!container) return
+
+  if (!teams || teams.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <strong>Equipos pendientes</strong>
+        <p>No se encontraron datos en la hoja EQUIPOS.</p>
+      </div>
+    `
+    return
+  }
+
+  container.innerHTML = teams
+    .map(team => {
+      const teamInfo = getTeamInfo(team.teamId)
+      const flag = driveImage(team.flagUrl || teamInfo.flagUrl)
+      const teamPlayers = players.filter(player => player.teamId === team.teamId)
+
+      return `
+        <article class="panel" style="margin-bottom: 14px;">
+          <div class="country-team-header">
+            <div class="country-team-main">
+              ${flag ? `<img class="country-team-flag" src="${flag}" alt="Bandera de ${teamInfo.name}">` : ""}
+              <div>
+                <h3>${teamInfo.name}</h3>
+                <p>${teamPlayers.length} integrantes · Capitán: ${team.captainName || "Pendiente"}</p>
+              </div>
+            </div>
+
+            <div class="country-team-stats">
+              <span class="unit-chip">${team.unit}</span>
+              <span class="status active">${team.status}</span>
+              <strong>${team.points} pts</strong>
+              <small>${team.sales} ventas</small>
+            </div>
+          </div>
+        </article>
+      `
+    })
+    .join("")
+}}
 
 function updateDashboardCards(summary) {
   document.getElementById("faseActual").textContent = summary.currentPhase || "Pendiente";
