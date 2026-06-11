@@ -211,6 +211,53 @@ async function getSheetFrom(sheetName, range) {
   )
 }
 
+function setupMobileMenu() {
+  const button = document.getElementById("mobileMenuButton")
+  const overlay = document.getElementById("mobileMenuOverlay")
+  const menuItems = document.querySelectorAll(".menu-item[data-view]")
+
+  if (!button || !overlay) return
+
+  const closeMenu = () => {
+    document.body.classList.remove("mobile-menu-open")
+    button.setAttribute("aria-label", "Abrir menú")
+    button.textContent = "☰"
+  }
+
+  const openMenu = () => {
+    document.body.classList.add("mobile-menu-open")
+    button.setAttribute("aria-label", "Cerrar menú")
+    button.textContent = "×"
+  }
+
+  const toggleMenu = () => {
+    if (document.body.classList.contains("mobile-menu-open")) {
+      closeMenu()
+    } else {
+      openMenu()
+    }
+  }
+
+  button.addEventListener("click", toggleMenu)
+  overlay.addEventListener("click", closeMenu)
+
+  menuItems.forEach(item => {
+    item.addEventListener("click", closeMenu)
+  })
+
+  window.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      closeMenu()
+    }
+  })
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900) {
+      closeMenu()
+    }
+  })
+}
+
 const matchCenterState = {
   matches: [],
   players: [],
@@ -1664,6 +1711,7 @@ function setText(id, value) {
 
 document.addEventListener("DOMContentLoaded", () => {
   setupViewNavigation()
+  setupMobileMenu()
   setupMatchCenterStripArrows()
 
   loadDashboardData()
