@@ -556,6 +556,16 @@ function renderUnitTeamsSection(unit, teams, players) {
   `
 }
 
+function sortPlayersForTeam(players) {
+  return [...players].sort((a, b) => {
+    if (a.isCaptain !== b.isCaptain) return a.isCaptain ? -1 : 1
+    if (b.points !== a.points) return b.points - a.points
+    if (b.sales !== a.sales) return b.sales - a.sales
+
+    return String(a.displayName || "").localeCompare(String(b.displayName || ""))
+  })
+}
+
 function renderCountryAccordion(team, players) {
   const teamInfo = getTeamInfo(team.teamId)
   const teamColors = getTeamColors(team.teamId)
