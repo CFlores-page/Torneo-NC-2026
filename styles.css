@@ -651,6 +651,47 @@ td {
   flex: 1;
 }
 
+.standing-click-row {
+  cursor: pointer;
+}
+
+.standing-click-row:hover {
+  background: rgba(255,255,255,0.035);
+}
+
+.standing-team-button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.standing-team-button:hover span {
+  color: var(--sport-blue);
+}
+
+.dashboard-live-match {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dashboard-live-match:hover {
+  transform: translateY(-2px);
+  border-color: rgba(93, 168, 255, 0.42);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.24);
+}
+
+.dashboard-match-center-link {
+  cursor: pointer;
+}
+
 @media (max-width: 1200px) {
   .app {
     grid-template-columns: 220px 1fr;

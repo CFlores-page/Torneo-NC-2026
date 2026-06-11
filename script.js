@@ -466,6 +466,21 @@ function renderTopContributorShowcase(player, teamName, sideClass) {
   `
 }
 
+function activateView(viewId) {
+  const menuButtons = document.querySelectorAll(".menu-item[data-view]")
+  const views = document.querySelectorAll(".view")
+  const targetView = document.getElementById(viewId)
+
+  if (!targetView) return
+
+  menuButtons.forEach(item => {
+    item.classList.toggle("active", item.dataset.view === viewId)
+  })
+
+  views.forEach(view => view.classList.add("hidden"))
+  targetView.classList.remove("hidden")
+}
+
 function renderMatchCenterStage(match, players) {
   const teamA = getTeamInfo(match.teamA)
   const teamB = getTeamInfo(match.teamB)
@@ -1016,13 +1031,13 @@ function renderStandings(standings) {
       const statusClass = statusText.toUpperCase() === "ACTIVO" ? "active" : "eliminated"
 
       return `
-        <tr>
+        <tr class="standing-click-row" data-standing-team="${team.teamId}">
           <td>${team.rank}</td>
           <td>
-            <div class="team-name-cell">
+            <button class="standing-team-button" type="button" data-standing-team="${team.teamId}">
               ${flag ? `<img class="team-flag" src="${flag}" alt="Bandera de ${teamInfo.name}">` : ""}
               <span>${teamInfo.name || team.name}</span>
-            </div>
+            </button>
           </td>
           <td>${team.unit}</td>
           <td>${team.points}</td>
@@ -1031,6 +1046,8 @@ function renderStandings(standings) {
       `
     })
     .join("")
+
+  setupDashboardTeamLinks()
 }
 
 function renderUpcomingMatches(matches) {
@@ -1096,7 +1113,7 @@ function renderLiveMatches(matches) {
         const teamB = getTeamInfo(match.teamB)
 
         return `
-          <div class="match-card live">
+          <button class="match-card live dashboard-live-match" type="button" data-dashboard-match="${match.matchId}">
             <span>${match.phase || "Partido en vivo"}</span>
 
             <div class="match-teams">
@@ -1106,15 +1123,63 @@ function renderLiveMatches(matches) {
             </div>
 
             <p>En vivo · finaliza ${match.endDate || "pendiente"}</p>
-          </div>
+          </button>
         `
       }).join("")}
     </div>
 
-    <a class="match-more-banner" href="#">
+    <button class="match-more-banner dashboard-match-center-link" type="button">
       Ver todos los partidos en Match Center
-    </a>
+    </button>
   `
+
+  setupDashboardMatchLinks()
+}
+
+function setupDashboardMatchLinks() {
+  document.querySelectorAll("[data-dashboard-match]").forEach(button => {
+    button.addEventListener("click", () => {
+      const matchId = String(button.dataset.dashboardMatch || "").trim()
+      openMatchCenterFromDashboard(matchId)
+    })
+  })
+
+  document.querySelectorAll(".dashboard-match-center-link").forEach(button => {
+    button.addEventListener("click", () => {
+      activateView("matchCenterView")
+      loadMatchCenterData()
+    })
+  })
+}
+
+function openMatchCenterFromDashboard(matchId) {
+  if (!matchId) return
+
+  matchCenterState.selectedMatchId = matchId
+
+  activateView("matchCenterView")
+
+  loadMatchCenterData().then(() => {
+    requestAnimationFrame(() => {
+      const selectedCard = document.querySelector(`[data-match-id="${matchId}"]`)
+      const stage = document.getElementById("matchCenterStage")
+
+      if (selectedCard) {
+        selectedCard.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest"
+        })
+      }
+
+      if (stage) {
+        stage.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        })
+      }
+    })
+  })
 }
 
 function renderMatchTeam(team, points = null) {
@@ -1256,6 +1321,46 @@ function renderCountryAccordion(team, players) {
   `
 }
 
+function setupDashboardTeamLinks() {
+  document.querySelectorAll("[data-standing-team]").forEach(element => {
+    element.addEventListener("click", event => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      const teamId = normalizeId(element.dataset.standingTeam)
+      openTeamAccordionFromDashboard(teamId)
+    })
+  })
+}
+
+function openTeamAccordionFromDashboard(teamId) {
+  const cleanTeamId = normalizeId(teamId)
+  if (!cleanTeamId) return
+
+  currentTeamFilter = "ALL"
+
+  document.querySelectorAll("[data-unit-filter]").forEach(button => {
+    button.classList.toggle("active", normalizeId(button.dataset.unitFilter) === "ALL")
+  })
+
+  openTeamIds.add(cleanTeamId)
+
+  renderTeamsPage(dashboardState.teams, dashboardState.players)
+  activateView("teamsView")
+
+  requestAnimationFrame(() => {
+    const card = document.querySelector(`[data-team-card="${cleanTeamId}"]`)
+
+    if (card) {
+      card.classList.add("open")
+      card.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      })
+    }
+  })
+}
+
 function renderPlayerCard(player, rank) {
   const teamInfo = getTeamInfo(player.teamId)
   const teamColors = getTeamColors(player.teamId)
@@ -1342,20 +1447,11 @@ function renderPlayerCard(player, rank) {
 
 function setupViewNavigation() {
   const menuButtons = document.querySelectorAll(".menu-item[data-view]")
-  const views = document.querySelectorAll(".view")
 
   menuButtons.forEach(button => {
     button.addEventListener("click", () => {
       const viewId = button.dataset.view
-      const targetView = document.getElementById(viewId)
-
-      if (!targetView) return
-
-      menuButtons.forEach(item => item.classList.remove("active"))
-      button.classList.add("active")
-
-      views.forEach(view => view.classList.add("hidden"))
-      targetView.classList.remove("hidden")
+      activateView(viewId)
 
       if (viewId === "matchCenterView") {
         loadMatchCenterData()
