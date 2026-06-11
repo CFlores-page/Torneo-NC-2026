@@ -230,15 +230,12 @@ function setupMobileMenu() {
     button.textContent = "×"
   }
 
-  const toggleMenu = () => {
-    if (document.body.classList.contains("mobile-menu-open")) {
-      closeMenu()
-    } else {
-      openMenu()
-    }
-  }
+  button.addEventListener("click", () => {
+    document.body.classList.contains("mobile-menu-open")
+      ? closeMenu()
+      : openMenu()
+  })
 
-  button.addEventListener("click", toggleMenu)
   overlay.addEventListener("click", closeMenu)
 
   menuItems.forEach(item => {
