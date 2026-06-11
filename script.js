@@ -597,7 +597,7 @@ async function loadMatchCenterData() {
   try {
     const [partidosRows, playerRows, summaryRows] = await Promise.all([
       getSheetFrom("PARTIDOS", "A2:K200"),
-      getSheetFrom("JUGADORES", "A1:Z500"),
+      getSheetFrom("JUGADORES", "A2:N500"),
       getSheetFrom("DASHBOARD", "A2:B25")
     ])
 
@@ -607,7 +607,7 @@ async function loadMatchCenterData() {
         return status === "EN VIVO" || status === "LIVE" || status === "ACTIVO"
       })
 
-    const players = rowsToPlayerObjects(playerRows)
+    const players = matchCenterPlayerRowsToObjects(playerRows)
     const summary = summaryRowsToObject(summaryRows)
 
     matchCenterState.matches = matches
@@ -648,6 +648,26 @@ async function loadMatchCenterData() {
       `
     }
   }
+}
+
+function matchCenterPlayerRowsToObjects(rows) {
+  return rows
+    .filter(row => row[0] && row[1] && row[4])
+    .map(row => ({
+      playerId: row[0],
+      fullName: row[1],
+      displayName: row[2] || row[1],
+      unit: normalizeId(row[3]),
+      teamId: normalizeId(row[4]),
+      isCaptain: String(row[5] || "").trim().toUpperCase() === "SI",
+      photoUrl: row[13] || row[6] || "",
+      flagUrl: row[7] || "",
+      points: parseNumber(row[8]),
+      sales: parseNumber(row[9]),
+      volume: parseNumber(row[10]),
+      average: parseNumber(row[11]),
+      teamPointShare: parsePercent(row[12])
+    }))
 }
 
 function renderMatchCenter(matches, selectedMatch, players, summary = {}) {
