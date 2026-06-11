@@ -475,11 +475,13 @@ td {
 }
 
 .team-flag-large {
-  width: 54px;
-  height: 38px;
+  width: 62px;
+  height: 42px;
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 0 18px rgba(255,255,255,0.18);
+  display: block;
+  background: rgba(255,255,255,0.08);
 }
 
 .matches-list {

@@ -206,14 +206,14 @@ function renderUpcomingMatches(matches) {
 
           <div class="match-teams">
             <div class="match-team">
-              <img class="team-flag-large" src="${teamA.flagUrl}" alt="Bandera de ${teamA.name}">
+              <img class="team-flag-large" src="${driveImage(teamA.flagUrl)}" alt="Bandera de ${teamA.name}">
               <div class="match-team-name">${teamA.name}</div>
             </div>
 
             <div class="match-vs">VS</div>
 
             <div class="match-team">
-              <img class="team-flag-large" src="${teamB.flagUrl}" alt="Bandera de ${teamB.name}">
+              <img class="team-flag-large" src="${driveImage(teamB.flagUrl)}" alt="Bandera de ${teamB.name}">
               <div class="match-team-name">${teamB.name}</div>
             </div>
           </div>
@@ -269,6 +269,27 @@ function renderLiveMatches(matches) {
       `;
     })
     .join("");
+}
+
+function driveImage(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+
+  if (raw.includes("thumbnail?id=")) {
+    return raw;
+  }
+
+  if (raw.includes("uc?export=view&id=")) {
+    const id = raw.split("id=")[1];
+    return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+  }
+
+  const match = raw.match(/\/d\/([^/]+)/);
+  if (match) {
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+  }
+
+  return raw;
 }
 
 const TEAM_CATALOG = {
