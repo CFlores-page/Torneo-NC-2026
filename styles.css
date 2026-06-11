@@ -1,14 +1,35 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap");
+
+/* =========================================================
+   NETCENTER AMERICAS FIFA CUP 2026
+   Cleaned stylesheet
+   Order:
+   1. Base variables
+   2. Layout / dashboard
+   3. Teams / player cards
+   4. Match Center
+   5. Responsive
+   6. Final typography/theme overrides
+========================================================= */
+
 * {
   box-sizing: border-box;
 }
 
 :root {
+  --font-display: "Bebas Neue", Arial, Helvetica, sans-serif;
+  --font-ui: "Rajdhani", Arial, Helvetica, sans-serif;
+
   --bg-main: #050b16;
   --bg-panel: rgba(10, 24, 46, 0.88);
   --bg-panel-soft: rgba(255, 255, 255, 0.045);
   --border: rgba(255, 255, 255, 0.11);
+
   --text-main: #ffffff;
-  --text-soft: #aebbd0;
+  --text-strong: #f7fbff;
+  --text-soft: #b8c6dc;
+  --text-muted: #7f8fa8;
+
   --blue: #1d6fff;
   --blue-dark: #0c2b78;
   --gold: #f5b942;
@@ -16,18 +37,41 @@
   --purple: #8b5cf6;
   --red: #ff304f;
 
+  --sport-blue: #5da8ff;
+  --sport-gold: #ffd447;
+  --sport-red: #ff3b5f;
+  --sport-green: #3df28f;
+
+  --title-shadow: 0 8px 28px rgba(0,0,0,0.42);
   --card-stadium-bg: url("https://drive.google.com/thumbnail?id=1Ec_FB9zR5140iDPcMSv9RHuH2uKZ9WDS&sz=w1600");
+}
+
+html {
+  min-height: 100%;
+  background: var(--bg-main);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.01em;
   color: var(--text-main);
   background:
     radial-gradient(circle at 80% 0%, rgba(29, 111, 255, 0.32), transparent 32%),
     radial-gradient(circle at 35% 100%, rgba(245, 185, 66, 0.08), transparent 30%),
     linear-gradient(180deg, #071426 0%, #050b16 55%, #020711 100%);
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-ui);
 }
 
 body::before {
@@ -1301,11 +1345,6 @@ td {
 }
 
 .mc-strip-card {
-  flex: 0 0 300px;
-  scroll-snap-align: start;
-}
-
-.mc-strip-card {
   flex: 0 0 360px;
   scroll-snap-align: start;
   min-height: 118px;
@@ -1802,23 +1841,6 @@ td {
   box-shadow: 0 14px 32px rgba(0,0,0,0.26);
 }
 
-.mc-showcase-figure {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  min-height: 138px;
-  margin-bottom: 8px;
-}
-
-.mc-showcase-img {
-  max-height: 150px;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 14px 24px rgba(0,0,0,0.28));
-}
-
 .mc-showcase-placeholder {
   width: 96px;
   height: 96px;
@@ -1830,15 +1852,6 @@ td {
   color: #fff;
   background: rgba(255,255,255,0.10);
   border: 1px solid rgba(255,255,255,0.14);
-}
-
-.mc-showcase-copy {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 4px;
 }
 
 .mc-showcase-label {
@@ -1878,14 +1891,6 @@ td {
   font-size: 15px;
   font-weight: 700;
   color: var(--text-soft);
-}
-
-.mc-showcase-points::after {
-  content: " pts";
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-soft);
-  margin-left: 4px;
 }
 
 .mc-stat-box {
@@ -2094,4 +2099,294 @@ td {
   .mc-main-score {
     font-size: 56px;
   }
+}
+
+.sidebar {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(29, 111, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(5, 15, 32, 0.96), rgba(2, 8, 18, 0.96));
+}
+
+.menu-item {
+  position: relative;
+}
+
+.menu-item.active {
+  background:
+    linear-gradient(90deg, rgba(29, 111, 255, 0.95), rgba(8, 43, 130, 0.92));
+  box-shadow:
+    0 0 0 1px rgba(118, 169, 255, 0.42),
+    0 0 24px rgba(29, 111, 255, 0.26);
+}
+
+.menu-item.active::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 3px;
+  height: 44%;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: var(--sport-gold);
+  box-shadow: 0 0 12px rgba(255, 212, 71, 0.55);
+}
+
+
+/* =========================================================
+   FINAL TYPOGRAPHY / SPORTS THEME OVERRIDES
+   Kept at bottom on purpose so these win the cascade.
+========================================================= */
+
+.topbar h1,
+.view-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(44px, 4.2vw, 72px);
+  font-weight: 400;
+  letter-spacing: 0.035em;
+  line-height: 0.92;
+  color: var(--text-strong);
+  text-shadow: var(--title-shadow);
+}
+
+.eyebrow {
+  font-family: var(--font-ui);
+  color: var(--sport-gold);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.subtitle,
+.panel-header p,
+.view-header .subtitle {
+  color: var(--text-soft);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+}
+
+.brand h1,
+.brand h2,
+.panel-header h2,
+.hype-panel h2,
+.mc-info-card h4,
+.mc-roster-head h3,
+.country-team-main h3,
+.player-card-body h4,
+.mc-team-name,
+.mc-showcase-name,
+.prize-card h3,
+.empty-state strong,
+.mc-showcase-empty strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--text-strong);
+}
+
+.brand h1 {
+  font-size: 24px;
+}
+
+.brand h2 {
+  font-size: 28px;
+  color: var(--sport-red);
+  text-shadow: 0 0 18px rgba(255, 48, 79, 0.26);
+}
+
+.brand p {
+  font-family: var(--font-ui);
+  color: #dbe7ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
+.menu-item {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  color: #d8e4f6;
+}
+
+.menu-item.active {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.panel-header h2 {
+  font-size: 26px;
+  line-height: 0.95;
+}
+
+.mc-info-card h4 {
+  font-size: 24px;
+}
+
+.mc-roster-head h3 {
+  font-size: 28px;
+  line-height: 0.95;
+}
+
+.summary-card span,
+.update-card span,
+.prize-card span,
+.mc-showcase-label,
+.mc-stat-box span,
+.mc-info-row span,
+.mc-player-sub,
+.player-stats-grid span,
+.player-record span,
+.player-last-match span,
+th {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.summary-card strong,
+.update-card strong,
+.country-team-stats strong,
+.mc-main-score,
+.mc-strip-score strong,
+.mc-player-points,
+.player-stats-grid strong,
+.player-record strong,
+td {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.mc-main-score {
+  font-size: clamp(72px, 7vw, 118px);
+  letter-spacing: -0.045em;
+  text-shadow:
+    0 10px 34px rgba(0,0,0,0.52),
+    0 0 20px rgba(255,255,255,0.08);
+}
+
+.mc-strip-score strong {
+  font-size: 30px;
+  letter-spacing: 0.02em;
+}
+
+.mc-team-name {
+  font-size: clamp(34px, 3.2vw, 52px);
+  letter-spacing: 0.045em;
+  line-height: 0.92;
+  text-shadow:
+    0 8px 24px rgba(0,0,0,0.50),
+    0 0 18px rgba(255,255,255,0.08);
+}
+
+.mc-team-points,
+.prize-card p,
+.empty-state p,
+.mc-showcase-empty p {
+  color: var(--text-soft);
+  font-weight: 500;
+}
+
+.mc-team-points strong {
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.country-team-main h3 {
+  font-size: 34px;
+  line-height: 0.95;
+  text-shadow: var(--title-shadow);
+}
+
+.player-card-body h4 {
+  font-size: 34px;
+  line-height: 0.92;
+  text-shadow:
+    0 8px 24px rgba(0,0,0,0.56),
+    0 0 14px rgba(255,255,255,0.06);
+}
+
+.mc-player-name {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+
+.mc-player-points {
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.mc-showcase-name {
+  font-size: clamp(30px, 3vw, 46px);
+  letter-spacing: 0.045em;
+  line-height: 0.92;
+  text-shadow: 0 8px 24px rgba(0,0,0,0.50);
+}
+
+.mc-showcase-points strong {
+  font-family: var(--font-ui);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.mc-showcase-points span {
+  color: var(--sport-gold);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.status,
+.unit-chip,
+.mc-team-unit,
+.player-team-line strong,
+.mc-live-pill,
+.mc-stage-badge,
+.captain-badge,
+.panel-link {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.sidebar {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(29, 111, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(5, 15, 32, 0.96), rgba(2, 8, 18, 0.96));
+}
+
+.menu-item {
+  position: relative;
+}
+
+.menu-item.active {
+  background:
+    linear-gradient(90deg, rgba(29, 111, 255, 0.95), rgba(8, 43, 130, 0.92));
+  box-shadow:
+    0 0 0 1px rgba(118, 169, 255, 0.42),
+    0 0 24px rgba(29, 111, 255, 0.26);
+}
+
+.menu-item.active::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 3px;
+  height: 44%;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: var(--sport-gold);
+  box-shadow: 0 0 12px rgba(255, 212, 71, 0.55);
 }
