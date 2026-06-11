@@ -108,7 +108,7 @@ async function loadDashboardData() {
     const [summaryRows, standingsRows, upcomingRows, liveRows] = await Promise.all([
       getSheet("A2:B25"),
       getSheet("A28:G40"),
-      getSheet("A44:G49"),
+      getSheet("A44:F49"),
       getSheet("A53:G58")
     ]);
 
@@ -116,6 +116,9 @@ async function loadDashboardData() {
     const standings = standingsRowsToObjects(standingsRows);
     const upcomingMatches = upcomingRowsToObjects(upcomingRows);
     const liveMatches = liveRowsToObjects(liveRows);
+
+    console.log("UPCOMING ROWS:", upcomingRows);
+    console.log("UPCOMING MATCHES:", upcomingMatches);
 
     updateDashboardCards(summary);
     renderStandings(standings);
