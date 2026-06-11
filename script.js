@@ -839,6 +839,7 @@ function setupMatchCenterStripArrows() {
 async function loadDashboardData() {
   try {
     const [
+      phaseRows,
       summaryRows,
       standingsRows,
       upcomingRows,
@@ -846,6 +847,7 @@ async function loadDashboardData() {
       teamRows,
       playerRows
     ] = await Promise.all([
+      getSheet("B1:B1", "DASHBOARD"),
       getSheet("A2:B25", "DASHBOARD"),
       getSheet("A28:G40", "DASHBOARD"),
       getSheet("A44:F49", "DASHBOARD"),
@@ -855,6 +857,7 @@ async function loadDashboardData() {
     ])
 
     const summary = summaryRowsToObject(summaryRows)
+    summary.currentPhase = phaseRows?.[0]?.[0] || "Pendiente"
     const standings = standingsRowsToObjects(standingsRows)
     const upcomingMatches = upcomingRowsToObjects(upcomingRows)
     const liveMatches = liveRowsToObjects(liveRows)
