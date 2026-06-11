@@ -747,14 +747,14 @@ async function loadDashboardData() {
 }
 
 function summaryRowsToObject(rows) {
-  const obj = {}
+  const map = {}
 
   rows.forEach(row => {
     const key = String(row[0] || "").trim()
     const value = row[1] || ""
 
     if (key) {
-      obj[key] = value
+      map[key] = value
     }
   })
 
@@ -774,7 +774,12 @@ function summaryRowsToObject(rows) {
     liveMatches: map["Partidos en vivo"] || 0,
     upcomingMatches: map["Próximos partidos"] || 0,
     finishedMatches: map["Partidos finalizados"] || 0,
-    currentLeader: map["Líder actual"] || ""
+    currentLeader: map["Líder actual"] || "",
+
+    // Estos extra son para que Match Center también pueda leerlo como objeto simple
+    "Fase actual": map["Fase actual"] || "",
+    "Estado del torneo": map["Estado del torneo"] || "",
+    "Última actualización": map["Última actualización"] || ""
   }
 }
 
