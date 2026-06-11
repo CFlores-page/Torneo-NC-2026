@@ -207,7 +207,7 @@ async function loadDashboardData() {
   } catch (error) {
     console.error("Error cargando DASHBOARD:", error);
   }
-  
+
 function renderTeamsPage(teams, players) {
   const container = document.getElementById("teamsContainer")
   if (!container) return
@@ -222,35 +222,20 @@ function renderTeamsPage(teams, players) {
     return
   }
 
-  container.innerHTML = teams
-    .map(team => {
-      const teamInfo = getTeamInfo(team.teamId)
-      const flag = driveImage(team.flagUrl || teamInfo.flagUrl)
-      const teamPlayers = players.filter(player => player.teamId === team.teamId)
+  const unitOrder = ["ELITE", "PREMIER", "BALFER", "LOYALTY"]
 
-      return `
-        <article class="panel" style="margin-bottom: 14px;">
-          <div class="country-team-header">
-            <div class="country-team-main">
-              ${flag ? `<img class="country-team-flag" src="${flag}" alt="Bandera de ${teamInfo.name}">` : ""}
-              <div>
-                <h3>${teamInfo.name}</h3>
-                <p>${teamPlayers.length} integrantes · Capitán: ${team.captainName || "Pendiente"}</p>
-              </div>
-            </div>
+  container.innerHTML = unitOrder
+    .map(unit => {
+      const unitTeams = teams.filter(team => team.unit === unit)
 
-            <div class="country-team-stats">
-              <span class="unit-chip">${team.unit}</span>
-              <span class="status active">${team.status}</span>
-              <strong>${team.points} pts</strong>
-              <small>${team.sales} ventas</small>
-            </div>
-          </div>
-        </article>
-      `
+      if (unitTeams.length === 0) return ""
+
+      return renderUnitTeamsSection(unit, unitTeams, players)
     })
     .join("")
-}}
+
+  setupTeamAccordions()
+}
 
 function updateDashboardCards(summary) {
   document.getElementById("faseActual").textContent = summary.currentPhase || "Pendiente";
@@ -333,6 +318,194 @@ function renderTeamsPage(teams, players) {
     .join("")
 
   setupTeamAccordions()
+}
+
+function renderUnitTeamsSection(unit, teams, players) {
+  const unitColors = getUnitColors(unit)
+
+  return `
+    <section
+      class="teams-unit-section"
+      style="
+        --unit-primary: ${unitColors.primary};
+        --unit-secondary: ${unitColors.secondary};
+        --unit-accent: ${unitColors.accent};
+        --unit-bg: ${unitColors.bg};
+      "
+    >
+      <div class="teams-unit-header">
+        <div>
+          <span>Unidad</span>
+          <h2>${unit}</h2>
+        </div>
+        <p>${teams.length} equipos</p>
+      </div>
+
+      <div class="country-accordion-list">
+        ${teams.map(team => {
+          const teamPlayers = players.filter(player => player.teamId === team.teamId)
+          return renderCountryAccordion(team, teamPlayers)
+        }).join("")}
+      </div>
+    </section>
+  `
+}
+
+function renderCountryAccordion(team, players) {
+  const teamInfo = getTeamInfo(team.teamId)
+  const teamColors = getTeamColors(team.teamId)
+  const unitColors = getUnitColors(team.unit)
+  const sortedPlayers = sortPlayersForTeam(players)
+  const flag = driveImage(team.flagUrl || teamInfo.flagUrl)
+  const statusText = String(team.status || "Pendiente").trim()
+  const statusClass = statusText.toUpperCase() === "ACTIVO" ? "active" : "eliminated"
+
+  return `
+    <article
+      class="country-team-card"
+      style="
+        --team-primary: ${teamColors.primary};
+        --team-secondary: ${teamColors.secondary};
+        --team-accent: ${teamColors.accent};
+        --team-bg: ${teamColors.bg};
+        --unit-primary: ${unitColors.primary};
+        --unit-bg: ${unitColors.bg};
+      "
+    >
+      <button class="country-team-header" type="button" data-team-toggle>
+        <div class="country-team-main">
+          ${flag ? `<img class="country-team-flag" src="${flag}" alt="Bandera de ${teamInfo.name}">` : ""}
+
+          <div>
+            <h3>${teamInfo.name}</h3>
+            <p>${sortedPlayers.length} integrantes · Capitán: ${team.captainName || "Pendiente"}</p>
+          </div>
+        </div>
+
+        <div class="country-team-stats">
+          <span class="unit-chip">${team.unit}</span>
+          <span class="status ${statusClass}">${statusText}</span>
+          <strong>${team.points} pts</strong>
+          <small>${team.sales} ventas</small>
+          <span class="accordion-arrow">⌄</span>
+        </div>
+      </button>
+
+      <div class="country-roster" data-team-roster>
+        ${
+          sortedPlayers.length
+            ? sortedPlayers.map((player, index) => renderPlayerCard(player, index + 1)).join("")
+            : `<div class="empty-state">
+                <strong>Roster pendiente</strong>
+                <p>No hay jugadores registrados para este equipo todavía.</p>
+              </div>`
+        }
+      </div>
+    </article>
+  `
+}
+
+function sortPlayersForTeam(players) {
+  return [...players].sort((a, b) => {
+    if (a.isCaptain !== b.isCaptain) return a.isCaptain ? -1 : 1
+    if (b.points !== a.points) return b.points - a.points
+    if (b.sales !== a.sales) return b.sales - a.sales
+
+    return String(a.displayName).localeCompare(String(b.displayName))
+  })
+}
+
+function renderPlayerCard(player, rank) {
+  const teamInfo = getTeamInfo(player.teamId)
+  const teamColors = getTeamColors(player.teamId)
+  const unitColors = getUnitColors(player.unit)
+  const photo = driveImage(player.photoUrl)
+  const flag = driveImage(player.flagUrl || teamInfo.flagUrl)
+  const performance = Math.max(0, Math.min(100, Number(player.teamPointShare) || 0))
+
+  return `
+    <article
+      class="player-card ${player.isCaptain ? "captain-card" : ""}"
+      style="
+        --team-primary: ${teamColors.primary};
+        --team-secondary: ${teamColors.secondary};
+        --team-accent: ${teamColors.accent};
+        --team-bg: ${teamColors.bg};
+        --unit-primary: ${unitColors.primary};
+        --unit-secondary: ${unitColors.secondary};
+        --unit-accent: ${unitColors.accent};
+      "
+    >
+      <div class="player-card-rank">${rank}</div>
+
+      ${player.isCaptain ? `<div class="captain-badge">⭐ Capitán</div>` : ""}
+
+      <div class="player-photo-wrap">
+        ${
+          photo
+            ? `<img class="player-photo" src="${photo}" alt="${player.displayName}">`
+            : `<div class="player-photo-placeholder">${getInitials(player.displayName)}</div>`
+        }
+      </div>
+
+      <div class="player-card-body">
+        <h4>${player.displayName}</h4>
+
+        <div class="player-team-line">
+          ${flag ? `<img src="${flag}" alt="Bandera de ${teamInfo.name}">` : ""}
+          <span>${teamInfo.name}</span>
+          <strong>${player.unit}</strong>
+        </div>
+
+        <div class="player-meta-line">
+          <span>Rol: Integrante</span>
+          <span>${player.isCaptain ? "Capitán del equipo" : "Jugador"}</span>
+        </div>
+
+        <div class="player-record">
+          <div>
+            <span>Récord en el torneo</span>
+            <strong>${player.sales}V - 0D</strong>
+          </div>
+          <em>${player.isCaptain ? "Liderazgo activo" : "En competencia"}</em>
+        </div>
+
+        <div class="player-stats-grid">
+          <div>
+            <span>Puntos</span>
+            <strong>${formatNumber(player.points)}</strong>
+          </div>
+          <div>
+            <span>Ventas</span>
+            <strong>${formatNumber(player.sales)}</strong>
+          </div>
+          <div>
+            <span>Volumen</span>
+            <strong>${formatMoney(player.volume)}</strong>
+          </div>
+          <div>
+            <span>Promedio</span>
+            <strong>${formatMoney(player.average)}</strong>
+          </div>
+        </div>
+
+        <div class="player-performance">
+          <div>
+            <span>% de puntos del equipo</span>
+            <strong>${performance}%</strong>
+          </div>
+          <div class="performance-track">
+            <div class="performance-fill" style="width: ${performance}%"></div>
+          </div>
+        </div>
+
+        <div class="player-last-match">
+          <span>Último partido</span>
+          <p>Actividad pendiente de registrar</p>
+        </div>
+      </div>
+    </article>
+  `
 }
 
 function renderUnitTeamsSection(unit, teams, players) {
