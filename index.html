@@ -20,12 +20,12 @@
       </div>
 
       <nav class="menu">
-        <button class="menu-item active">Dashboard</button>
-        <button class="menu-item">Teams</button>
-        <button class="menu-item">Match Center</button>
-        <button class="menu-item">Bracket</button>
-        <button class="menu-item">Placings / MVP</button>
-        <button class="menu-item">Tournament Rules</button>
+        <button class="menu-item active" data-view="dashboardView">Dashboard</button>
+        <button class="menu-item" data-view="teamsView">Teams</button>
+        <button class="menu-item" data-view="matchCenterView">Match Center</button>
+        <button class="menu-item" data-view="bracketView">Bracket</button>
+        <button class="menu-item" data-view="placingsView">Placings / MVP</button>
+        <button class="menu-item" data-view="rulesView">Tournament Rules</button>
       </nav>
 
       <div class="prize-card">
@@ -38,7 +38,7 @@
     </aside>
 
     <main class="main">
-
+     <section id="dashboardView" class="view dashboard-view">
       <header class="topbar">
         <div>
           <p class="eyebrow">Panel principal del torneo</p>
@@ -78,7 +78,7 @@
           <p id="puntosLider">0 pts</p>
         </article>
       </section>
-
+     
       <section class="dashboard-grid">
 
         <article class="panel standings-panel">
@@ -224,6 +224,7 @@
             </div>
         </div>
         </section>
+     </section>
     </main>
   </div>
 

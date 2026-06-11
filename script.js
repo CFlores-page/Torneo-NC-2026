@@ -789,5 +789,26 @@ function getTeamInfo(teamId) {
   };
 }
 
-loadDashboardData();
-setInterval(loadDashboardData, REFRESH_MS);
+function setupViewNavigation() {
+  const menuButtons = document.querySelectorAll(".menu-item[data-view]")
+  const views = document.querySelectorAll(".view")
+
+  menuButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const viewId = button.dataset.view
+      const targetView = document.getElementById(viewId)
+
+      if (!targetView) return
+
+      menuButtons.forEach(item => item.classList.remove("active"))
+      button.classList.add("active")
+
+      views.forEach(view => view.classList.add("hidden"))
+      targetView.classList.remove("hidden")
+    })
+  })
+}
+
+setupViewNavigation()
+loadDashboardData()
+setInterval(loadDashboardData, REFRESH_MS)
