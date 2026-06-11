@@ -645,6 +645,30 @@ function updateMatchCenterClock() {
   })
 }
 
+function setupMatchCenterStripArrows() {
+  const strip = document.getElementById("matchCenterStrip")
+  const prev = document.getElementById("mcStripPrev")
+  const next = document.getElementById("mcStripNext")
+
+  if (!strip || !prev || !next) return
+
+  const scrollAmount = 320
+
+  prev.addEventListener("click", () => {
+    strip.scrollBy({
+      left: -scrollAmount,
+      behavior: "smooth"
+    })
+  })
+
+  next.addEventListener("click", () => {
+    strip.scrollBy({
+      left: scrollAmount,
+      behavior: "smooth"
+    })
+  })
+}
+
 async function loadDashboardData() {
   try {
     const [
@@ -1360,6 +1384,6 @@ function setText(id, value) {
 }
 
 setupViewNavigation()
-setupTeamFilters()
+setupMatchCenterStripArrows()
 loadDashboardData()
 setInterval(loadDashboardData, REFRESH_MS)
