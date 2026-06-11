@@ -1441,7 +1441,15 @@ function setText(id, value) {
   }
 }
 
-setupViewNavigation()
-setupMatchCenterStripArrows()
-loadDashboardData()
-setInterval(loadDashboardData, REFRESH_MS)
+document.addEventListener("DOMContentLoaded", () => {
+  setupViewNavigation()
+  setupMatchCenterStripArrows()
+
+  loadDashboardData()
+  loadMatchCenterData()
+  updateMatchCenterClock()
+
+  setInterval(loadDashboardData, REFRESH_MS)
+  setInterval(loadMatchCenterData, REFRESH_MS)
+  setInterval(updateMatchCenterClock, 30000)
+})
