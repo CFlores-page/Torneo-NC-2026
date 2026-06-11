@@ -117,9 +117,6 @@ async function loadDashboardData() {
     const upcomingMatches = upcomingRowsToObjects(upcomingRows);
     const liveMatches = liveRowsToObjects(liveRows);
 
-    console.log("UPCOMING ROWS:", upcomingRows);
-    console.log("UPCOMING MATCHES:", upcomingMatches);
-
     updateDashboardCards(summary);
     renderStandings(standings);
     renderUpcomingMatches(upcomingMatches);
@@ -195,34 +192,42 @@ function renderUpcomingMatches(matches) {
   }
 
   container.className = "matches-list";
-  container.innerHTML = matches
-    .map(match => {
-      const teamA = getTeamInfo(match.teamA);
-      const teamB = getTeamInfo(match.teamB);
+container.innerHTML = `
+  <div class="matches-scroll">
+    ${matches
+      .map(match => {
+        const teamA = getTeamInfo(match.teamA);
+        const teamB = getTeamInfo(match.teamB);
 
-      return `
-        <div class="match-card">
-          <span>${match.phase}</span>
+        return `
+          <div class="match-card">
+            <span>${match.phase}</span>
 
-          <div class="match-teams">
-            <div class="match-team">
-              <img class="team-flag-large" src="${driveImage(teamA.flagUrl)}" alt="Bandera de ${teamA.name}">
-              <div class="match-team-name">${teamA.name}</div>
+            <div class="match-teams">
+              <div class="match-team">
+                <img class="team-flag-large" src="${driveImage(teamA.flagUrl)}" alt="Bandera de ${teamA.name}">
+                <div class="match-team-name">${teamA.name}</div>
+              </div>
+
+              <div class="match-vs">VS</div>
+
+              <div class="match-team">
+                <img class="team-flag-large" src="${driveImage(teamB.flagUrl)}" alt="Bandera de ${teamB.name}">
+                <div class="match-team-name">${teamB.name}</div>
+              </div>
             </div>
 
-            <div class="match-vs">VS</div>
-
-            <div class="match-team">
-              <img class="team-flag-large" src="${driveImage(teamB.flagUrl)}" alt="Bandera de ${teamB.name}">
-              <div class="match-team-name">${teamB.name}</div>
-            </div>
+            <p>${match.startDate} — ${match.endDate}</p>
           </div>
+        `;
+      })
+      .join("")}
+  </div>
 
-          <p>${match.startDate} — ${match.endDate}</p>
-        </div>
-      `;
-    })
-    .join("");
+  <a class="match-more-banner" href="#">
+    Ver calendario completo en Match Center
+  </a>
+`;
 }
 
 function renderLiveMatches(matches) {
@@ -238,37 +243,45 @@ function renderLiveMatches(matches) {
     return;
   }
 
-  container.className = "matches-list";
-  container.innerHTML = matches
-    .map(match => {
-      const teamA = getTeamInfo(match.teamA);
-      const teamB = getTeamInfo(match.teamB);
+    container.className = "matches-list";
+    container.innerHTML = `
+    <div class="matches-scroll">
+        ${matches
+        .map(match => {
+            const teamA = getTeamInfo(match.teamA);
+            const teamB = getTeamInfo(match.teamB);
 
-      return `
-        <div class="match-card live">
-          <span>${match.phase}</span>
+            return `
+            <div class="match-card live">
+                <span>${match.phase}</span>
 
-          <div class="match-teams">
-            <div class="match-team">
-              <img class="team-flag-large" src="${driveImage(teamA.flagUrl)}" alt="Bandera de ${teamA.name}">
-              <div class="match-team-name">${teamA.name}</div>
-              <div class="match-score">${match.pointsA ?? 0}</div>
+                <div class="match-teams">
+                <div class="match-team">
+                    <img class="team-flag-large" src="${driveImage(teamA.flagUrl)}" alt="Bandera de ${teamA.name}">
+                    <div class="match-team-name">${teamA.name}</div>
+                    <div class="match-score">${match.pointsA ?? 0}</div>
+                </div>
+
+                <div class="match-vs">VS</div>
+
+                <div class="match-team">
+                    <img class="team-flag-large" src="${driveImage(teamB.flagUrl)}" alt="Bandera de ${teamB.name}">
+                    <div class="match-team-name">${teamB.name}</div>
+                    <div class="match-score">${match.pointsB ?? 0}</div>
+                </div>
+                </div>
+
+                <p>En vivo</p>
             </div>
+            `;
+        })
+        .join("")}
+    </div>
 
-            <div class="match-vs">VS</div>
-
-            <div class="match-team">
-              <img class="team-flag-large" src="${driveImage(teamB.flagUrl)}" alt="Bandera de ${teamB.name}">
-              <div class="match-team-name">${teamB.name}</div>
-              <div class="match-score">${match.pointsB ?? 0}</div>
-            </div>
-          </div>
-
-          <p>En vivo</p>
-        </div>
-      `;
-    })
-    .join("");
+    <a class="match-more-banner" href="#">
+        Ver todos los partidos en Match Center
+    </a>
+    `;
 }
 
 function driveImage(url) {

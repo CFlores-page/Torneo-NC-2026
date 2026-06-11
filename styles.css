@@ -303,7 +303,11 @@ body::before {
   display: grid;
   grid-template-columns: 1.35fr 1fr 1fr;
   gap: 18px;
-  align-items: start;
+  grid-template-areas:
+    "standings live upcoming"
+    "units units units"
+    "hype hype hype";
+  align-items: stretch;
 }
 
 .panel {
@@ -315,11 +319,29 @@ body::before {
 }
 
 .standings-panel {
-  grid-row: span 2;
+  grid-area: standings;
+}
+
+.live-panel {
+    grid-area: live;
+}
+
+.upcoming-panel{
+    grid-area:upcoming;
+}
+
+.standings-panel,
+.live-panel,
+.upcoming-panel {
+  min-height: 430px;
+  max-height: 430px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .hype-panel {
-  grid-column: span 3;
+  grid-area: hype;
   background:
     linear-gradient(135deg, rgba(255, 48, 79, 0.18), rgba(29, 111, 255, 0.12)),
     var(--bg-panel);
@@ -415,7 +437,7 @@ td {
 }
 
 .unit-panel {
-  grid-column: span 2;
+  grid-area: units;
   align-self: start;
 }
 
@@ -466,6 +488,47 @@ td {
   font-size: 16px;
 }
 
+.matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.matches-scroll {
+  flex: 1;
+  display: grid;
+  gap: 12px;
+  overflow: hidden;
+  min-height: 0;
+  align-content: start;
+}
+
+.match-more-banner {
+  margin-top: auto;
+  padding: 12px 14px;
+  border-radius: 14px;
+  text-align: center;
+  color: #ffffff;
+  background: linear-gradient(90deg, rgba(29, 111, 255, 0.85), rgba(12, 43, 120, 0.85));
+  border: 1px solid rgba(118, 169, 255, 0.45);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 0 18px rgba(29, 111, 255, 0.18);
+}
+
+.match-more-banner:hover {
+  filter: brightness(1.1);
+}
+
+.live-panel .empty-state,
+.upcoming-panel .empty-state {
+  flex: 1;
+}
+
 @media (max-width: 1200px) {
   .app {
     grid-template-columns: 220px 1fr;
@@ -477,19 +540,24 @@ td {
 
   .dashboard-grid {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "standings"
+      "live"
+      "upcoming"
+      "units"
+      "hype";
   }
 
   .standings-panel,
-  .hype-panel {
-    grid-column: auto;
+  .live-panel,
+  .upcoming-panel {
+    min-height: auto;
+    max-height: none;
   }
-  .unit-panel {
-    grid-column: auto;
-    }
+
   .unit-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
 }
 
 @media (max-width: 700px) {
@@ -506,11 +574,6 @@ td {
   box-shadow: 0 0 18px rgba(255,255,255,0.18);
   display: block;
   background: rgba(255,255,255,0.08);
-}
-
-.matches-list {
-  display: grid;
-  gap: 12px;
 }
 
 .match-card {
