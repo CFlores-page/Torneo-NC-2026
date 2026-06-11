@@ -225,6 +225,53 @@
             </div>
         </div>
         </section>
+        <section id="matchCenterView" class="view match-center-view hidden">
+          <header class="view-header">
+            <div>
+              <p class="eyebrow">Live head-to-head</p>
+              <h1>Match Center</h1>
+              <p class="subtitle">Partidos en vivo, marcador actual y rosters por selección.</p>
+            </div>
+
+            <div class="match-center-header-cards">
+              <div class="update-card">
+                <span>Match Period</span>
+                <strong id="mcPeriod">Pendiente</strong>
+                <small id="mcPhase">Cargando fase...</small>
+              </div>
+
+              <div class="update-card">
+                <span>Server Time</span>
+                <strong id="mcServerTime">--:--</strong>
+                <small id="mcServerDate">--</small>
+              </div>
+            </div>
+          </header>
+
+          <section class="panel mc-strip-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Active Matches</h2>
+                <p>Selecciona un partido para abrir su head-to-head.</p>
+              </div>
+            </div>
+
+            <div id="matchCenterStrip" class="mc-strip">
+              <div class="empty-state">
+                <strong>Cargando partidos</strong>
+                <p>Los partidos activos aparecerán aquí.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="matchCenterStage" class="panel mc-stage-shell">
+            <div class="empty-state">
+              <strong>Sin partido seleccionado</strong>
+              <p>Selecciona un partido activo para abrir el Match Center.</p>
+            </div>
+          </section>
+        </section>
+
 
         </main>
   </div>

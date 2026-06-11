@@ -191,6 +191,460 @@ async function getSheet(range, sheetName = SHEET_NAME) {
   )
 }
 
+async function getSheetFrom(sheetName, range) {
+  const url =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&range=${range}&t=${Date.now()}`
+
+  const res = await fetch(url)
+  const text = await res.text()
+
+  const jsonText = text.substring(
+    text.indexOf("{"),
+    text.lastIndexOf("}") + 1
+  )
+
+  const data = JSON.parse(jsonText)
+  const rows = data.table.rows || []
+
+  return rows.map(row =>
+    (row.c || []).map(cell => (cell ? cell.v : ""))
+  )
+}
+
+const matchCenterState = {
+  matches: [],
+  players: [],
+  selectedMatchId: null
+}
+
+function normalizeHeader(value) {
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+}
+
+function getInitials(name) {
+  const parts = String(name || "").trim().split(/\s+/).filter(Boolean)
+  return parts.slice(0, 2).map(part => part[0]).join("").toUpperCase() || "NA"
+}
+
+function parseNumber(value) {
+  if (value === null || value === undefined || value === "") return 0
+  const cleaned = String(value).replace(/[^0-9.-]/g, "")
+  const num = Number(cleaned)
+  return Number.isFinite(num) ? num : 0
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("es-MX").format(parseNumber(value))
+}
+
+function formatMoney(value) {
+  return new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0
+  }).format(parseNumber(value))
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value))
+}
+
+function rowsToPlayerObjects(rows) {
+  if (!rows || !rows.length) return []
+
+  const headers = rows[0].map(normalizeHeader)
+  const dataRows = rows.slice(1)
+
+  const getIndex = (...names) => {
+    for (const name of names) {
+      const idx = headers.indexOf(normalizeHeader(name))
+      if (idx !== -1) return idx
+    }
+    return -1
+  }
+
+  const idx = {
+    playerId: getIndex("PLAYER_ID"),
+    displayName: getIndex("NOMBRE_NORM", "JUGADORES"),
+    unit: getIndex("UNIDAD"),
+    teamId: getIndex("EQUIPO", "TEAM_ID"),
+    captain: getIndex("CAPITAN"),
+    photo: getIndex("HS_IMG", "HEADSHOT", "PLR_IMG"),
+    flag: getIndex("BANDERA"),
+    points: getIndex("PUNTOS"),
+    sales: getIndex("VENTAS"),
+    volume: getIndex("VOLUMEN"),
+    average: getIndex("PROMEDIO")
+  }
+
+  return dataRows
+    .filter(row => row[idx.playerId] || row[idx.displayName])
+    .map(row => ({
+      playerId: row[idx.playerId] || "",
+      displayName: row[idx.displayName] || row[idx.playerId] || "Jugador",
+      unit: row[idx.unit] || "",
+      teamId: row[idx.teamId] || "",
+      isCaptain: /^(SI|SÍ|YES|TRUE|CAPITAN|CAPITÁN)$/i.test(String(row[idx.captain] || "").trim()),
+      photoUrl: row[idx.photo] || "",
+      flagUrl: row[idx.flag] || "",
+      points: parseNumber(row[idx.points]),
+      sales: parseNumber(row[idx.sales]),
+      volume: parseNumber(row[idx.volume]),
+      average: parseNumber(row[idx.average])
+    }))
+}
+
+function buildRosterList(teamId, players) {
+  const teamPlayers = players
+    .filter(player => player.teamId === teamId)
+    .sort((a, b) => {
+      if (a.isCaptain && !b.isCaptain) return -1
+      if (!a.isCaptain && b.isCaptain) return 1
+      return b.points - a.points
+    })
+
+  return teamPlayers.map(player => {
+    const photo = driveImage(player.photoUrl)
+    const avatar = photo
+      ? `<img class="mc-player-avatar" src="${photo}" alt="${player.displayName}">`
+      : `<div class="mc-player-avatar-placeholder">${getInitials(player.displayName)}</div>`
+
+    return `
+      <div class="mc-player-row">
+        ${avatar}
+        <div class="mc-player-meta">
+          <div class="mc-player-name">${player.displayName}</div>
+          <div class="mc-player-sub">${player.isCaptain ? "Capitán" : "Jugador"}</div>
+        </div>
+        <div class="mc-player-points">${formatNumber(player.points)}</div>
+      </div>
+    `
+  }).join("")
+}
+
+function renderMatchStripCard(match, active = false) {
+  const teamA = getTeamInfo(match.teamA)
+  const teamB = getTeamInfo(match.teamB)
+
+  const flagA = driveImage(teamA.flagUrl)
+  const flagB = driveImage(teamB.flagUrl)
+
+  return `
+    <button class="mc-strip-card ${active ? "active" : ""}" data-match-id="${match.matchId}">
+      <div class="mc-strip-card-top">
+        <span>${match.phase || "Match"}</span>
+        <span class="mc-live-pill">LIVE</span>
+      </div>
+
+      <div class="mc-strip-vs">
+        <div class="mc-strip-team">
+          ${flagA ? `<img src="${flagA}" alt="${teamA.name}">` : ""}
+          <span>${teamA.name}</span>
+        </div>
+
+        <div class="mc-strip-score">${formatNumber(match.scoreA)} - ${formatNumber(match.scoreB)}</div>
+
+        <div class="mc-strip-team right">
+          <span>${teamB.name}</span>
+          ${flagB ? `<img src="${flagB}" alt="${teamB.name}">` : ""}
+        </div>
+      </div>
+
+      <div class="mc-strip-footer">
+        ${match.matchId || "MATCH"} · ${match.final || ""}
+      </div>
+    </button>
+  `
+}
+
+function renderMatchCenterStage(match, players) {
+  const teamA = getTeamInfo(match.teamA)
+  const teamB = getTeamInfo(match.teamB)
+
+  const teamAColors = getTeamColors(match.teamA)
+  const teamBColors = getTeamColors(match.teamB)
+
+  const teamAPlayers = players.filter(player => player.teamId === match.teamA)
+  const teamBPlayers = players.filter(player => player.teamId === match.teamB)
+
+  const pointsA = parseNumber(match.scoreA)
+  const pointsB = parseNumber(match.scoreB)
+  const total = Math.max(pointsA + pointsB, 1)
+  const shareA = clamp((pointsA / total) * 100, 0, 100)
+  const shareB = clamp((pointsB / total) * 100, 0, 100)
+
+  const topA = [...teamAPlayers].sort((a, b) => b.points - a.points)[0]
+  const topB = [...teamBPlayers].sort((a, b) => b.points - a.points)[0]
+
+  const teamAFlag = driveImage(teamA.flagUrl)
+  const teamBFlag = driveImage(teamB.flagUrl)
+
+  return `
+    <div
+      class="mc-stage"
+      style="
+        --team-a-primary: ${teamAColors.primary};
+        --team-b-primary: ${teamBColors.primary};
+        --team-a-share: ${shareA}%;
+        --team-b-share: ${shareB}%;
+      "
+    >
+      <div class="mc-stage-inner">
+        <div class="mc-stage-topline">
+          <div class="mc-stage-badge">LIVE MATCH</div>
+        </div>
+
+        <div class="mc-headline">
+          <div class="mc-team-hero">
+            ${teamAFlag ? `<img class="mc-team-flag" src="${teamAFlag}" alt="${teamA.name}">` : ""}
+            <div class="mc-team-name">${teamA.name}</div>
+            <div class="mc-team-unit">${teamAPlayers[0]?.unit || ""}</div>
+            <div class="mc-team-points">Tournament Points<strong>${formatNumber(teamAPlayers.reduce((sum, p) => sum + p.points, 0))}</strong></div>
+          </div>
+
+          <div class="mc-score-center">
+            <div class="mc-phase-line">${match.phase || "Partido en vivo"}</div>
+            <div class="mc-time-line">${match.final || ""}</div>
+            <div class="mc-main-score">${formatNumber(pointsA)} - ${formatNumber(pointsB)}</div>
+          </div>
+
+          <div class="mc-team-hero right">
+            ${teamBFlag ? `<img class="mc-team-flag" src="${teamBFlag}" alt="${teamB.name}">` : ""}
+            <div class="mc-team-name">${teamB.name}</div>
+            <div class="mc-team-unit">${teamBPlayers[0]?.unit || ""}</div>
+            <div class="mc-team-points">Tournament Points<strong>${formatNumber(teamBPlayers.reduce((sum, p) => sum + p.points, 0))}</strong></div>
+          </div>
+        </div>
+
+        <div class="mc-progress-wrap">
+          <div class="mc-progress-head">
+            <span>${teamA.name} ${formatNumber(pointsA)}</span>
+            <span>Points Progress</span>
+            <span>${teamB.name} ${formatNumber(pointsB)}</span>
+          </div>
+
+          <div class="mc-progress-bar">
+            <div class="mc-progress-a"></div>
+            <div class="mc-progress-b"></div>
+          </div>
+        </div>
+
+        <div class="mc-body-grid">
+          <div class="mc-roster-card">
+            <div class="mc-roster-head">
+              <div>
+                <h3>${teamA.name} Roster</h3>
+                <span>${teamAPlayers.length} jugadores</span>
+              </div>
+            </div>
+
+            <div class="mc-roster-list">
+              ${buildRosterList(match.teamA, players)}
+            </div>
+          </div>
+
+          <div class="mc-center-card">
+            <div class="mc-mini-stats">
+              <div class="mc-stat-box">
+                <span>Top contributor</span>
+                <strong>${topA ? topA.displayName : "—"}</strong>
+              </div>
+
+              <div class="mc-stat-box">
+                <span>Top contributor</span>
+                <strong>${topB ? topB.displayName : "—"}</strong>
+              </div>
+
+              <div class="mc-stat-box">
+                <span>${teamA.name}</span>
+                <strong>${topA ? formatNumber(topA.points) : "0"} pts</strong>
+              </div>
+
+              <div class="mc-stat-box">
+                <span>${teamB.name}</span>
+                <strong>${topB ? formatNumber(topB.points) : "0"} pts</strong>
+              </div>
+            </div>
+
+            <div class="mc-info-grid">
+              <div class="mc-info-card">
+                <h4>Match Info</h4>
+                <div class="mc-info-list">
+                  <div class="mc-info-row"><span>Formato</span><strong>Head-to-Head</strong></div>
+                  <div class="mc-info-row"><span>Scoring</span><strong>Total Sales Points</strong></div>
+                  <div class="mc-info-row"><span>Tiebreaker</span><strong>Most Volume</strong></div>
+                </div>
+              </div>
+
+              <div class="mc-info-card">
+                <h4>Recent Activity</h4>
+                <div class="mc-activity-list">
+                  <div class="mc-activity-item">
+                    <span class="mc-activity-tag a">${teamA.name}</span>
+                    <span>${topA ? `${topA.displayName} lidera con ${formatNumber(topA.points)} puntos` : "Sin actividad registrada"}</span>
+                  </div>
+                  <div class="mc-activity-item">
+                    <span class="mc-activity-tag b">${teamB.name}</span>
+                    <span>${topB ? `${topB.displayName} lidera con ${formatNumber(topB.points)} puntos` : "Sin actividad registrada"}</span>
+                  </div>
+                  <div class="mc-activity-item">
+                    <span class="mc-activity-tag a">${teamA.name}</span>
+                    <span>Marcador actual: ${formatNumber(pointsA)}</span>
+                  </div>
+                  <div class="mc-activity-item">
+                    <span class="mc-activity-tag b">${teamB.name}</span>
+                    <span>Marcador actual: ${formatNumber(pointsB)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mc-info-card">
+                <h4>About This Match</h4>
+                <div class="mc-info-list">
+                  <div class="mc-info-row"><span>Fase</span><strong>${match.phase || "—"}</strong></div>
+                  <div class="mc-info-row"><span>Match ID</span><strong>${match.matchId || "—"}</strong></div>
+                  <div class="mc-info-row"><span>Estado</span><strong>Live</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mc-roster-card">
+            <div class="mc-roster-head">
+              <div>
+                <h3>${teamB.name} Roster</h3>
+                <span>${teamBPlayers.length} jugadores</span>
+              </div>
+            </div>
+
+            <div class="mc-roster-list">
+              ${buildRosterList(match.teamB, players)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+async function loadMatchCenterData() {
+  try {
+    const [liveRows, playerRows, summaryRows] = await Promise.all([
+      getSheetFrom("DASHBOARD", "A53:G200"),
+      getSheetFrom("JUGADORES", "A1:Z500"),
+      getSheetFrom("DASHBOARD", "A2:B25")
+    ])
+
+    const matches = liveRowsToObjects(liveRows).filter(match => match.teamA && match.teamB)
+    const players = rowsToPlayerObjects(playerRows)
+    const summary = summaryRowsToObject(summaryRows)
+
+    matchCenterState.matches = matches
+    matchCenterState.players = players
+
+    if (!matchCenterState.selectedMatchId && matches.length) {
+      matchCenterState.selectedMatchId = matches[0].matchId
+    }
+
+    const selectedMatch =
+      matches.find(match => match.matchId === matchCenterState.selectedMatchId) ||
+      matches[0] ||
+      null
+
+    renderMatchCenter(matches, selectedMatch, players, summary)
+    updateMatchCenterClock()
+  } catch (error) {
+    console.error("Error loading Match Center:", error)
+
+    const stage = document.getElementById("matchCenterStage")
+    if (stage) {
+      stage.innerHTML = `
+        <div class="empty-state">
+          <strong>Error cargando Match Center</strong>
+          <p>${error.message}</p>
+        </div>
+      `
+    }
+  }
+}
+
+function renderMatchCenter(matches, selectedMatch, players, summary = {}) {
+  const strip = document.getElementById("matchCenterStrip")
+  const stage = document.getElementById("matchCenterStage")
+
+  const mcPeriod = document.getElementById("mcPeriod")
+  const mcPhase = document.getElementById("mcPhase")
+
+  if (mcPeriod) {
+    mcPeriod.textContent = summary["Fase actual"] || summary["Estado del torneo"] || "En curso"
+  }
+
+  if (mcPhase) {
+    mcPhase.textContent = summary["Última actualización"] || "Actualización en vivo"
+  }
+
+  if (!matches.length) {
+    strip.innerHTML = `
+      <div class="empty-state">
+        <strong>No hay partidos en vivo</strong>
+        <p>Cuando existan partidos activos aparecerán aquí.</p>
+      </div>
+    `
+
+    stage.innerHTML = `
+      <div class="empty-state">
+        <strong>Sin partido activo</strong>
+        <p>No hay head-to-head disponible en este momento.</p>
+      </div>
+    `
+    return
+  }
+
+  strip.innerHTML = matches
+    .map(match => renderMatchStripCard(match, selectedMatch && match.matchId === selectedMatch.matchId))
+    .join("")
+
+  stage.innerHTML = selectedMatch
+    ? renderMatchCenterStage(selectedMatch, players)
+    : `
+      <div class="empty-state">
+        <strong>Selecciona un partido</strong>
+        <p>Elige uno de los partidos activos de la franja superior.</p>
+      </div>
+    `
+
+  strip.querySelectorAll(".mc-strip-card").forEach(button => {
+    button.addEventListener("click", () => {
+      matchCenterState.selectedMatchId = button.dataset.matchId
+      const nextMatch = matchCenterState.matches.find(match => match.matchId === matchCenterState.selectedMatchId)
+      renderMatchCenter(matchCenterState.matches, nextMatch, matchCenterState.players, summary)
+    })
+  })
+}
+
+function updateMatchCenterClock() {
+  const timeEl = document.getElementById("mcServerTime")
+  const dateEl = document.getElementById("mcServerDate")
+  if (!timeEl || !dateEl) return
+
+  const now = new Date()
+
+  timeEl.textContent = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit"
+  })
+
+  dateEl.textContent = now.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  })
+}
+
 async function loadDashboardData() {
   try {
     const [
