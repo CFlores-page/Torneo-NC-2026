@@ -700,3 +700,473 @@ td {
   vertical-align: middle;
   margin-right: 8px;
 }
+
+.hidden {
+  display: none !important;
+}
+
+.view {
+  position: relative;
+  z-index: 1;
+}
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.view-header h1 {
+  margin: 0;
+  font-size: 42px;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.teams-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.team-filter {
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.045);
+  color: #dbe7ff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.team-filter.active,
+.team-filter:hover {
+  background: linear-gradient(90deg, #125cff, #082b82);
+  color: #fff;
+  border-color: rgba(118,169,255,0.65);
+}
+
+.teams-container {
+  display: grid;
+  gap: 20px;
+}
+
+.teams-unit-section {
+  border: 1px solid color-mix(in srgb, var(--unit-primary) 38%, rgba(255,255,255,0.12));
+  background:
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--unit-primary) 16%, transparent), transparent 34%),
+    rgba(10, 24, 46, 0.75);
+  border-radius: 22px;
+  padding: 18px;
+}
+
+.teams-unit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.teams-unit-header span {
+  color: var(--unit-primary);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.teams-unit-header h2 {
+  margin: 4px 0 0;
+  font-size: 24px;
+}
+
+.teams-unit-header p {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.country-accordion-list {
+  display: grid;
+  gap: 14px;
+}
+
+.country-team-card {
+  border: 1px solid color-mix(in srgb, var(--team-primary) 40%, rgba(255,255,255,0.12));
+  background:
+    radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--team-primary) 26%, transparent), transparent 30%),
+    linear-gradient(135deg, color-mix(in srgb, var(--team-bg) 88%, black), rgba(5, 11, 22, 0.94));
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.country-team-header {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.country-team-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.country-team-flag {
+  width: 78px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--team-primary) 45%, transparent);
+  background: rgba(255,255,255,0.08);
+}
+
+.country-team-main h3 {
+  margin: 0;
+  font-size: 24px;
+  text-transform: uppercase;
+}
+
+.country-team-main p {
+  margin: 6px 0 0;
+  color: var(--text-soft);
+}
+
+.country-team-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.unit-chip {
+  color: var(--unit-primary);
+  background: color-mix(in srgb, var(--unit-bg) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--unit-primary) 55%, transparent);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.country-team-stats strong {
+  font-size: 20px;
+}
+
+.country-team-stats small {
+  color: var(--text-soft);
+}
+
+.accordion-arrow {
+  color: var(--team-accent);
+  font-size: 24px;
+  transition: transform 0.2s ease;
+}
+
+.country-team-card.open .accordion-arrow {
+  transform: rotate(180deg);
+}
+
+.country-roster {
+  display: none;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  gap: 14px;
+  padding: 0 16px 16px;
+}
+
+.country-team-card.open .country-roster {
+  display: grid;
+}
+
+.player-card {
+  position: relative;
+  min-height: 520px;
+  border: 1px solid color-mix(in srgb, var(--team-primary) 45%, rgba(255,255,255,0.12));
+  border-radius: 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--team-secondary) 28%, transparent), transparent 36%),
+    radial-gradient(circle at 90% 20%, color-mix(in srgb, var(--team-primary) 30%, transparent), transparent 32%),
+    linear-gradient(180deg, color-mix(in srgb, var(--team-bg) 92%, black), rgba(3, 8, 17, 0.98));
+  box-shadow: 0 20px 44px rgba(0,0,0,0.28);
+}
+
+.player-card.captain-card {
+  border-color: color-mix(in srgb, var(--team-accent) 80%, white);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--team-accent) 38%, transparent),
+    0 0 30px color-mix(in srgb, var(--team-accent) 22%, transparent),
+    0 20px 44px rgba(0,0,0,0.32);
+}
+
+.player-card-rank {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: rgba(0,0,0,0.42);
+  border: 1px solid rgba(255,255,255,0.24);
+  font-weight: 900;
+}
+
+.captain-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #111;
+  background: var(--team-accent);
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--team-accent) 42%, transparent);
+}
+
+.player-photo-wrap {
+  height: 210px;
+  display: grid;
+  place-items: end center;
+  padding-top: 26px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), transparent);
+}
+
+.player-photo {
+  width: 170px;
+  height: 190px;
+  object-fit: cover;
+  object-position: center top;
+  filter: drop-shadow(0 22px 26px rgba(0,0,0,0.38));
+}
+
+.player-photo-placeholder {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 42px;
+  font-weight: 900;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  margin-bottom: 20px;
+}
+
+.player-card-body {
+  padding: 16px;
+}
+
+.player-card-body h4 {
+  margin: 0;
+  font-size: 25px;
+  line-height: 1;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.42);
+}
+
+.player-team-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: white;
+  font-weight: 800;
+}
+
+.player-team-line img {
+  width: 28px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.player-team-line strong {
+  margin-left: auto;
+  color: var(--unit-primary);
+  border: 1px solid color-mix(in srgb, var(--unit-primary) 60%, transparent);
+  border-radius: 7px;
+  padding: 4px 7px;
+  font-size: 12px;
+}
+
+.player-meta-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.player-record {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.player-record span {
+  display: block;
+  color: var(--text-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.player-record strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 18px;
+}
+
+.player-record em {
+  color: var(--team-accent);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.player-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.player-stats-grid div {
+  padding: 10px 8px;
+  background: rgba(0,0,0,0.16);
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+
+.player-stats-grid div:last-child {
+  border-right: 0;
+}
+
+.player-stats-grid span {
+  display: block;
+  color: var(--text-soft);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.player-stats-grid strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.player-performance {
+  margin-top: 14px;
+}
+
+.player-performance > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-soft);
+  font-size: 12px;
+}
+
+.player-performance strong {
+  color: white;
+}
+
+.performance-track {
+  height: 9px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+
+.performance-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--team-primary), var(--team-accent));
+}
+
+.player-last-match {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.player-last-match span {
+  display: block;
+  color: var(--text-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.player-last-match p {
+  margin: 6px 0 0;
+  color: #edf4ff;
+  font-size: 13px;
+}
+
+@media (max-width: 1300px) {
+  .country-roster {
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 1000px) {
+  .country-roster {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+
+  .country-team-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .country-team-stats {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  .country-roster {
+    grid-template-columns: 1fr;
+  }
+
+  .player-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .country-team-flag {
+    width: 62px;
+    height: 42px;
+  }
+
+  .country-team-main h3 {
+    font-size: 20px;
+  }
+}

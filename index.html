@@ -43,7 +43,7 @@
         <div>
           <p class="eyebrow">Panel principal del torneo</p>
           <h1>NETCENTER AMERICAS FIFA CUP 2026</h1>
-          <p class="subtitle">Cada venta cuenta. Cada punto pesa. Una nación levanta la copa.</p>
+          <p class="subtitle"></p>
         </div>
 
         <div class="update-card">
@@ -199,6 +199,31 @@
         </article>
 
       </section>
+
+     <section id="teamsView" class="view teams-view hidden">
+        <header class="view-header">
+            <div>
+            <p class="eyebrow">Selecciones oficiales</p>
+            <h1>Teams</h1>
+            <p class="subtitle">Explora cada país y despliega las cartas de sus integrantes.</p>
+            </div>
+        </header>
+
+        <div class="teams-toolbar">
+            <button class="team-filter active" data-unit-filter="ALL">Todos</button>
+            <button class="team-filter" data-unit-filter="ELITE">Elite</button>
+            <button class="team-filter" data-unit-filter="PREMIER">Premier</button>
+            <button class="team-filter" data-unit-filter="BALFER">Balfer</button>
+            <button class="team-filter" data-unit-filter="LOYALTY">Loyalty</button>
+        </div>
+
+        <div id="teamsContainer" class="teams-container">
+            <div class="empty-state">
+            <strong>Cargando equipos</strong>
+            <p>Las selecciones aparecerán aquí cuando cargue la hoja EQUIPOS.</p>
+            </div>
+        </div>
+        </section>
     </main>
   </div>
 
