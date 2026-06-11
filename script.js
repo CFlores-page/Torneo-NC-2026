@@ -328,7 +328,7 @@ function buildRosterList(teamId, players) {
   }
 
   return teamPlayers.map(player => {
-    const photo = driveImage(player.photoUrl)
+    const photo = driveImage(player.headshotUrl || player.photoUrl || player.fullBodyUrl)
     const avatar = photo
       ? `<img class="mc-player-avatar" src="${photo}" alt="${player.displayName}">`
       : `<div class="mc-player-avatar-placeholder">${getInitials(player.displayName)}</div>`
@@ -336,12 +336,10 @@ function buildRosterList(teamId, players) {
     return `
       <div class="mc-player-row">
         ${avatar}
-
         <div class="mc-player-meta">
           <div class="mc-player-name">${player.displayName}</div>
           <div class="mc-player-sub">${player.isCaptain ? "Capitán" : `${formatNumber(player.sales)} ventas`}</div>
         </div>
-
         <div class="mc-player-points">${formatNumber(player.points)}</div>
       </div>
     `
@@ -445,6 +443,12 @@ function renderMatchCenterStage(match, players) {
   const teamAFlag = driveImage(teamA.flagUrl)
   const teamBFlag = driveImage(teamB.flagUrl)
 
+  const topAImage = driveImage(topA?.fullBodyUrl || topA?.photoUrl || "")
+  const topBImage = driveImage(topB?.fullBodyUrl || topB?.photoUrl || "")
+
+  const teamATotalTournamentPoints = teamAPlayers.reduce((sum, p) => sum + parseNumber(p.points), 0)
+  const teamBTotalTournamentPoints = teamBPlayers.reduce((sum, p) => sum + parseNumber(p.points), 0)
+
   return `
     <div
       class="mc-stage"
@@ -461,11 +465,14 @@ function renderMatchCenterStage(match, players) {
         </div>
 
         <div class="mc-headline">
-          <div class="mc-team-hero">
+          <div class="mc-team-hero left">
             ${teamAFlag ? `<img class="mc-team-flag" src="${teamAFlag}" alt="${teamA.name}">` : ""}
             <div class="mc-team-name">${teamA.name}</div>
             <div class="mc-team-unit">${teamAPlayers[0]?.unit || ""}</div>
-            <div class="mc-team-points">Tournament Points<strong>${formatNumber(teamAPlayers.reduce((sum, p) => sum + p.points, 0))}</strong></div>
+            <div class="mc-team-points">
+              Tournament Points
+              <strong>${formatNumber(teamATotalTournamentPoints)}</strong>
+            </div>
           </div>
 
           <div class="mc-score-center">
@@ -478,7 +485,10 @@ function renderMatchCenterStage(match, players) {
             ${teamBFlag ? `<img class="mc-team-flag" src="${teamBFlag}" alt="${teamB.name}">` : ""}
             <div class="mc-team-name">${teamB.name}</div>
             <div class="mc-team-unit">${teamBPlayers[0]?.unit || ""}</div>
-            <div class="mc-team-points">Tournament Points<strong>${formatNumber(teamBPlayers.reduce((sum, p) => sum + p.points, 0))}</strong></div>
+            <div class="mc-team-points">
+              Tournament Points
+              <strong>${formatNumber(teamBTotalTournamentPoints)}</strong>
+            </div>
           </div>
         </div>
 
@@ -511,24 +521,34 @@ function renderMatchCenterStage(match, players) {
 
           <div class="mc-center-card">
             <div class="mc-mini-stats">
-              <div class="mc-stat-box">
-                <span>Top contributor</span>
-                <strong>${topA ? topA.displayName : "—"}</strong>
+              <div class="mc-showcase-card a">
+                <div class="mc-showcase-figure">
+                  ${
+                    topAImage
+                      ? `<img class="mc-showcase-img" src="${topAImage}" alt="${topA?.displayName || teamA.name}">`
+                      : `<div class="mc-showcase-placeholder">${topA ? getInitials(topA.displayName) : "—"}</div>`
+                  }
+                </div>
+                <div class="mc-showcase-copy">
+                  <span class="mc-showcase-label">Top Contributor</span>
+                  <strong class="mc-showcase-name">${topA ? topA.displayName : "—"}</strong>
+                  <div class="mc-showcase-points">${topA ? formatNumber(topA.points) : "0"} pts</div>
+                </div>
               </div>
 
-              <div class="mc-stat-box">
-                <span>Top contributor</span>
-                <strong>${topB ? topB.displayName : "—"}</strong>
-              </div>
-
-              <div class="mc-stat-box">
-                <span>${teamA.name}</span>
-                <strong>${topA ? formatNumber(topA.points) : "0"} pts</strong>
-              </div>
-
-              <div class="mc-stat-box">
-                <span>${teamB.name}</span>
-                <strong>${topB ? formatNumber(topB.points) : "0"} pts</strong>
+              <div class="mc-showcase-card b">
+                <div class="mc-showcase-figure">
+                  ${
+                    topBImage
+                      ? `<img class="mc-showcase-img" src="${topBImage}" alt="${topB?.displayName || teamB.name}">`
+                      : `<div class="mc-showcase-placeholder">${topB ? getInitials(topB.displayName) : "—"}</div>`
+                  }
+                </div>
+                <div class="mc-showcase-copy">
+                  <span class="mc-showcase-label">Top Contributor</span>
+                  <strong class="mc-showcase-name">${topB ? topB.displayName : "—"}</strong>
+                  <div class="mc-showcase-points">${topB ? formatNumber(topB.points) : "0"} pts</div>
+                </div>
               </div>
             </div>
 
@@ -654,19 +674,22 @@ function matchCenterPlayerRowsToObjects(rows) {
   return rows
     .filter(row => row[0] && row[1] && row[4])
     .map(row => ({
-      playerId: row[0],
-      fullName: row[1],
-      displayName: row[2] || row[1],
-      unit: normalizeId(row[3]),
-      teamId: normalizeId(row[4]),
-      isCaptain: String(row[5] || "").trim().toUpperCase() === "SI",
-      photoUrl: row[13] || row[6] || "",
+      playerId: row[0] || "",
+      fullName: row[1] || "",
+      displayName: row[2] || row[1] || "Jugador",
+      unit: normalizeId(row[3] || ""),
+      teamId: normalizeId(row[4] || ""),
+      isCaptain: /^(SI|SÍ|YES|TRUE)$/i.test(String(row[5] || "").trim()),
+
+      fullBodyUrl: row[6] || "",
       flagUrl: row[7] || "",
       points: parseNumber(row[8]),
       sales: parseNumber(row[9]),
       volume: parseNumber(row[10]),
       average: parseNumber(row[11]),
-      teamPointShare: parsePercent(row[12])
+      teamPointShare: parsePercent(row[12]),
+      headshotUrl: row[13] || "",
+      photoUrl: row[13] || row[6] || ""
     }))
 }
 
