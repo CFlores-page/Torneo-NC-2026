@@ -2435,7 +2435,7 @@ padding: 18px 18px 22px;
 
 .mc-showcase-bg-figure {
 position: absolute;
-inset: 18px 12px 150px 12px;
+inset: 8px 8px 138px 8px;
 display: flex;
 align-items: flex-end;
 justify-content: center;
@@ -2448,17 +2448,13 @@ align-items: center;
 }
 
 .mc-showcase-bg-img {
-max-height: 100%;
-max-width: 96%;
-width: auto;
-object-fit: contain;
-object-position: center bottom;
-transform: translateY(0) scale(1);
-transform-origin: center bottom;
-filter:
-drop-shadow(0 18px 34px rgba(0,0,0,0.38))
-drop-shadow(0 0 18px rgba(255,255,255,0.04));
-opacity: 0.99;
+  max-height: 112%;
+  max-width: 105%;
+  width: auto;
+  object-fit: contain;
+  object-position: center bottom;
+  transform: translateY(8px) scale(1.08);
+  transform-origin: center bottom;
 }
 
 .mc-showcase-result {
