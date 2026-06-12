@@ -2526,3 +2526,48 @@ transform: translateY(0) scale(1);
 width: min(92%, 300px);
 }
 }
+
+.standing-team-button {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  outline: 0;
+  background: transparent !important;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.standing-team-button:hover,
+.standing-team-button:focus,
+.standing-team-button:active {
+  background: transparent !important;
+  color: var(--sport-blue);
+  box-shadow: none;
+}
+
+.standing-team-button span {
+  background: transparent !important;
+  color: inherit;
+}
+
+.standing-team-button img,
+.standing-team-button .team-flag {
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.standing-click-row {
+  cursor: pointer;
+}
+
+.standing-click-row:hover {
+  background: rgba(255,255,255,0.035);
+}
