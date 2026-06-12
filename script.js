@@ -188,7 +188,7 @@ async function getSheet(range, sheetName = SHEET_NAME) {
   const json = JSON.parse(match[1])
 
   return (json.table?.rows || []).map(row =>
-    (row.c || []).map(cell => cell ? (cell.f || cell.v || "") : "")
+    (row.c || []).map(cell => cell ? (cell.v ?? cell.f ?? "") : "")
   )
 }
 
@@ -1000,15 +1000,35 @@ function parseFeedDateValue(value) {
   return 0
 }
 
+let lastLiveFeedNewestEventId = null
+let liveFeedFirstRender = true
+
 function renderLiveFeed(feedItems = []) {
   const container = document.getElementById("liveFeedTicker")
   if (!container) return
 
-  const items = feedItems
-    .slice(0, 18)
-    .reverse()
+  const itemsNewestFirst = [...feedItems]
+    .filter(item => item.eventId)
+    .sort((a, b) => {
+      const dateA = parseFeedDateValue(a.createdAt || a.saleTimestamp)
+      const dateB = parseFeedDateValue(b.createdAt || b.saleTimestamp)
 
-  if (!items.length) {
+      if (dateB !== dateA) return dateB - dateA
+
+      return String(b.eventId).localeCompare(String(a.eventId))
+    })
+    .slice(0, 18)
+
+  const itemsOldestFirst = [...itemsNewestFirst].reverse()
+  const newestEventId = itemsNewestFirst[0]?.eventId || null
+
+  const distanceFromBottom =
+    container.scrollHeight - container.scrollTop - container.clientHeight
+
+  const userWasNearBottom = distanceFromBottom < 80
+  const hasNewEvent = newestEventId && newestEventId !== lastLiveFeedNewestEventId
+
+  if (!itemsOldestFirst.length) {
     container.innerHTML = `
       <div class="feed-empty">
         <strong>Esperando goles</strong>
@@ -1019,15 +1039,15 @@ function renderLiveFeed(feedItems = []) {
   }
 
   container.innerHTML = `
-    <div class="feed-list live-chat-feed">
-      ${items.map(item => `
+    <div class="live-chat-feed">
+      ${itemsOldestFirst.map(item => `
         <article class="feed-message">
           <div class="feed-avatar">${item.emoji || "⚽"}</div>
 
           <div class="feed-bubble">
             <div class="feed-message-top">
               <strong class="feed-author">${item.title}</strong>
-              <span class="feed-time">${formatFeedTime(item.saleTimestamp)}</span>
+              <span class="feed-time">${formatFeedTime(item.createdAt || item.saleTimestamp)}</span>
             </div>
 
             <p class="feed-commentary">${item.commentary}</p>
@@ -1041,9 +1061,14 @@ function renderLiveFeed(feedItems = []) {
     </div>
   `
 
-  requestAnimationFrame(() => {
-    container.scrollTop = container.scrollHeight
-  })
+  if (liveFeedFirstRender || (hasNewEvent && userWasNearBottom)) {
+    requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight
+    })
+  }
+
+  lastLiveFeedNewestEventId = newestEventId
+  liveFeedFirstRender = false
 }
 
 function formatFeedTime(value) {
