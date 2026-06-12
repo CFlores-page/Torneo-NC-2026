@@ -1047,7 +1047,7 @@ function renderLiveFeed(feedItems = []) {
           <div class="feed-bubble">
             <div class="feed-message-top">
               <strong class="feed-author">${item.title}</strong>
-              <span class="feed-time">${formatFeedTime(item.createdAt || item.saleTimestamp)}</span>
+              <span class="feed-time">${formatFeedTime(item.saleTimestamp)}</span>
             </div>
 
             <p class="feed-commentary">${item.commentary}</p>
@@ -1074,35 +1074,41 @@ function renderLiveFeed(feedItems = []) {
 function formatFeedTime(value) {
   if (!value) return ""
 
-  const raw = String(value).trim()
-
-  const gvizDateTime = raw.match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/)
-
   let date = null
 
-  if (gvizDateTime) {
-    date = new Date(
-      Number(gvizDateTime[1]),
-      Number(gvizDateTime[2]),
-      Number(gvizDateTime[3]),
-      Number(gvizDateTime[4] || 0),
-      Number(gvizDateTime[5] || 0),
-      Number(gvizDateTime[6] || 0)
-    )
-  } else if (value instanceof Date) {
+  if (value instanceof Date && !isNaN(value.getTime())) {
     date = value
   } else {
-    const parsed = new Date(raw)
-    if (!isNaN(parsed.getTime())) date = parsed
+    const raw = String(value).trim()
+
+    const gvizDate = raw.match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/)
+
+    if (gvizDate) {
+      date = new Date(
+        Number(gvizDate[1]),
+        Number(gvizDate[2]),
+        Number(gvizDate[3]),
+        Number(gvizDate[4] || 0),
+        Number(gvizDate[5] || 0),
+        Number(gvizDate[6] || 0)
+      )
+    } else {
+      const parsed = new Date(raw)
+
+      if (!isNaN(parsed.getTime())) {
+        date = parsed
+      }
+    }
   }
 
-  if (!date || isNaN(date.getTime())) return raw
+  if (!date || isNaN(date.getTime())) return String(value)
 
   return date.toLocaleString("es-MX", {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
+    second: "2-digit"
   })
 }
 
