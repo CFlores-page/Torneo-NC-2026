@@ -463,7 +463,7 @@ function renderTopContributorShowcase(team, topContributor, side = "left") {
     <article class="mc-showcase-card ${side}">
       <div class="mc-showcase-team-top">
         <div class="mc-showcase-team-identity">
-          ${flag ? `<img src="${flag}" alt="${teamName}">` : ""}
+          ${flag ? `<img class="mc-showcase-team-flag" src="${flag}" alt="${teamName}">` : ""}
 
           <div class="mc-showcase-team-copy">
             <span class="mc-showcase-team-name">${teamName}</span>
@@ -544,9 +544,6 @@ function renderMatchCenterStage(match, players) {
       return String(a.displayName || "").localeCompare(String(b.displayName || ""))
     })[0] || null
 
-  const teamAFlag = driveImage(teamA.flagUrl)
-  const teamBFlag = driveImage(teamB.flagUrl)
-
   const teamATotalTournamentPoints = teamAPlayers.reduce((sum, p) => sum + parseNumber(p.points), 0)
   const teamBTotalTournamentPoints = teamBPlayers.reduce((sum, p) => sum + parseNumber(p.points), 0)
 
@@ -584,31 +581,11 @@ function renderMatchCenterStage(match, players) {
           <div class="mc-stage-badge">LIVE MATCH</div>
         </div>
 
-        <div class="mc-headline">
-          <div class="mc-team-hero left">
-            ${teamAFlag ? `<img class="mc-team-flag" src="${teamAFlag}" alt="${teamA.name}">` : ""}
-            <div class="mc-team-name">${teamA.name}</div>
-            <div class="mc-team-unit">${teamAPlayers[0]?.unit || ""}</div>
-            <div class="mc-team-points">
-              Tournament Points
-              <strong>${formatNumber(teamATotalTournamentPoints)}</strong>
-            </div>
-          </div>
-
+        <div class="mc-headline score-only">
           <div class="mc-score-center">
             <div class="mc-phase-line">${match.phase || "Partido en vivo"}</div>
             <div class="mc-time-line">Termina: ${formatMatchDate(match.endDate)}</div>
             <div class="mc-main-score">${formatNumber(pointsA)} - ${formatNumber(pointsB)}</div>
-          </div>
-
-          <div class="mc-team-hero right">
-            ${teamBFlag ? `<img class="mc-team-flag" src="${teamBFlag}" alt="${teamB.name}">` : ""}
-            <div class="mc-team-name">${teamB.name}</div>
-            <div class="mc-team-unit">${teamBPlayers[0]?.unit || ""}</div>
-            <div class="mc-team-points">
-              Tournament Points
-              <strong>${formatNumber(teamBTotalTournamentPoints)}</strong>
-            </div>
           </div>
         </div>
 
