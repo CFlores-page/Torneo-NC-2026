@@ -366,9 +366,16 @@ body::before {
 }
 
 .feed-panel {
-  grid-area: feed;
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.feed-panel .panel-header {
+  margin-bottom: 12px;
+}
+
+.feed-panel .panel-link {
+  color: #ff4d6d;
 }
 
 .upcoming-panel {
@@ -421,16 +428,15 @@ body::before {
 }
 
 .live-feed-ticker {
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-right: 2px;
+  padding: 8px 4px 4px 2px;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  scroll-behavior: smooth;
 }
 
 .live-feed-ticker::-webkit-scrollbar {
@@ -439,86 +445,122 @@ body::before {
   display: none;
 }
 
-.feed-list {
+.live-chat-feed {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  min-height: 100%;
+  justify-content: flex-end;
+  padding-left: 4px;
 }
 
-.feed-item {
+.live-chat-feed::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 21px;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 212, 71, 0.04),
+    rgba(255, 212, 71, 0.28),
+    rgba(93, 168, 255, 0.12)
+  );
+  pointer-events: none;
+}
+
+.feed-message {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: 38px 1fr;
+  grid-template-columns: 42px 1fr;
   gap: 10px;
-  align-items: start;
-  padding: 12px;
-  border-radius: 14px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025)),
-    rgba(5, 12, 22, 0.72);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 10px 18px rgba(0,0,0,0.16);
+  align-items: end;
 }
 
-.feed-item:first-child {
-  border-color: rgba(255, 212, 71, 0.32);
-  background:
-    radial-gradient(circle at 0% 0%, rgba(255, 212, 71, 0.13), transparent 34%),
-    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
-    rgba(5, 12, 22, 0.78);
-}
-
-.feed-icon {
-  width: 38px;
-  height: 38px;
+.feed-avatar {
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255, 212, 71, 0.14);
-  border: 1px solid rgba(255, 212, 71, 0.25);
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,255,255,0.20), transparent 34%),
+    linear-gradient(180deg, rgba(255, 212, 71, 0.24), rgba(255, 212, 71, 0.08));
+  border: 1px solid rgba(255, 212, 71, 0.28);
+  box-shadow:
+    0 0 0 4px rgba(5, 12, 22, 0.86),
+    0 10px 20px rgba(0,0,0,0.24);
   font-size: 20px;
 }
 
-.feed-text {
-  min-width: 0;
+.feed-bubble {
+  position: relative;
+  padding: 11px 12px 10px;
+  border-radius: 16px 16px 16px 4px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.025)),
+    rgba(5, 12, 22, 0.78);
+  border: 1px solid rgba(255,255,255,0.09);
+  box-shadow: 0 12px 22px rgba(0,0,0,0.18);
 }
 
-.feed-title {
+.feed-message:last-child .feed-bubble {
+  border-color: rgba(255, 212, 71, 0.34);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 212, 71, 0.13), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.028)),
+    rgba(5, 12, 22, 0.84);
+}
+
+.feed-message-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.feed-author {
   display: block;
   color: #ffffff;
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 20px;
   line-height: 0.95;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.045em;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
-.feed-commentary {
-  margin: 6px 0 0;
-  color: var(--text-soft);
-  font-size: 13px;
-  line-height: 1.25;
-}
-
-.feed-score {
+.feed-score-pill {
+  display: inline-flex;
   margin-top: 8px;
+  padding: 5px 8px;
+  border-radius: 999px;
   color: var(--sport-gold);
-  font-size: 12px;
+  background: rgba(255, 212, 71, 0.09);
+  border: 1px solid rgba(255, 212, 71, 0.16);
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
 }
 
 .feed-time {
-  margin-top: 5px;
-  color: rgba(184, 198, 220, 0.72);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  flex: 0 0 auto;
+  color: rgba(184, 198, 220, 0.62);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .feed-empty {
-  flex: 1;
+  height: 100%;
+  min-height: 220px;
   border: 1px dashed rgba(255,255,255,0.16);
   border-radius: 16px;
   display: grid;
@@ -540,6 +582,20 @@ body::before {
   max-width: 260px;
 }
 
+.feed-item:first-child {
+  border-color: rgba(255, 212, 71, 0.32);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 212, 71, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
+    rgba(5, 12, 22, 0.78);
+}
+
+.feed-commentary {
+  margin: 6px 0 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.25;
+}
 
 table {
   width: 100%;

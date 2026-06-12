@@ -1004,7 +1004,9 @@ function renderLiveFeed(feedItems = []) {
   const container = document.getElementById("liveFeedTicker")
   if (!container) return
 
-  const items = feedItems.slice(0, 12)
+  const items = feedItems
+    .slice(0, 18)
+    .reverse()
 
   if (!items.length) {
     container.innerHTML = `
@@ -1017,21 +1019,31 @@ function renderLiveFeed(feedItems = []) {
   }
 
   container.innerHTML = `
-    <div class="feed-list">
+    <div class="feed-list live-chat-feed">
       ${items.map(item => `
-        <article class="feed-item">
-          <div class="feed-icon">${item.emoji || "⚽"}</div>
+        <article class="feed-message">
+          <div class="feed-avatar">${item.emoji || "⚽"}</div>
 
-          <div class="feed-text">
-            <strong class="feed-title">${item.title}</strong>
+          <div class="feed-bubble">
+            <div class="feed-message-top">
+              <strong class="feed-author">${item.title}</strong>
+              <span class="feed-time">${formatFeedTime(item.saleTimestamp)}</span>
+            </div>
+
             <p class="feed-commentary">${item.commentary}</p>
-            <div class="feed-score">${item.scoreText}</div>
-            <div class="feed-time">${formatFeedTime(item.saleTimestamp)}</div>
+
+            <div class="feed-score-pill">
+              ${item.scoreText}
+            </div>
           </div>
         </article>
       `).join("")}
     </div>
   `
+
+  requestAnimationFrame(() => {
+    container.scrollTop = container.scrollHeight
+  })
 }
 
 function formatFeedTime(value) {
