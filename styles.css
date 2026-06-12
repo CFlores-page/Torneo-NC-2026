@@ -1847,7 +1847,7 @@ td {
 
 .mc-showcase-card {
   position: relative;
-  min-height: 340px;
+  min-height: 420px;
   border-radius: 18px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
@@ -1869,16 +1869,16 @@ td {
 
 .mc-showcase-stage {
   position: relative;
-  min-height: 340px;
+  min-height: 420px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 12px 16px 16px;
+  padding: 18px 16px 20px;
 }
 
 .mc-showcase-bg-figure {
   position: absolute;
-  inset: 8px 8px 72px 8px;
+  inset: 8px 8px 96px 8px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -1910,8 +1910,8 @@ td {
   width: min(100%, 280px);
   margin-top: auto;
   border-radius: 18px;
-  padding: 12px 16px 12px;
-  background: linear-gradient(180deg, rgba(7,12,24,0.68), rgba(7,12,24,0.92));
+  padding: 12px 16px 14px;
+  background: linear-gradient(180deg, rgba(7,12,24,0.66), rgba(7,12,24,0.94));
   border: 1px solid rgba(255,255,255,0.08);
   backdrop-filter: blur(10px);
   text-align: center;
@@ -1944,8 +1944,8 @@ td {
 .mc-showcase-name {
   display: block;
   color: #ffffff;
-  font-size: 20px;
-  line-height: 1.02;
+  font-size: 18px;
+  line-height: 0.98;
   font-weight: 900;
 }
 
@@ -1958,7 +1958,7 @@ td {
 }
 
 .mc-showcase-points strong {
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1;
   font-weight: 900;
   color: #ffffff;
@@ -2899,22 +2899,22 @@ td {
   }
 
  .mc-showcase-card {
-    min-height: 300px;
+    min-height: 360px;
   }
 
   .mc-showcase-stage {
-    min-height: 300px;
-    padding: 10px 12px 14px;
+    min-height: 360px;
+    padding: 14px 12px 16px;
   }
 
   .mc-showcase-bg-figure {
-    inset: 6px 6px 64px 6px;
+    inset: 6px 6px 84px 6px;
   }
 
   .mc-showcase-bg-img {
-    max-height: 112%;
-    max-width: 100%;
-    transform: translateY(6px) scale(1.12);
+    max-height: 120%;
+    max-width: 102%;
+    transform: translateY(8px) scale(1.16);
   }
 
   .mc-info-grid {
