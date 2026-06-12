@@ -7,19 +7,19 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  
   <header class="mobile-topbar">
-  <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Abrir menú">
-    ☰
-  </button>
+    <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Abrir menú">
+      ☰
+    </button>
 
-  <div class="mobile-brand">
-    <strong>NETCENTER AMERICAS</strong>
-    <span>FIFA CUP 2026</span>
-  </div>
-</header>
+    <div class="mobile-brand">
+      <strong>NETCENTER AMERICAS</strong>
+      <span>FIFA CUP 2026</span>
+    </div>
+  </header>
 
-<div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
   <div class="app">
 
     <aside class="sidebar">
@@ -155,7 +155,24 @@
             <p>Los partidos aparecerán aquí cuando sean definidos.</p>
           </div>
         </article>
+        
+        <article class="panel feed-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Live Feed</h2>
+              <p>Goles, puntos y narración del torneo</p>
+            </div>
+            <span class="panel-link">En vivo</span>
+          </div>
 
+          <div id="liveFeedTicker" class="live-feed-ticker">
+            <div class="feed-empty">
+              <strong>Esperando goles</strong>
+              <p>El narrador aparecerá cuando caigan puntos nuevos.</p>
+            </div>
+          </div>
+        </article>
+        
         <article class="panel upcoming-panel">
           <div class="panel-header">
             <div>
@@ -170,38 +187,6 @@
             <p>Los próximos partidos se mostrarán cuando se publiquen oficialmente.</p>
           </div>
         </article>
-
-        <article class="panel unit-panel">
-            <div class="panel-header">
-                <div>
-                <h2>Equipos por unidad</h2>
-                <p>Distribución oficial</p>
-                </div>
-                <span class="panel-link">Teams</span>
-            </div>
-
-            <div class="unit-grid">
-                <div class="unit-card">
-                <strong>ELITE</strong>
-                <p>Estados Unidos · Colombia · Francia</p>
-                </div>
-
-                <div class="unit-card">
-                <strong>PREMIER</strong>
-                <p>Holanda · Inglaterra · Portugal · México · Argentina</p>
-                </div>
-
-                <div class="unit-card">
-                <strong>BALFER</strong>
-                <p>Alemania · Brasil</p>
-                </div>
-
-                <div class="unit-card">
-                <strong>LOYALTY</strong>
-                <p>España · Marruecos</p>
-                </div>
-            </div>
-            </article>
 
         <article class="panel hype-panel">
           <h2>Mensaje del torneo</h2>

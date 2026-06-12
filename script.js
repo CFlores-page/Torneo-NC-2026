@@ -8,7 +8,8 @@ let dashboardState = {
   upcomingMatches: [],
   liveMatches: [],
   teams: [],
-  players: []
+  players: [],
+  liveFeed: []
 }
 
 let currentTeamFilter = "ALL"
@@ -891,8 +892,9 @@ async function loadDashboardData() {
       standingsRows,
       upcomingRows,
       liveRows,
-      teamRows,
-      playerRows
+      teamsRows,
+      playersRows,
+      liveFeedRows
     ] = await Promise.all([
       getSheet("B4:B4", "DASHBOARD"),
       getSheet("A2:B25", "DASHBOARD"),
@@ -900,16 +902,19 @@ async function loadDashboardData() {
       getSheet("A44:F49", "DASHBOARD"),
       getSheet("A53:G58", "DASHBOARD"),
       getSheet("A2:H50", "EQUIPOS"),
-      getSheet("A2:M300", "JUGADORES")
+      getSheet("A2:M300", "JUGADORES"),
+      getSheet("A2:Q100", "LIVE_FEED")
     ])
 
     const summary = summaryRowsToObject(summaryRows)
-    summary.currentPhase = phaseRows?.[0]?.[0] || "Pendiente"
+    summary.currentPhase = phaseRows?.[0]?.[0] || summary.currentPhase || "Pendiente"
+
     const standings = standingsRowsToObjects(standingsRows)
     const upcomingMatches = upcomingRowsToObjects(upcomingRows)
     const liveMatches = liveRowsToObjects(liveRows)
-    const teams = teamRowsToObjects(teamRows)
-    const players = playerRowsToObjects(playerRows)
+    const teams = teamRowsToObjects(teamsRows)
+    const players = playerRowsToObjects(playersRows)
+    const liveFeed = liveFeedRowsToObjects(liveFeedRows)
 
     dashboardState = {
       summary,
@@ -917,13 +922,15 @@ async function loadDashboardData() {
       upcomingMatches,
       liveMatches,
       teams,
-      players
+      players,
+      liveFeed
     }
 
     updateDashboardCards(summary)
     renderStandings(standings)
     renderUpcomingMatches(upcomingMatches)
     renderLiveMatches(liveMatches)
+    renderLiveFeed(liveFeed)
     renderTeamsPage(teams, players)
 
     console.log("Datos cargados:", dashboardState)
@@ -931,6 +938,135 @@ async function loadDashboardData() {
     console.error("Error cargando datos del torneo:", error)
     showTeamsError(error)
   }
+}
+
+function liveFeedRowsToObjects(rows) {
+  return rows
+    .filter(row => row[0] && row[14])
+    .map(row => ({
+      eventId: row[0] || "",
+      createdAt: row[1] || "",
+      saleTimestamp: row[2] || "",
+      matchId: row[3] || "",
+      playerName: row[4] || "",
+      playerShortName: row[5] || "",
+      teamId: row[6] || "",
+      teamName: row[7] || "",
+      opponentId: row[8] || "",
+      opponentName: row[9] || "",
+      pointsAdded: parseNumber(row[10]),
+      teamScoreAtEvent: parseNumber(row[11]),
+      opponentScoreAtEvent: parseNumber(row[12]),
+      emoji: row[13] || "⚽",
+      title: row[14] || "",
+      commentary: row[15] || "",
+      scoreText: row[16] || ""
+    }))
+    .sort((a, b) => {
+      const dateA = parseFeedDateValue(a.createdAt || a.saleTimestamp)
+      const dateB = parseFeedDateValue(b.createdAt || b.saleTimestamp)
+      return dateB - dateA
+    })
+}
+
+function parseFeedDateValue(value) {
+  if (!value) return 0
+
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    return value.getTime()
+  }
+
+  const raw = String(value).trim()
+
+  const gvizDateTime = raw.match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/)
+
+  if (gvizDateTime) {
+    const year = Number(gvizDateTime[1])
+    const month = Number(gvizDateTime[2])
+    const day = Number(gvizDateTime[3])
+    const hour = Number(gvizDateTime[4] || 0)
+    const minute = Number(gvizDateTime[5] || 0)
+    const second = Number(gvizDateTime[6] || 0)
+
+    return new Date(year, month, day, hour, minute, second).getTime()
+  }
+
+  const parsed = new Date(raw)
+
+  if (!isNaN(parsed.getTime())) {
+    return parsed.getTime()
+  }
+
+  return 0
+}
+
+function renderLiveFeed(feedItems = []) {
+  const container = document.getElementById("liveFeedTicker")
+  if (!container) return
+
+  const items = feedItems.slice(0, 12)
+
+  if (!items.length) {
+    container.innerHTML = `
+      <div class="feed-empty">
+        <strong>Esperando goles</strong>
+        <p>El narrador aparecerá cuando caigan puntos nuevos.</p>
+      </div>
+    `
+    return
+  }
+
+  container.innerHTML = `
+    <div class="feed-list">
+      ${items.map(item => `
+        <article class="feed-item">
+          <div class="feed-icon">${item.emoji || "⚽"}</div>
+
+          <div class="feed-text">
+            <strong class="feed-title">${item.title}</strong>
+            <p class="feed-commentary">${item.commentary}</p>
+            <div class="feed-score">${item.scoreText}</div>
+            <div class="feed-time">${formatFeedTime(item.saleTimestamp)}</div>
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `
+}
+
+function formatFeedTime(value) {
+  if (!value) return ""
+
+  const raw = String(value).trim()
+
+  const gvizDateTime = raw.match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/)
+
+  let date = null
+
+  if (gvizDateTime) {
+    date = new Date(
+      Number(gvizDateTime[1]),
+      Number(gvizDateTime[2]),
+      Number(gvizDateTime[3]),
+      Number(gvizDateTime[4] || 0),
+      Number(gvizDateTime[5] || 0),
+      Number(gvizDateTime[6] || 0)
+    )
+  } else if (value instanceof Date) {
+    date = value
+  } else {
+    const parsed = new Date(raw)
+    if (!isNaN(parsed.getTime())) date = parsed
+  }
+
+  if (!date || isNaN(date.getTime())) return raw
+
+  return date.toLocaleString("es-MX", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+  })
 }
 
 function summaryRowsToObject(rows) {

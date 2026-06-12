@@ -351,18 +351,10 @@ body::before {
   grid-template-columns: 1.35fr 1fr 1fr;
   gap: 18px;
   grid-template-areas:
-    "standings live upcoming"
-    "units units units"
+    "standings live feed"
+    "upcoming upcoming upcoming"
     "hype hype hype";
   align-items: stretch;
-}
-
-.panel {
-  border: 1px solid var(--border);
-  background: var(--bg-panel);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 18px 42px rgba(0,0,0,0.22);
 }
 
 .standings-panel {
@@ -370,20 +362,30 @@ body::before {
 }
 
 .live-panel {
-    grid-area: live;
+  grid-area: live;
 }
 
-.upcoming-panel{
-    grid-area:upcoming;
+.feed-panel {
+  grid-area: feed;
+  display: flex;
+  flex-direction: column;
+}
+
+.upcoming-panel {
+  grid-area: upcoming;
 }
 
 .standings-panel,
 .live-panel,
-.upcoming-panel {
+.feed-panel {
   height: 430px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.upcoming-panel {
+  min-height: 190px;
 }
 
 .hype-panel {
@@ -417,6 +419,127 @@ body::before {
   font-size: 13px;
   white-space: nowrap;
 }
+
+.live-feed-ticker {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 2px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.live-feed-ticker::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feed-item {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025)),
+    rgba(5, 12, 22, 0.72);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 18px rgba(0,0,0,0.16);
+}
+
+.feed-item:first-child {
+  border-color: rgba(255, 212, 71, 0.32);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 212, 71, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
+    rgba(5, 12, 22, 0.78);
+}
+
+.feed-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 212, 71, 0.14);
+  border: 1px solid rgba(255, 212, 71, 0.25);
+  font-size: 20px;
+}
+
+.feed-text {
+  min-width: 0;
+}
+
+.feed-title {
+  display: block;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.feed-commentary {
+  margin: 6px 0 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.feed-score {
+  margin-top: 8px;
+  color: var(--sport-gold);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.feed-time {
+  margin-top: 5px;
+  color: rgba(184, 198, 220, 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.feed-empty {
+  flex: 1;
+  border: 1px dashed rgba(255,255,255,0.16);
+  border-radius: 16px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 22px;
+  color: var(--text-soft);
+}
+
+.feed-empty strong {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 0.04em;
+}
+
+.feed-empty p {
+  margin: 8px auto 0;
+  max-width: 260px;
+}
+
 
 table {
   width: 100%;
@@ -634,8 +757,8 @@ td {
     grid-template-areas:
       "standings"
       "live"
+      "feed"
       "upcoming"
-      "units"
       "hype";
   }
 
