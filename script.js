@@ -269,34 +269,6 @@ function normalizeHeader(value) {
     .replace(/[\u0300-\u036f]/g, "")
 }
 
-function getInitials(name) {
-  const parts = String(name || "").trim().split(/\s+/).filter(Boolean)
-  return parts.slice(0, 2).map(part => part[0]).join("").toUpperCase() || "NA"
-}
-
-function parseNumber(value) {
-  if (value === null || value === undefined || value === "") return 0
-  const cleaned = String(value).replace(/[^0-9.-]/g, "")
-  const num = Number(cleaned)
-  return Number.isFinite(num) ? num : 0
-}
-
-function formatNumber(value) {
-  return new Intl.NumberFormat("es-MX").format(parseNumber(value))
-}
-
-function formatMoney(value) {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0
-  }).format(parseNumber(value))
-}
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value))
-}
-
 function rowsToPlayerObjects(rows) {
   if (!rows || !rows.length) return []
 
@@ -465,48 +437,63 @@ function formatMatchDate(value) {
   })
 }
 
-function renderTopContributorShowcase(player, teamName, sideClass) {
-  if (!player) {
-    return `
-      <div class="mc-showcase-card ${sideClass} empty">
-        <div class="mc-showcase-empty">
-          <span>${teamName}</span>
-          <strong>Sin ventas registradas</strong>
-          <p>El top contributor aparecerá cuando el equipo sume su primera venta.</p>
-        </div>
-      </div>
-    `
-  }
+function renderTopContributorShowcase(team, topContributor, side = "left") {
+  const flag = driveImage(team.flagUrl || "")
+  const teamName = team.name || "Equipo"
+  const unit = team.unit || ""
+  const tournamentPoints = parseNumber(team.tournamentPoints)
 
-  const image = driveImage(player.fullBodyUrl || player.photoUrl || player.headshotUrl || "")
+  const hasContributor =
+    topContributor &&
+    parseNumber(topContributor.sales) > 0
+
+  const contributorName = hasContributor
+    ? topContributor.displayName || topContributor.fullName || "Jugador"
+    : "Sin líder todavía"
+
+  const contributorPoints = hasContributor
+    ? parseNumber(topContributor.points)
+    : 0
+
+  const contributorImage = hasContributor
+    ? driveImage(topContributor.fullBodyUrl || topContributor.photoUrl || topContributor.headshotUrl || "")
+    : ""
 
   return `
-    <div class="mc-showcase-card ${sideClass}">
-      <div class="mc-showcase-stage">
-        ${
-          image
-            ? `
-              <div class="mc-showcase-bg-figure">
-                <img class="mc-showcase-bg-img" src="${image}" alt="${player.displayName}">
-              </div>
-            `
-            : `
-              <div class="mc-showcase-bg-figure no-image">
-                <div class="mc-showcase-placeholder">${getInitials(player.displayName)}</div>
-              </div>
-            `
-        }
+    <article class="mc-showcase-card ${side}">
+      <div class="mc-showcase-team-top">
+        <div class="mc-showcase-team-identity">
+          ${flag ? `<img src="${flag}" alt="${teamName}">` : ""}
 
-        <div class="mc-showcase-result">
-          <span class="mc-showcase-label">Top Contributor</span>
-          <strong class="mc-showcase-name">${player.displayName}</strong>
-          <div class="mc-showcase-points">
-            <strong>${formatNumber(player.points)}</strong>
-            <span>pts</span>
+          <div class="mc-showcase-team-copy">
+            <span class="mc-showcase-team-name">${teamName}</span>
+
+            <div class="mc-showcase-team-meta">
+              ${unit ? `<span class="mc-showcase-unit-badge">${unit}</span>` : ""}
+              <span class="mc-showcase-team-points">${formatNumber(tournamentPoints)} pts</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <div class="mc-showcase-stage ${hasContributor ? "has-player" : "is-empty"}">
+        ${
+          hasContributor && contributorImage
+            ? `<img class="mc-showcase-player-image" src="${contributorImage}" alt="${contributorName}">`
+            : `<div class="mc-showcase-no-player">Sin top contributor todavía</div>`
+        }
+      </div>
+
+      <div class="mc-showcase-info-box">
+        <span class="mc-showcase-eyebrow">Top Contributor</span>
+        <strong class="mc-showcase-player-name">${contributorName}</strong>
+        ${
+          hasContributor
+            ? `<div class="mc-showcase-player-points">${formatNumber(contributorPoints)} pts</div>`
+            : `<div class="mc-showcase-player-points muted">Sin ventas registradas</div>`
+        }
+      </div>
+    </article>
   `
 }
 
@@ -542,7 +529,7 @@ function renderMatchCenterStage(match, players) {
   const shareB = clamp((pointsB / total) * 100, 0, 100)
 
   const topA = [...teamAPlayers]
-    .filter(player => parseNumber(player.sales) > 0 || parseNumber(player.points) > 0)
+    .filter(player => parseNumber(player.sales) > 0)
     .sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points
       if (b.sales !== a.sales) return b.sales - a.sales
@@ -550,7 +537,7 @@ function renderMatchCenterStage(match, players) {
     })[0] || null
 
   const topB = [...teamBPlayers]
-    .filter(player => parseNumber(player.sales) > 0 || parseNumber(player.points) > 0)
+    .filter(player => parseNumber(player.sales) > 0)
     .sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points
       if (b.sales !== a.sales) return b.sales - a.sales
@@ -560,11 +547,27 @@ function renderMatchCenterStage(match, players) {
   const teamAFlag = driveImage(teamA.flagUrl)
   const teamBFlag = driveImage(teamB.flagUrl)
 
-  const topAImage = driveImage(topA?.fullBodyUrl || topA?.photoUrl || "")
-  const topBImage = driveImage(topB?.fullBodyUrl || topB?.photoUrl || "")
-
   const teamATotalTournamentPoints = teamAPlayers.reduce((sum, p) => sum + parseNumber(p.points), 0)
   const teamBTotalTournamentPoints = teamBPlayers.reduce((sum, p) => sum + parseNumber(p.points), 0)
+
+  const teamAShowcase = {
+    teamId: match.teamA,
+    name: teamA.name,
+    flagUrl: teamA.flagUrl,
+    unit: teamAPlayers[0]?.unit || "",
+    tournamentPoints: teamATotalTournamentPoints
+  }
+
+  const teamBShowcase = {
+    teamId: match.teamB,
+    name: teamB.name,
+    flagUrl: teamB.flagUrl,
+    unit: teamBPlayers[0]?.unit || "",
+    tournamentPoints: teamBTotalTournamentPoints
+  }
+
+  const leftShowcaseHtml = renderTopContributorShowcase(teamAShowcase, topA, "left")
+  const rightShowcaseHtml = renderTopContributorShowcase(teamBShowcase, topB, "right")
 
   return `
     <div
@@ -637,9 +640,9 @@ function renderMatchCenterStage(match, players) {
           </div>
 
           <div class="mc-center-card">
-            <div class="mc-mini-stats">
-              ${renderTopContributorShowcase(topA, teamA.name, "a")}
-              ${renderTopContributorShowcase(topB, teamB.name, "b")}
+            <div class="mc-showcase-grid">
+              ${leftShowcaseHtml}
+              ${rightShowcaseHtml}
             </div>
 
             <div class="mc-info-grid">

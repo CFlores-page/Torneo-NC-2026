@@ -2382,6 +2382,189 @@ td {
   display: none;
 }
 
+.mc-showcase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.mc-showcase-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
+  padding: 14px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(5, 10, 24, 0.94), rgba(4, 8, 18, 0.88)),
+    radial-gradient(circle at 20% 80%, rgba(12, 163, 84, 0.10), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(255, 190, 60, 0.10), transparent 35%);
+}
+
+.mc-showcase-card.left::before,
+.mc-showcase-card.right::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0)),
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,0.05), transparent 38%);
+  pointer-events: none;
+}
+
+.mc-showcase-team-top {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.mc-showcase-team-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.mc-showcase-team-identity img {
+  width: 54px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+}
+
+.mc-showcase-team-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mc-showcase-team-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.mc-showcase-team-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mc-showcase-unit-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mc-showcase-team-points {
+  color: rgba(255,255,255,0.86);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mc-showcase-stage {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 170px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.mc-showcase-stage.has-player {
+  padding-top: 8px;
+}
+
+.mc-showcase-player-image {
+  max-height: 190px;
+  width: auto;
+  max-width: 88%;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 16px 34px rgba(0,0,0,0.40))
+    drop-shadow(0 8px 14px rgba(255,255,255,0.06));
+}
+
+.mc-showcase-no-player {
+  color: rgba(255,255,255,0.60);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  padding: 24px 12px;
+}
+
+.mc-showcase-info-box {
+  position: relative;
+  z-index: 4;
+  margin-top: 6px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(4, 9, 22, 0.92), rgba(6, 10, 20, 0.82));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  text-align: center;
+}
+
+.mc-showcase-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(255,255,255,0.64);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mc-showcase-player-name {
+  display: block;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.mc-showcase-player-points {
+  margin-top: 6px;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.mc-showcase-player-points.muted {
+  color: rgba(255,255,255,0.62);
+  font-size: 14px;
+  font-weight: 700;
+}
+
 @media (max-width: 1300px) {
   .mc-body-grid {
     grid-template-columns: 1fr;
@@ -3058,5 +3241,28 @@ td {
 
   .main {
     padding: 12px 0 28px;
+  }
+  .mc-showcase-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mc-showcase-card {
+    min-height: 320px;
+  }
+
+  .mc-showcase-team-name {
+    font-size: 16px;
+  }
+
+  .mc-showcase-player-image {
+    max-height: 170px;
+  }
+
+  .mc-showcase-player-name {
+    font-size: 18px;
+  }
+
+  .mc-showcase-player-points {
+    font-size: 24px;
   }
 }
