@@ -799,16 +799,9 @@ td {
 }
 
 @media (max-width: 1200px) {
-  .app {
-    grid-template-columns: 220px 1fr;
-  }
-
-  .summary-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .dashboard-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     grid-template-areas:
       "standings"
       "live"
@@ -817,13 +810,29 @@ td {
       "hype";
   }
 
+  .app {
+    grid-template-columns: 220px 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .standings-panel,
-  .live-panel {
-  height: 430px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+  .live-panel,
+  .feed-panel,
+  .upcoming-panel {
+    height: auto;
+    min-height: auto;
+  }
+
+  .feed-panel {
+    min-height: 430px;
+  }
+
+  .upcoming-panel {
+    min-height: 170px;
+  }
 
   .unit-grid {
     grid-template-columns: repeat(2, 1fr);
