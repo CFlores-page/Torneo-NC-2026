@@ -349,13 +349,34 @@ body::before {
   z-index: 1;
   display: grid;
   grid-template-columns: 1.35fr 1fr 1fr;
-  grid-template-rows: 430px 150px auto;
+  grid-template-rows: 430px 240px auto;
   gap: 18px;
   grid-template-areas:
     "standings live feed"
     "upcoming upcoming feed"
     "hype hype hype";
   align-items: stretch;
+}
+
+.feed-panel {
+  grid-area: feed;
+  display: flex;
+  flex-direction: column;
+  height: 688px;
+  max-height: 688px;
+  overflow: hidden;
+}
+
+.upcoming-panel {
+  grid-area: upcoming;
+  height: 240px;
+  min-height: 240px;
+  overflow: hidden;
+}
+
+.upcoming-panel .empty-state {
+  min-height: 145px;
+  padding: 20px;
 }
 
 .standings-panel {
@@ -366,28 +387,12 @@ body::before {
   grid-area: live;
 }
 
-.feed-panel {
-  grid-area: feed;
-  display: flex;
-  flex-direction: column;
-  height: 598px;
-  max-height: 598px;
-  overflow: hidden;
-}
-
 .feed-panel .panel-header {
   margin-bottom: 12px;
 }
 
 .feed-panel .panel-link {
   color: #ff4d6d;
-}
-
-.upcoming-panel {
-  grid-area: upcoming;
-  height: 150px;
-  min-height: 150px;
-  overflow: hidden;
 }
 
 .standings-panel,
@@ -816,13 +821,13 @@ td {
   .summary-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
+  
   .standings-panel,
   .live-panel {
     height: auto;
     min-height: 430px;
   }
-
+  
   .feed-panel {
     height: 430px;
     max-height: 430px;
