@@ -148,6 +148,45 @@ body::before {
   letter-spacing: 1.4px;
 }
 
+.brand-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 26px;
+  padding: 10px 8px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 212, 71, 0.10), transparent 42%),
+    rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.brand-logo-img {
+  display: block;
+  width: 100%;
+  max-width: 170px;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 12px rgba(255, 212, 71, 0.18))
+    drop-shadow(0 8px 18px rgba(0,0,0,0.36));
+}
+
+.mobile-brand-logo {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.mobile-brand-logo-img {
+  display: block;
+  height: 42px;
+  width: auto;
+  max-width: 230px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 212, 71, 0.18));
+}
+
 .menu {
   display: flex;
   flex-direction: column;
@@ -827,7 +866,7 @@ td {
     height: auto;
     min-height: 430px;
   }
-  
+
   .feed-panel {
     height: 430px;
     max-height: 430px;
