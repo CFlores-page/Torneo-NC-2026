@@ -152,24 +152,23 @@ body::before {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 26px;
-  padding: 10px 8px;
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 212, 71, 0.10), transparent 42%),
-    rgba(255,255,255,0.025);
-  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 24px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .brand-logo-img {
   display: block;
   width: 100%;
-  max-width: 170px;
+  max-width: 200px;
   height: auto;
   object-fit: contain;
   filter:
-    drop-shadow(0 0 12px rgba(255, 212, 71, 0.18))
-    drop-shadow(0 8px 18px rgba(0,0,0,0.36));
+    drop-shadow(0 0 14px rgba(255, 212, 71, 0.16))
+    drop-shadow(0 10px 24px rgba(0,0,0,0.30));
 }
 
 .mobile-brand-logo {
