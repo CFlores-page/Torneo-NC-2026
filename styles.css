@@ -1163,9 +1163,10 @@ td {
 
 .country-roster {
   display: none;
-  grid-template-columns: repeat(4, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 0 16px 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 340px));
+  justify-content: center;
+  gap: 22px;
+  padding: 0 16px 22px;
 }
 
 .country-team-card.open .country-roster {
@@ -2951,6 +2952,21 @@ display: none;
   color: #ffffff;
   border: 1px solid rgba(255,255,255,0.18);
   background: rgba(255,255,255,0.08);
+}
+
+.official-player-card {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  isolation: isolate;
+}
+
+.opc-frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  min-height: 0;
+  height: auto;
 }
 
 /* =========================================================
