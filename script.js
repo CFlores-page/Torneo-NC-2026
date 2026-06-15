@@ -1271,6 +1271,9 @@ function splitPlayerName(displayName = "") {
   }
 }
 
+const CAPTAIN_BADGE_URL =
+  "https://drive.google.com/thumbnail?id=1LVY4kH2lrDqhK32UOhzcYyaHNR7fFVaK&sz=w600"
+
 const STANDIN_PLAYER_IMAGE_URL =
   "https://drive.google.com/thumbnail?id=1nOqh3rpvnZsrFaFPS6bae7q30RCebLNT"
 
@@ -2100,8 +2103,7 @@ function renderPlayerCard(player, rank) {
             player.isCaptain
               ? `
                 <div class="opc-captain-badge">
-                  <span class="opc-captain-icon">♛</span>
-                  <span>Capitán de Equipo</span>
+                  <img src="${CAPTAIN_BADGE_URL}" alt="Capitán de Equipo">
                 </div>
               `
               : ``

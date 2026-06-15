@@ -2765,31 +2765,25 @@ display: none;
 }
 
 .official-player-card .opc-captain-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  max-width: 126px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  color: #221600;
-  background: linear-gradient(180deg, #ffe78a, #d69b20);
-  border: 1px solid rgba(255,255,255,0.34);
-  box-shadow:
-    0 10px 20px rgba(0,0,0,0.28),
-    0 0 18px rgba(255, 212, 71, 0.22);
-  font-size: 10px;
-  font-weight: 900;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.055em;
-  text-align: center;
+  display: block;
+  width: 122px;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
-.official-player-card .opc-captain-icon {
-  font-size: 13px;
+.official-player-card .opc-captain-badge img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 8px 16px rgba(0,0,0,0.32))
+    drop-shadow(0 0 14px rgba(255, 212, 71, 0.20));
 }
-
-/* Hero: name + portrait */
 
 .official-player-card .opc-main {
   flex: 0 0 250px;
