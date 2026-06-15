@@ -2911,8 +2911,8 @@ display: none;
   position: relative;
   z-index: 2;
   display: block;
-  max-width: 138%;
-  max-height: 108%;
+  max-width: 152%;
+  max-height: 119%;
   object-fit: contain;
   object-position: center bottom;
   filter:
@@ -2990,7 +2990,9 @@ display: none;
 /* Team share: intentionally pushed downward to use bottom space */
 
 .official-player-card .opc-team-share {
-  margin-top: auto;
+  position: relative;
+  z-index: 10;
+  margin-top: 2px !important;
   padding: 9px 12px;
   border-radius: 13px;
   background: rgba(2, 7, 14, 0.66);
@@ -3130,6 +3132,7 @@ display: none;
   }
 
   .official-player-card .opc-frame {
+    gap: 8px !important;
     height: 600px;
     min-height: 600px;
     padding: 15px;
