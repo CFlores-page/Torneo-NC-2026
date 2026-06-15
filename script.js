@@ -362,8 +362,8 @@ function buildRosterList(teamId, players) {
     .sort((a, b) => {
       if (a.isCaptain && !b.isCaptain) return -1
       if (!a.isCaptain && b.isCaptain) return 1
+      if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints
       if (b.points !== a.points) return b.points - a.points
-      if (b.sales !== a.sales) return b.sales - a.sales
       return String(a.displayName || "").localeCompare(String(b.displayName || ""))
     })
 
@@ -386,9 +386,11 @@ function buildRosterList(teamId, players) {
         ${avatar}
         <div class="mc-player-meta">
           <div class="mc-player-name">${player.displayName}</div>
-          <div class="mc-player-sub">${player.isCaptain ? "Capitán" : `${formatNumber(player.sales)} ventas`}</div>
+          <div class="mc-player-sub">
+            ${player.isCaptain ? "Capitán" : "Jugador"} · ${formatNumber(player.points)} pts torneo
+          </div>
         </div>
-        <div class="mc-player-points">${formatNumber(player.points)}</div>
+        <div class="mc-player-points">${formatNumber(player.matchPoints)}</div>
       </div>
     `
   }).join("")
@@ -546,18 +548,18 @@ function renderMatchCenterStage(match, players) {
   const shareB = clamp((pointsB / total) * 100, 0, 100)
 
   const topA = [...teamAPlayers]
-    .filter(player => parseNumber(player.sales) > 0 || parseNumber(player.points) > 0)
+    .filter(player => parseNumber(player.matchPoints) > 0)
     .sort((a, b) => {
+      if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints
       if (b.points !== a.points) return b.points - a.points
-      if (b.sales !== a.sales) return b.sales - a.sales
       return String(a.displayName || "").localeCompare(String(b.displayName || ""))
     })[0] || null
 
   const topB = [...teamBPlayers]
-    .filter(player => parseNumber(player.sales) > 0 || parseNumber(player.points) > 0)
+    .filter(player => parseNumber(player.matchPoints) > 0)
     .sort((a, b) => {
+      if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints
       if (b.points !== a.points) return b.points - a.points
-      if (b.sales !== a.sales) return b.sales - a.sales
       return String(a.displayName || "").localeCompare(String(b.displayName || ""))
     })[0] || null
 
@@ -661,11 +663,11 @@ function renderMatchCenterStage(match, players) {
                 <div class="mc-activity-list">
                   <div class="mc-activity-item">
                     <span class="mc-activity-tag a">${teamA.name}</span>
-                    <span>${topA ? `${topA.displayName} lidera con ${formatNumber(topA.points)} puntos` : "Sin actividad registrada"}</span>
+                    <span>${topA ? `${topA.displayName} lidera este partido con ${formatNumber(topA.matchPoints)} puntos` : "Sin actividad registrada"}</span>
                   </div>
                   <div class="mc-activity-item">
                     <span class="mc-activity-tag b">${teamB.name}</span>
-                    <span>${topB ? `${topB.displayName} lidera con ${formatNumber(topB.points)} puntos` : "Sin actividad registrada"}</span>
+                    <span>${topB ? `${topB.displayName} lidera este partido con ${formatNumber(topB.matchPoints)} puntos` : "Sin actividad registrada"}</span>
                   </div>
                   <div class="mc-activity-item">
                     <span class="mc-activity-tag a">${teamA.name}</span>
@@ -711,7 +713,7 @@ async function loadMatchCenterData() {
   try {
     const [partidosRows, playerRows, summaryRows] = await Promise.all([
       getSheetFrom("PARTIDOS", "A2:K200"),
-      getSheetFrom("JUGADORES", "A2:N500"),
+      getSheetFrom("JUGADORES", "A2:O500"),
       getSheetFrom("DASHBOARD", "A2:B25")
     ])
 
@@ -777,13 +779,18 @@ function matchCenterPlayerRowsToObjects(rows) {
 
       fullBodyUrl: row[6] || "",
       flagUrl: row[7] || "",
+
+      // Tournament totals — DO NOT CHANGE THESE
       points: parseNumber(row[8]),
       sales: parseNumber(row[9]),
       volume: parseNumber(row[10]),
       average: parseNumber(row[11]),
       teamPointShare: parsePercent(row[12]),
       headshotUrl: row[13] || "",
-      photoUrl: row[13] || row[6] || ""
+      photoUrl: row[13] || row[6] || "",
+
+      // Current live match only — from JUGADORES!O:O
+      matchPoints: parseNumber(row[14])
     }))
 }
 
@@ -1643,7 +1650,7 @@ function renderPlayerCard(player, rank) {
         <div class="player-stats-grid">
           <div>
             <span>Puntos</span>
-            <strong>${formatNumber(player.points)}</strong>
+            <strong>${formatNumber(player.matchPoints)}</strong>
           </div>
           <div>
             <span>Ventas</span>
