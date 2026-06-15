@@ -2824,9 +2824,9 @@ display: none;
   max-height: 520px;
 }
 
-.tournament-standings-scroll td:nth-child(n+4),
-.tournament-standings-scroll th:nth-child(n+4) {
-  text-align: center;
+.tournament-standings-scroll td:last-child,
+.tournament-standings-scroll th:last-child {
+  color: var(--sport-gold);
 }
 
 .tournament-standings-scroll td:last-child,

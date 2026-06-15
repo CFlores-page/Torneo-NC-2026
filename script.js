@@ -1437,8 +1437,6 @@ function buildTournamentStandings(teams, matches) {
       losses: 0,
       ties: 0,
       pointsFor: 0,
-      pointsAgainst: 0,
-      pointDiff: 0,
       tournamentPoints: 0
     })
   })
@@ -1467,10 +1465,7 @@ function buildTournamentStandings(teams, matches) {
       rowB.played += 1
 
       rowA.pointsFor += pointsA
-      rowA.pointsAgainst += pointsB
-
       rowB.pointsFor += pointsB
-      rowB.pointsAgainst += pointsA
 
       if (pointsA > pointsB) {
         rowA.wins += 1
@@ -1489,14 +1484,9 @@ function buildTournamentStandings(teams, matches) {
     })
 
   return [...table.values()]
-    .map(row => ({
-      ...row,
-      pointDiff: row.pointsFor - row.pointsAgainst
-    }))
     .sort((a, b) => {
       if (b.tournamentPoints !== a.tournamentPoints) return b.tournamentPoints - a.tournamentPoints
       if (b.wins !== a.wins) return b.wins - a.wins
-      if (b.pointDiff !== a.pointDiff) return b.pointDiff - a.pointDiff
       if (b.pointsFor !== a.pointsFor) return b.pointsFor - a.pointsFor
 
       const nameA = getTeamInfo(a.teamId).name
@@ -1515,8 +1505,6 @@ function createEmptyStanding(teamId) {
     losses: 0,
     ties: 0,
     pointsFor: 0,
-    pointsAgainst: 0,
-    pointDiff: 0,
     tournamentPoints: 0
   }
 }
@@ -1553,12 +1541,11 @@ function renderTournamentStandings(standings) {
           </button>
         </td>
         <td>${row.unit || "—"}</td>
+        <td>${formatNumber(row.played)}</td>
         <td>${formatNumber(row.wins)}</td>
         <td>${formatNumber(row.losses)}</td>
         <td>${formatNumber(row.ties)}</td>
         <td>${formatNumber(row.pointsFor)}</td>
-        <td>${formatNumber(row.pointsAgainst)}</td>
-        <td>${formatNumber(row.pointDiff)}</td>
         <td><strong>${formatNumber(row.tournamentPoints)}</strong></td>
       </tr>
     `
