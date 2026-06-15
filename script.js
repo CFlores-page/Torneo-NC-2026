@@ -9,7 +9,9 @@ let dashboardState = {
   liveMatches: [],
   teams: [],
   players: [],
-  liveFeed: []
+  liveFeed: [],
+  tournamentStandings: [],
+  allTournamentMatches: []
 }
 
 let currentTeamFilter = "ALL"
@@ -901,7 +903,8 @@ async function loadDashboardData() {
       liveRows,
       teamsRows,
       playersRows,
-      liveFeedRows
+      liveFeedRows,
+      partidosRows
     ] = await Promise.all([
       getSheet("B4:B4", "DASHBOARD"),
       getSheet("A2:B25", "DASHBOARD"),
@@ -910,7 +913,8 @@ async function loadDashboardData() {
       getSheet("A53:G58", "DASHBOARD"),
       getSheet("A2:H50", "EQUIPOS"),
       getSheet("A2:M300", "JUGADORES"),
-      getSheet("A2:Q100", "LIVE_FEED")
+      getSheet("A2:Q100", "LIVE_FEED"),
+      getSheet("A2:K200", "PARTIDOS")
     ])
 
     const summary = summaryRowsToObject(summaryRows)
@@ -922,6 +926,8 @@ async function loadDashboardData() {
     const teams = teamRowsToObjects(teamsRows)
     const players = playerRowsToObjects(playersRows)
     const liveFeed = liveFeedRowsToObjects(liveFeedRows)
+    const allTournamentMatches = tournamentMatchRowsToObjects(partidosRows)
+    const tournamentStandings = buildTournamentStandings(teams, allTournamentMatches)
 
     dashboardState = {
       summary,
@@ -930,7 +936,9 @@ async function loadDashboardData() {
       liveMatches,
       teams,
       players,
-      liveFeed
+      liveFeed,
+      tournamentStandings,
+      allTournamentMatches
     }
 
     updateDashboardCards(summary)
@@ -939,6 +947,8 @@ async function loadDashboardData() {
     renderLiveMatches(liveMatches)
     renderLiveFeed(liveFeed)
     renderTeamsPage(teams, players)
+    renderTournamentStandings(tournamentStandings)
+    renderPreviousMatches(allTournamentMatches)
 
     console.log("Datos cargados:", dashboardState)
   } catch (error) {
@@ -1372,6 +1382,292 @@ function renderLiveMatches(matches) {
   setupDashboardMatchLinks()
 }
 
+function tournamentMatchRowsToObjects(rows) {
+  return rows
+    .filter(row => row[0] && row[3] && row[4])
+    .map(row => ({
+      matchId: String(row[0] || "").trim(),
+      phase: row[1] || "",
+      matchday: row[2] || "",
+      teamA: normalizeId(row[3] || ""),
+      teamB: normalizeId(row[4] || ""),
+      startDate: row[5] || "",
+      endDate: row[6] || "",
+      status: row[7] || "",
+      pointsA: parseNumber(row[8]),
+      pointsB: parseNumber(row[9]),
+      winner: normalizeId(row[10] || "")
+    }))
+}
+
+function isFinishedMatch(match) {
+  const status = normalizeHeader(match.status)
+
+  return (
+    status === "TERMINADO" ||
+    status === "FINALIZADO" ||
+    status === "COMPLETE" ||
+    status === "FINAL"
+  )
+}
+
+function isLiveMatch(match) {
+  const status = normalizeHeader(match.status)
+
+  return (
+    status === "EN VIVO" ||
+    status === "LIVE" ||
+    status === "ACTIVO"
+  )
+}
+
+function buildTournamentStandings(teams, matches) {
+  const table = new Map()
+
+  teams.forEach(team => {
+    const teamId = normalizeId(team.teamId)
+
+    if (!teamId) return
+
+    table.set(teamId, {
+      teamId,
+      unit: team.unit || "",
+      played: 0,
+      wins: 0,
+      losses: 0,
+      ties: 0,
+      pointsFor: 0,
+      pointsAgainst: 0,
+      pointDiff: 0,
+      tournamentPoints: 0
+    })
+  })
+
+  matches
+    .filter(isFinishedMatch)
+    .forEach(match => {
+      const teamA = normalizeId(match.teamA)
+      const teamB = normalizeId(match.teamB)
+
+      if (!table.has(teamA)) {
+        table.set(teamA, createEmptyStanding(teamA))
+      }
+
+      if (!table.has(teamB)) {
+        table.set(teamB, createEmptyStanding(teamB))
+      }
+
+      const rowA = table.get(teamA)
+      const rowB = table.get(teamB)
+
+      const pointsA = parseNumber(match.pointsA)
+      const pointsB = parseNumber(match.pointsB)
+
+      rowA.played += 1
+      rowB.played += 1
+
+      rowA.pointsFor += pointsA
+      rowA.pointsAgainst += pointsB
+
+      rowB.pointsFor += pointsB
+      rowB.pointsAgainst += pointsA
+
+      if (pointsA > pointsB) {
+        rowA.wins += 1
+        rowA.tournamentPoints += 3
+        rowB.losses += 1
+      } else if (pointsB > pointsA) {
+        rowB.wins += 1
+        rowB.tournamentPoints += 3
+        rowA.losses += 1
+      } else {
+        rowA.ties += 1
+        rowB.ties += 1
+        rowA.tournamentPoints += 1
+        rowB.tournamentPoints += 1
+      }
+    })
+
+  return [...table.values()]
+    .map(row => ({
+      ...row,
+      pointDiff: row.pointsFor - row.pointsAgainst
+    }))
+    .sort((a, b) => {
+      if (b.tournamentPoints !== a.tournamentPoints) return b.tournamentPoints - a.tournamentPoints
+      if (b.wins !== a.wins) return b.wins - a.wins
+      if (b.pointDiff !== a.pointDiff) return b.pointDiff - a.pointDiff
+      if (b.pointsFor !== a.pointsFor) return b.pointsFor - a.pointsFor
+
+      const nameA = getTeamInfo(a.teamId).name
+      const nameB = getTeamInfo(b.teamId).name
+
+      return nameA.localeCompare(nameB)
+    })
+}
+
+function createEmptyStanding(teamId) {
+  return {
+    teamId,
+    unit: "",
+    played: 0,
+    wins: 0,
+    losses: 0,
+    ties: 0,
+    pointsFor: 0,
+    pointsAgainst: 0,
+    pointDiff: 0,
+    tournamentPoints: 0
+  }
+}
+
+function renderTournamentStandings(standings) {
+  const body = document.getElementById("tournamentStandingsBody")
+  if (!body) return
+
+  if (!standings || !standings.length) {
+    body.innerHTML = `
+      <tr>
+        <td colspan="10">
+          <div class="empty-state">
+            <strong>Sin standings</strong>
+            <p>Todavía no hay equipos disponibles para calcular la tabla.</p>
+          </div>
+        </td>
+      </tr>
+    `
+    return
+  }
+
+  body.innerHTML = standings.map((row, index) => {
+    const team = getTeamInfo(row.teamId)
+    const flag = driveImage(team.flagUrl)
+
+    return `
+      <tr class="standing-click-row" data-standing-team="${row.teamId}">
+        <td>${index + 1}</td>
+        <td>
+          <button class="standing-team-button" type="button" data-standing-team="${row.teamId}">
+            ${flag ? `<img class="team-flag" src="${flag}" alt="${team.name}">` : ""}
+            <span>${team.name}</span>
+          </button>
+        </td>
+        <td>${row.unit || "—"}</td>
+        <td>${formatNumber(row.wins)}</td>
+        <td>${formatNumber(row.losses)}</td>
+        <td>${formatNumber(row.ties)}</td>
+        <td>${formatNumber(row.pointsFor)}</td>
+        <td>${formatNumber(row.pointsAgainst)}</td>
+        <td>${formatNumber(row.pointDiff)}</td>
+        <td><strong>${formatNumber(row.tournamentPoints)}</strong></td>
+      </tr>
+    `
+  }).join("")
+
+  setupDashboardTeamLinks()
+}
+
+function renderPreviousMatches(matches) {
+  const container = document.getElementById("previousMatchesList")
+  if (!container) return
+
+  const previousMatches = (matches || [])
+    .filter(isFinishedMatch)
+    .sort((a, b) => {
+      const dateA = parseMatchSortDate(a.endDate || a.startDate)
+      const dateB = parseMatchSortDate(b.endDate || b.startDate)
+
+      if (dateB !== dateA) return dateB - dateA
+
+      return String(b.matchId || "").localeCompare(String(a.matchId || ""))
+    })
+
+  if (!previousMatches.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <strong>Sin partidos terminados</strong>
+        <p>Los resultados aparecerán aquí cuando se cierre el primer partido.</p>
+      </div>
+    `
+    return
+  }
+
+  container.innerHTML = previousMatches
+    .map(match => renderPreviousMatchCard(match))
+    .join("")
+}
+
+function renderPreviousMatchCard(match) {
+  const teamA = getTeamInfo(match.teamA)
+  const teamB = getTeamInfo(match.teamB)
+
+  const flagA = driveImage(teamA.flagUrl)
+  const flagB = driveImage(teamB.flagUrl)
+
+  const pointsA = parseNumber(match.pointsA)
+  const pointsB = parseNumber(match.pointsB)
+
+  const isTie = pointsA === pointsB
+  const winner = isTie
+    ? ""
+    : pointsA > pointsB
+      ? normalizeId(match.teamA)
+      : normalizeId(match.teamB)
+
+  return `
+    <article class="previous-match-card">
+      <div class="previous-match-meta">
+        <span>${match.phase || "Partido"}</span>
+        <strong>${match.matchId}</strong>
+        <small>${formatMatchDate(match.endDate || match.startDate)}</small>
+      </div>
+
+      <div class="previous-match-teams">
+        <div class="previous-match-team ${winner === normalizeId(match.teamA) ? "winner" : ""}">
+          ${flagA ? `<img src="${flagA}" alt="${teamA.name}">` : ""}
+          <div>
+            <strong>${teamA.name}</strong>
+            ${winner === normalizeId(match.teamA) ? `<span class="winner-badge">Ganador</span>` : ""}
+          </div>
+          <em>${formatNumber(pointsA)}</em>
+        </div>
+
+        <div class="previous-match-vs">
+          ${isTie ? `<span class="tie-badge">Empate</span>` : `<span>VS</span>`}
+        </div>
+
+        <div class="previous-match-team right ${winner === normalizeId(match.teamB) ? "winner" : ""}">
+          <em>${formatNumber(pointsB)}</em>
+          <div>
+            <strong>${teamB.name}</strong>
+            ${winner === normalizeId(match.teamB) ? `<span class="winner-badge">Ganador</span>` : ""}
+          </div>
+          ${flagB ? `<img src="${flagB}" alt="${teamB.name}">` : ""}
+        </div>
+      </div>
+    </article>
+  `
+}
+
+function parseMatchSortDate(value) {
+  if (!value) return 0
+
+  const raw = String(value || "").trim()
+  const gvizMatch = raw.match(/^Date\((\d+),(\d+),(\d+)\)$/)
+
+  if (gvizMatch) {
+    return new Date(
+      Number(gvizMatch[1]),
+      Number(gvizMatch[2]),
+      Number(gvizMatch[3])
+    ).getTime()
+  }
+
+  const date = new Date(raw)
+
+  return isNaN(date.getTime()) ? 0 : date.getTime()
+}
+
 function setupDashboardMatchLinks() {
   document.querySelectorAll("[data-dashboard-match]").forEach(button => {
     button.addEventListener("click", () => {
@@ -1691,6 +1987,11 @@ function setupViewNavigation() {
 
       if (viewId === "matchCenterView") {
         loadMatchCenterData()
+      }
+
+      if (viewId === "placingsView") {
+        renderTournamentStandings(dashboardState.tournamentStandings)
+        renderPreviousMatches(dashboardState.allTournamentMatches)
       }
     })
   })

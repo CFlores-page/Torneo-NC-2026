@@ -39,7 +39,7 @@
         <button class="menu-item" data-view="teamsView">Teams</button>
         <button class="menu-item" data-view="matchCenterView">Match Center</button>
         <button class="menu-item" data-view="bracketView">Bracket (coming soon)</button>
-        <button class="menu-item" data-view="placingsView">Placings / MVP (coming soon)</button>
+        <button class="menu-item" data-view="placingsView">Standings / Matches</button>
         <button class="menu-item" data-view="rulesView">Tournament Rules (coming soon)</button>
       </nav>
 
@@ -274,6 +274,71 @@
             <div class="empty-state">
               <strong>Sin partido seleccionado</strong>
               <p>Selecciona un partido activo para abrir el Match Center.</p>
+            </div>
+          </section>
+        </section>
+        <section id="placingsView" class="view placings-view hidden">
+          <header class="view-header">
+            <div>
+              <p class="eyebrow">Tabla general</p>
+              <h1>Standings / Matches</h1>
+              <p class="subtitle">
+                Récord general del torneo y resultados de partidos anteriores.
+              </p>
+            </div>
+          </header>
+
+          <section class="panel tournament-standings-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Tabla del torneo</h2>
+                <p>Victoria = 3 pts · Empate = 1 pt · Derrota = 0 pts</p>
+              </div>
+            </div>
+
+            <div class="standings-scroll scroll-area tournament-standings-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Equipo</th>
+                    <th>Unidad</th>
+                    <th>W</th>
+                    <th>L</th>
+                    <th>T</th>
+                    <th>PF</th>
+                    <th>PC</th>
+                    <th>Dif</th>
+                    <th>Pts</th>
+                  </tr>
+                </thead>
+                <tbody id="tournamentStandingsBody">
+                  <tr>
+                    <td colspan="10">
+                      <div class="empty-state">
+                        <strong>Cargando tabla</strong>
+                        <p>Los standings aparecerán aquí cuando carguen los partidos.</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel previous-matches-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Partidos anteriores</h2>
+                <p>Resultados oficiales del torneo.</p>
+              </div>
+            </div>
+
+            <div id="previousMatchesList" class="previous-matches-list">
+              <div class="empty-state">
+                <strong>Cargando partidos</strong>
+                <p>Los resultados aparecerán aquí cuando cargue la hoja PARTIDOS.</p>
+              </div>
             </div>
           </section>
         </section>
