@@ -942,7 +942,7 @@ async function loadDashboardData() {
     }
 
     updateDashboardCards(summary)
-    renderStandings(standings)
+    renderStandings(tournamentStandings.slice(0, 8))
     renderUpcomingMatches(upcomingMatches)
     renderLiveMatches(liveMatches)
     renderLiveFeed(liveFeed)
@@ -1257,41 +1257,46 @@ function updateDashboardCards(summary) {
 }
 
 function renderStandings(standings) {
-  const standingsBody = document.getElementById("standingsBody")
-  if (!standingsBody) return
+  const body = document.getElementById("standingsBody")
+  if (!body) return
 
-  if (!standings || standings.length === 0) {
-    standingsBody.innerHTML = `
+  if (!standings || !standings.length) {
+    body.innerHTML = `
       <tr>
-        <td colspan="5">Información pendiente</td>
+        <td colspan="5">
+          <div class="empty-state">
+            <strong>Sin tabla disponible</strong>
+            <p>La tabla aparecerá cuando haya equipos cargados.</p>
+          </div>
+        </td>
       </tr>
     `
     return
   }
 
-  standingsBody.innerHTML = standings
-    .map(team => {
-      const teamInfo = getTeamInfo(team.teamId)
-      const flag = driveImage(teamInfo.flagUrl)
-      const statusText = team.status || "Pendiente"
-      const statusClass = statusText.toUpperCase() === "ACTIVO" ? "active" : "eliminated"
+  body.innerHTML = standings.map((row, index) => {
+    const team = getTeamInfo(row.teamId)
+    const flag = driveImage(team.flagUrl)
 
-      return `
-        <tr class="standing-click-row" data-standing-team="${team.teamId}">
-          <td>${team.rank}</td>
-          <td>
-            <button class="standing-team-button" type="button" data-standing-team="${team.teamId}">
-              ${flag ? `<img class="team-flag" src="${flag}" alt="Bandera de ${teamInfo.name}">` : ""}
-              <span>${teamInfo.name || team.name}</span>
-            </button>
-          </td>
-          <td>${team.unit}</td>
-          <td>${team.points}</td>
-          <td><span class="status ${statusClass}">${statusText}</span></td>
-        </tr>
-      `
-    })
-    .join("")
+    return `
+      <tr class="standing-click-row" data-standing-team="${row.teamId}">
+        <td>${index + 1}</td>
+        <td>
+          <button class="standing-team-button" type="button" data-standing-team="${row.teamId}">
+            ${flag ? `<img class="team-flag" src="${flag}" alt="${team.name}">` : ""}
+            <span>${team.name}</span>
+          </button>
+        </td>
+        <td>${row.unit || "—"}</td>
+        <td><strong>${formatNumber(row.tournamentPoints)}</strong></td>
+        <td>
+          <span class="status ${getStatusClass(row.status)}">
+            ${formatTeamStatus(row.status)}
+          </span>
+        </td>
+      </tr>
+    `
+  }).join("")
 
   setupDashboardTeamLinks()
 }
@@ -1496,10 +1501,33 @@ function buildTournamentStandings(teams, matches) {
     })
 }
 
+function getStatusClass(status) {
+  const clean = normalizeHeader(status)
+
+  if (clean === "ACTIVO") return "active"
+
+  if (
+    clean === "ELIMINADO" ||
+    clean === "ELIMINADA" ||
+    clean === "INACTIVO" ||
+    clean === "FUERA"
+  ) {
+    return "eliminated"
+  }
+
+  return "pending"
+}
+
+function formatTeamStatus(status) {
+  const clean = String(status || "").trim()
+  return clean || "Pendiente"
+}
+
 function createEmptyStanding(teamId) {
   return {
     teamId,
     unit: "",
+    status: "Pendiente",
     played: 0,
     wins: 0,
     losses: 0,
