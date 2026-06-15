@@ -4022,3 +4022,93 @@ overflow-x: hidden;
   gap: 26px !important;
   padding: 0 16px 28px !important;
 }
+
+/* =========================================================
+   OFFICIAL PLAYER CARD — HERO COMPOSITION REFINEMENT
+   Right-side portrait block / bigger player
+========================================================= */
+
+.official-player-card .opc-main {
+  position: relative;
+  height: 250px !important;
+  min-height: 250px !important;
+  overflow: hidden;
+}
+
+/* Left text block */
+.official-player-card .opc-name-block {
+  position: absolute;
+  z-index: 12;
+  left: 0;
+  bottom: 34px;
+  width: 56%;
+  min-width: 0;
+}
+
+/* Slightly tighten the name so it coexists better with the portrait lane */
+.official-player-card .opc-first-name {
+  font-size: 34px;
+}
+
+.official-player-card .opc-last-name {
+  font-size: 44px;
+}
+
+/* Identity row stays under name */
+.official-player-card .opc-identity-row {
+  margin-top: 10px;
+  position: relative;
+  z-index: 13;
+}
+
+/* Right-side portrait lane */
+.official-player-card .opc-photo-block {
+  position: absolute;
+  z-index: 11;
+  right: 0;
+  bottom: 0;
+  width: 47%;
+  height: 248px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+/* Subtle “portrait panel” behind the player */
+.official-player-card .opc-photo-block::before {
+  content: "";
+  position: absolute;
+  inset: 8px 0 0 8px;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04)),
+    rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 8px 18px rgba(0,0,0,0.14);
+  backdrop-filter: blur(1px);
+}
+
+/* Bigger player inside the portrait lane */
+.official-player-card .opc-player-photo {
+  position: relative;
+  z-index: 2;
+  display: block;
+  max-width: 138%;
+  max-height: 108%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter:
+    drop-shadow(0 20px 24px rgba(0,0,0,0.46))
+    drop-shadow(0 0 14px color-mix(in srgb, var(--opc-primary) 22%, transparent));
+}
+
+/* If the stand-in image is used, keep it cleaner and a little smaller */
+.official-player-card .opc-player-photo[src*="maniquí"],
+.official-player-card .opc-player-photo[src*="maniqui"] {
+  max-width: 118%;
+  max-height: 98%;
+  object-position: center bottom;
+}
