@@ -912,7 +912,7 @@ async function loadDashboardData() {
       getSheet("A44:F49", "DASHBOARD"),
       getSheet("A53:G58", "DASHBOARD"),
       getSheet("A2:H50", "EQUIPOS"),
-      getSheet("A2:M300", "JUGADORES"),
+      getSheet("A2:P300", "JUGADORES"),
       getSheet("A2:Q100", "LIVE_FEED"),
       getSheet("A2:K200", "PARTIDOS")
     ])
@@ -1227,20 +1227,167 @@ function playerRowsToObjects(rows) {
   return rows
     .filter(row => row[0] && row[1] && row[4])
     .map(row => ({
-      playerId: row[0],
-      fullName: row[1],
-      displayName: row[2] || row[1],
+      playerId: row[0] || "",
+      fullName: row[1] || "",
+      displayName: row[2] || row[1] || "Jugador",
       unit: normalizeId(row[3]),
       teamId: normalizeId(row[4]),
       isCaptain: String(row[5] || "").trim().toUpperCase() === "SI",
-      photoUrl: row[6],
-      flagUrl: row[7],
+
+      fullBodyUrl: row[6] || "",
+      photoUrl: row[6] || "",
+      flagUrl: row[7] || "",
+
+      // Tournament totals
       points: parseNumber(row[8]),
       sales: parseNumber(row[9]),
       volume: parseNumber(row[10]),
       average: parseNumber(row[11]),
-      teamPointShare: parsePercent(row[12])
+      teamPointShare: parsePercent(row[12]),
+
+      // Extra image / match / rank fields
+      headshotUrl: row[13] || "",
+      matchPoints: parseNumber(row[14]),
+      tournamentRank: parseNumber(row[15])
     }))
+}
+
+const TOURNAMENT_LOGO_URL =
+  "https://drive.google.com/thumbnail?id=1IOKVX9rR2b_KZA_Gpk1CD0P_EeV71w2p&sz=w700"
+
+function splitPlayerName(displayName = "") {
+  const parts = String(displayName).trim().split(/\s+/).filter(Boolean)
+
+  if (parts.length <= 1) {
+    return {
+      firstName: parts[0] || "Jugador",
+      lastName: ""
+    }
+  }
+
+  return {
+    firstName: parts[0],
+    lastName: parts.slice(1).join(" ")
+  }
+}
+
+function buildPlayerSerial(player) {
+  const team = normalizeId(player.teamId) || "TEAM"
+  const rank = parseNumber(player.tournamentRank) || 0
+
+  return `NC-2026-${team}-${String(rank || 1).padStart(2, "0")}`
+}
+
+function getOfficialCardTheme(teamId) {
+  const id = normalizeId(teamId)
+
+  const themes = {
+    COL: {
+      primary: "#F5C542",
+      secondary: "#123A8C",
+      accent: "#D4212C",
+      glow: "rgba(245, 197, 66, 0.44)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#f5c542"
+    },
+    MEX: {
+      primary: "#006847",
+      secondary: "#f7f7f7",
+      accent: "#ce1126",
+      glow: "rgba(0, 104, 71, 0.44)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#18c27b"
+    },
+    BRA: {
+      primary: "#ffdf00",
+      secondary: "#009c3b",
+      accent: "#002776",
+      glow: "rgba(255, 223, 0, 0.42)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#ffdf00"
+    },
+    ARG: {
+      primary: "#75aadb",
+      secondary: "#ffffff",
+      accent: "#f6b40e",
+      glow: "rgba(117, 170, 219, 0.42)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#75aadb"
+    },
+    USA: {
+      primary: "#e63946",
+      secondary: "#1d3557",
+      accent: "#f1faee",
+      glow: "rgba(230, 57, 70, 0.42)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#e63946"
+    },
+    ENG: {
+      primary: "#ffffff",
+      secondary: "#c8102e",
+      accent: "#012169",
+      glow: "rgba(255, 255, 255, 0.32)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#dce8ff"
+    },
+    FRA: {
+      primary: "#0055a4",
+      secondary: "#ffffff",
+      accent: "#ef4135",
+      glow: "rgba(0, 85, 164, 0.44)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#6daeff"
+    },
+    ESP: {
+      primary: "#f1bf00",
+      secondary: "#aa151b",
+      accent: "#ffd700",
+      glow: "rgba(241, 191, 0, 0.42)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#f1bf00"
+    },
+    NED: {
+      primary: "#ff7a00",
+      secondary: "#1b365d",
+      accent: "#ffffff",
+      glow: "rgba(255, 122, 0, 0.44)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#ff7a00"
+    },
+    MAR: {
+      primary: "#c1272d",
+      secondary: "#006233",
+      accent: "#d4af37",
+      glow: "rgba(193, 39, 45, 0.44)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#d4af37"
+    },
+    POR: {
+      primary: "#c8102e",
+      secondary: "#006a4e",
+      accent: "#ffd700",
+      glow: "rgba(200, 16, 46, 0.44)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#ffd700"
+    },
+    GER: {
+      primary: "#ffce00",
+      secondary: "#dd0000",
+      accent: "#ffffff",
+      glow: "rgba(255, 206, 0, 0.38)",
+      nameTop: "#f8f8f8",
+      nameBottom: "#ffce00"
+    }
+  }
+
+  return themes[id] || {
+    primary: "#d9a441",
+    secondary: "#123a8c",
+    accent: "#ffffff",
+    glow: "rgba(217, 164, 65, 0.38)",
+    nameTop: "#f8f8f8",
+    nameBottom: "#d9a441"
+  }
 }
 
 function updateDashboardCards(summary) {
@@ -1911,83 +2058,119 @@ function openTeamAccordionFromDashboard(teamId) {
 
 function renderPlayerCard(player, rank) {
   const teamInfo = getTeamInfo(player.teamId)
-  const teamColors = getTeamColors(player.teamId)
+  const theme = getOfficialCardTheme(player.teamId)
   const unitColors = getUnitColors(player.unit)
-  const photo = driveImage(player.photoUrl)
+
+  const photo = driveImage(player.fullBodyUrl || player.photoUrl)
   const flag = driveImage(player.flagUrl || teamInfo.flagUrl)
-  const performance = clamp(parseNumber(player.teamPointShare), 0, 100)
+
+  const { firstName, lastName } = splitPlayerName(player.displayName)
+  const share = clamp(parseNumber(player.teamPointShare), 0, 100)
+  const tournamentRank = parseNumber(player.tournamentRank) || rank
+  const serial = buildPlayerSerial({ ...player, tournamentRank })
 
   return `
     <article
-      class="player-card ${player.isCaptain ? "captain-card" : ""}"
+      class="official-player-card ${player.isCaptain ? "is-captain" : ""}"
+      data-player-id="${player.playerId}"
       style="
-        --team-primary: ${teamColors.primary};
-        --team-secondary: ${teamColors.secondary};
-        --team-accent: ${teamColors.accent};
-        --team-bg: ${teamColors.bg};
+        --opc-primary: ${theme.primary};
+        --opc-secondary: ${theme.secondary};
+        --opc-accent: ${theme.accent};
+        --opc-glow: ${theme.glow};
+        --opc-name-top: ${theme.nameTop};
+        --opc-name-bottom: ${theme.nameBottom};
         --unit-primary: ${unitColors.primary};
-        --unit-secondary: ${unitColors.secondary};
-        --unit-accent: ${unitColors.accent};
       "
     >
-      <div class="player-card-rank">${rank}</div>
+      <div class="opc-frame">
+        <div class="opc-bg"></div>
+        <div class="opc-energy opc-energy-one"></div>
+        <div class="opc-energy opc-energy-two"></div>
 
-      ${player.isCaptain ? `<div class="captain-badge">⭐ Capitán</div>` : ""}
-
-      <div class="player-photo-wrap">
-        ${
-          photo
-            ? `<img class="player-photo" src="${photo}" alt="${player.displayName}">`
-            : `<div class="player-photo-placeholder">${getInitials(player.displayName)}</div>`
-        }
-      </div>
-
-      <div class="player-card-body">
-        <h4>${player.displayName}</h4>
-
-        <div class="player-team-line">
-          ${flag ? `<img src="${flag}" alt="Bandera de ${teamInfo.name}">` : ""}
-          <span>${teamInfo.name}</span>
-          <strong>${player.unit}</strong>
-        </div>
-
-        <div class="player-record">
-          <div>
-            <span>Récord en el torneo</span>
-            <strong>${player.sales}V - 0D</strong>
+        <div class="opc-top">
+          <div class="opc-logo-block">
+            <img src="${TOURNAMENT_LOGO_URL}" alt="Netcenter Americas FIFA Cup 2026">
           </div>
-          <em>${player.isCaptain ? "Liderazgo activo" : "En competencia"}</em>
+
+          ${
+            player.isCaptain
+              ? `
+                <div class="opc-captain-badge">
+                  <span class="opc-captain-icon">♛</span>
+                  <span>Capitán de Equipo</span>
+                </div>
+              `
+              : ``
+          }
         </div>
 
-        <div class="player-stats-grid">
-          <div>
+        <div class="opc-main">
+          <div class="opc-name-block">
+            <div class="opc-first-name">${firstName}</div>
+            <div class="opc-last-name">${lastName}</div>
+
+            <div class="opc-identity-row">
+              <div class="opc-country-pill">
+                ${flag ? `<img src="${flag}" alt="Bandera de ${teamInfo.name}">` : ""}
+                <span>${teamInfo.name}</span>
+              </div>
+
+              <div class="opc-unit-pill">${player.unit}</div>
+            </div>
+          </div>
+
+          <div class="opc-photo-block">
+            ${
+              photo
+                ? `<img class="opc-player-photo" src="${photo}" alt="${player.displayName}">`
+                : `<div class="opc-player-photo-placeholder">${getInitials(player.displayName)}</div>`
+            }
+          </div>
+        </div>
+
+        <div class="opc-stats-panel">
+          <div class="opc-stat">
+            <div class="opc-stat-icon">★</div>
             <span>Puntos</span>
-            <strong>${formatNumber(player.matchPoints)}</strong>
+            <strong>${formatNumber(player.points)}</strong>
           </div>
-          <div>
-            <span>Ventas</span>
-            <strong>${formatNumber(player.sales)}</strong>
-          </div>
-          <div>
+
+          <div class="opc-stat">
+            <div class="opc-stat-icon">▰</div>
             <span>Volumen</span>
             <strong>${formatMoney(player.volume)}</strong>
           </div>
-          <div>
-            <span>Promedio</span>
-            <strong>${formatMoney(player.average)}</strong>
+
+          <div class="opc-stat">
+            <div class="opc-stat-icon">🏆</div>
+            <span>Rank de torneo</span>
+            <strong>#${formatNumber(tournamentRank)}</strong>
           </div>
         </div>
 
-        <div class="player-performance">
-          <div>
-            <span>% de puntos del equipo</span>
-            <strong>${performance}%</strong>
+        <div class="opc-team-share">
+          <div class="opc-team-share-head">
+            <span>% del equipo</span>
+            <strong>${share}%</strong>
           </div>
 
-          <div class="performance-track">
-            <div class="performance-fill" style="width: ${performance}%"></div>
+          <div class="opc-share-bar">
+            <div class="opc-share-fill" style="width: ${share}%"></div>
           </div>
         </div>
+
+        <div class="opc-footer">
+          <span>Netcenter Americas</span>
+          <span class="opc-footer-emblem">⚽</span>
+          <span>FIFA Cup 2026</span>
+        </div>
+
+        <div class="opc-serial">${serial}</div>
+
+        <button class="opc-download-button" type="button" data-download-card="${player.playerId}">
+          Descargar carta
+        </button>
       </div>
     </article>
   `
