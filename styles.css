@@ -3365,3 +3365,24 @@ display: none;
   flex: 0 0 auto;
   padding: 4px 9px;
 }
+
+/* =========================================================
+   OFFICIAL PLAYER CARD — LOGO / CAPTAIN BADGE SIZE TWEAK
+========================================================= */
+
+/* Make captain badge 75% of current size */
+.official-player-card .opc-captain-badge {
+  width: 92px !important;
+}
+
+/* Make NC FIFA Cup logo bigger */
+.official-player-card .opc-logo-block {
+  width: 150px !important;
+  max-width: 62% !important;
+}
+
+.official-player-card .opc-logo-block img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
