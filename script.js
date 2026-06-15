@@ -1271,6 +1271,9 @@ function splitPlayerName(displayName = "") {
   }
 }
 
+const STANDIN_PLAYER_IMAGE_URL =
+  "https://drive.google.com/thumbnail?id=1nOqh3rpvnZsrFaFPS6bae7q30RCebLNT"
+
 function buildPlayerSerial(player) {
   const team = normalizeId(player.teamId) || "TEAM"
   const rank = parseNumber(player.tournamentRank) || 0
@@ -2061,13 +2064,13 @@ function renderPlayerCard(player, rank) {
   const theme = getOfficialCardTheme(player.teamId)
   const unitColors = getUnitColors(player.unit)
 
-  const photo = driveImage(player.fullBodyUrl || player.photoUrl)
+  const photo = driveImage(player.fullBodyUrl || player.photoUrl) || STANDIN_PLAYER_IMAGE_URL
   const flag = driveImage(player.flagUrl || teamInfo.flagUrl)
 
   const { firstName, lastName } = splitPlayerName(player.displayName)
   const share = clamp(parseNumber(player.teamPointShare), 0, 100)
   const tournamentRank = parseNumber(player.tournamentRank) || rank
-  const serial = buildPlayerSerial({ ...player, tournamentRank })
+  const serial = ({ ...player, tournamentRank })
 
   return `
     <article
@@ -2121,12 +2124,12 @@ function renderPlayerCard(player, rank) {
           </div>
 
           <div class="opc-photo-block">
-            ${
-              photo
-                ? `<img class="opc-player-photo" src="${photo}" alt="${player.displayName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
-                    <div class="opc-player-photo-placeholder opc-hidden-placeholder">${getInitials(player.displayName)}</div>`
-                : `<div class="opc-player-photo-placeholder">${getInitials(player.displayName)}</div>`
-            }
+            <img
+              class="opc-player-photo"
+              src="${photo}"
+              alt="${player.displayName}"
+              onerror="this.onerror=null; this.src='${STANDIN_PLAYER_IMAGE_URL}';"
+            />
           </div>
         </div>
 

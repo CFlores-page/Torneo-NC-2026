@@ -3597,3 +3597,428 @@ padding: 12px 0 28px;
 overflow-x: hidden;
 }
 }
+
+/* =========================================================
+   OFFICIAL PLAYER CARD — FINAL SCOPE OVERRIDE
+   Keep at the very bottom of styles.css
+========================================================= */
+
+.official-player-card {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  isolation: isolate;
+}
+
+.official-player-card .opc-frame {
+  position: relative;
+  height: 610px !important;
+  min-height: 610px !important;
+  aspect-ratio: auto !important;
+  overflow: hidden;
+  border-radius: 26px;
+  padding: 16px;
+  display: grid;
+  grid-template-rows:
+    56px     /* logo / captain */
+    232px    /* hero area */
+    76px     /* stats */
+    54px     /* % del equipo */
+    42px     /* footer */
+    14px;    /* serial */
+  row-gap: 10px;
+  background:
+    radial-gradient(circle at 78% 18%, var(--opc-glow), transparent 28%),
+    radial-gradient(circle at 16% 58%, color-mix(in srgb, var(--opc-secondary) 48%, transparent), transparent 36%),
+    linear-gradient(145deg, #071426 0%, #020711 58%, #090d14 100%);
+  border: 2px solid color-mix(in srgb, var(--opc-primary) 68%, rgba(255,255,255,0.18));
+  box-shadow:
+    0 24px 44px rgba(0,0,0,0.44),
+    0 0 30px color-mix(in srgb, var(--opc-primary) 22%, transparent),
+    inset 0 0 0 1px rgba(255,255,255,0.10);
+}
+
+.official-player-card .opc-frame::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.16);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.official-player-card .opc-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.13) 42%, transparent 48%),
+    radial-gradient(circle at 50% 100%, rgba(255,255,255,0.08), transparent 36%);
+  opacity: 0.42;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 19;
+}
+
+.official-player-card .opc-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(2, 7, 14, 0.08), rgba(2, 7, 14, 0.76)),
+    var(--card-stadium-bg);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.74;
+  transform: scale(1.05);
+  z-index: 0;
+}
+
+.official-player-card .opc-energy {
+  position: absolute;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  filter: blur(28px);
+  opacity: 0.38;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.official-player-card .opc-energy-one {
+  top: 70px;
+  right: -86px;
+  background: var(--opc-primary);
+}
+
+.official-player-card .opc-energy-two {
+  bottom: 120px;
+  left: -104px;
+  background: var(--opc-accent);
+}
+
+.official-player-card .opc-top,
+.official-player-card .opc-main,
+.official-player-card .opc-stats-panel,
+.official-player-card .opc-team-share,
+.official-player-card .opc-footer,
+.official-player-card .opc-serial {
+  position: relative;
+  z-index: 10;
+}
+
+/* Top */
+
+.official-player-card .opc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 0 !important;
+}
+
+.official-player-card .opc-logo-block {
+  width: 122px;
+  max-width: 55%;
+}
+
+.official-player-card .opc-logo-block img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.official-player-card .opc-captain-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 126px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  color: #221600;
+  background: linear-gradient(180deg, #ffe78a, #d69b20);
+  border: 1px solid rgba(255,255,255,0.34);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  text-align: center;
+}
+
+/* Hero */
+
+.official-player-card .opc-main {
+  height: auto !important;
+  min-height: 0 !important;
+  margin-top: 0 !important;
+  display: block;
+}
+
+.official-player-card .opc-name-block {
+  position: absolute;
+  z-index: 12;
+  left: 0;
+  bottom: 38px;
+  width: 64%;
+  min-width: 0;
+}
+
+.official-player-card .opc-first-name,
+.official-player-card .opc-last-name {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 0.84;
+  letter-spacing: 0.035em;
+  text-shadow:
+    0 5px 18px rgba(0,0,0,0.58),
+    0 1px 0 rgba(255,255,255,0.18);
+}
+
+.official-player-card .opc-first-name {
+  color: var(--opc-name-top);
+  font-size: 36px;
+}
+
+.official-player-card .opc-last-name {
+  margin-top: 3px;
+  color: var(--opc-name-bottom);
+  font-size: 46px;
+}
+
+.official-player-card .opc-identity-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  padding: 6px;
+  max-width: 100%;
+  border-radius: 13px;
+  background: rgba(2, 7, 14, 0.72);
+  border: 1px solid color-mix(in srgb, var(--opc-primary) 56%, rgba(255,255,255,0.12));
+}
+
+.official-player-card .opc-country-pill,
+.official-player-card .opc-unit-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.official-player-card .opc-country-pill {
+  gap: 6px;
+  padding: 4px 7px;
+  color: #ffffff;
+}
+
+.official-player-card .opc-country-pill img {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.official-player-card .opc-unit-pill {
+  padding: 4px 8px;
+  color: var(--unit-primary);
+  background: rgba(255,255,255,0.045);
+  border: 1px solid color-mix(in srgb, var(--unit-primary) 70%, rgba(255,255,255,0.10));
+}
+
+.official-player-card .opc-photo-block {
+  position: absolute;
+  z-index: 11;
+  right: -8px;
+  bottom: 12px;
+  width: 50%;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.official-player-card .opc-player-photo {
+  display: block;
+  max-width: 112%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter:
+    drop-shadow(0 22px 24px rgba(0,0,0,0.52))
+    drop-shadow(0 0 16px color-mix(in srgb, var(--opc-primary) 20%, transparent));
+}
+
+.official-player-card .opc-player-photo-placeholder,
+.official-player-card .opc-hidden-placeholder {
+  display: none !important;
+}
+
+/* Stats */
+
+.official-player-card .opc-stats-panel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: 0 !important;
+  border-radius: 16px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025)),
+    rgba(2, 7, 14, 0.84);
+  border: 1px solid color-mix(in srgb, var(--opc-primary) 45%, rgba(255,255,255,0.13));
+}
+
+.official-player-card .opc-stat {
+  min-height: 74px;
+  padding: 10px 8px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.10);
+}
+
+.official-player-card .opc-stat:last-child {
+  border-right: 0;
+}
+
+.official-player-card .opc-stat-icon {
+  color: var(--opc-primary);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.official-player-card .opc-stat span {
+  margin-top: 4px;
+  color: color-mix(in srgb, var(--opc-primary) 72%, #ffffff);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.official-player-card .opc-stat strong {
+  color: #ffffff;
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+/* Team share */
+
+.official-player-card .opc-team-share {
+  margin-top: 0 !important;
+  padding: 9px 12px;
+  border-radius: 13px;
+  background: rgba(2, 7, 14, 0.66);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.official-player-card .opc-team-share-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.official-player-card .opc-team-share-head span,
+.official-player-card .opc-team-share-head strong {
+  color: #ffffff;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.official-player-card .opc-team-share-head span {
+  font-size: 10px;
+}
+
+.official-player-card .opc-team-share-head strong {
+  color: var(--opc-primary);
+  font-size: 15px;
+}
+
+.official-player-card .opc-share-bar {
+  height: 11px;
+  padding: 2px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.14);
+  overflow: hidden;
+}
+
+.official-player-card .opc-share-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--opc-secondary), var(--opc-primary), var(--opc-accent));
+}
+
+/* Footer */
+
+.official-player-card .opc-footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-top: 0 !important;
+  padding: 8px 10px;
+  border-radius: 14px;
+  color: color-mix(in srgb, var(--opc-primary) 76%, #ffffff);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.02)),
+    rgba(2, 7, 14, 0.80);
+  border: 1px solid color-mix(in srgb, var(--opc-primary) 44%, rgba(255,255,255,0.12));
+  text-transform: uppercase;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-align: center;
+}
+
+.official-player-card .opc-footer span:first-child {
+  text-align: left;
+}
+
+.official-player-card .opc-footer span:last-child {
+  text-align: right;
+}
+
+.official-player-card .opc-footer-emblem {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #1b1200;
+  background: linear-gradient(180deg, #ffe78a, #d69b20);
+}
+
+.official-player-card .opc-serial {
+  margin-top: 0 !important;
+  color: rgba(255,255,255,0.48);
+  text-align: center;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.official-player-card .opc-download-button {
+  display: none !important;
+}
+
+/* Roster grid support */
+
+.country-roster {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 340px)) !important;
+  justify-content: center !important;
+  align-items: start !important;
+  gap: 26px !important;
+  padding: 0 16px 28px !important;
+}
