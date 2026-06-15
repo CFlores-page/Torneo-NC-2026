@@ -1618,7 +1618,7 @@ function renderPreviousMatchCard(match) {
     <article class="previous-match-card">
       <div class="previous-match-meta">
         <span>${match.phase || "Partido"}</span>
-        <strong>${match.matchId}</strong>
+        <strong>${getFriendlyMatchLabel(match)}</strong>
         <small>${formatMatchDate(match.endDate || match.startDate)}</small>
       </div>
 
@@ -1975,6 +1975,32 @@ function renderPlayerCard(player, rank) {
       </div>
     </article>
   `
+}
+
+const MATCH_ROUND_LABELS = {
+  PR: "Jornada 1",
+  SR: "Jornada 2",
+  TR: "Jornada 3",
+  CR: "Jornada 4",
+  OF: "Octavos de final",
+  CF: "Cuartos de final",
+  SF: "Semifinal",
+  GF: "Gran final"
+}
+
+function getFriendlyMatchLabel(match) {
+  const rawId = String(match.matchId || "").trim().toUpperCase()
+  const codeMatch = rawId.match(/^[A-Z]+/)
+  const numberMatch = rawId.match(/\d+/)
+
+  const code = codeMatch ? codeMatch[0] : ""
+  const roundLabel = MATCH_ROUND_LABELS[code] || match.phase || "Partido"
+
+  const friendlyNumber = numberMatch
+    ? `Partido ${Number(numberMatch[0])}`
+    : "Partido"
+
+  return `${roundLabel} · ${friendlyNumber}`
 }
 
 function setupViewNavigation() {
