@@ -1166,8 +1166,8 @@ td {
   grid-template-columns: repeat(auto-fill, minmax(300px, 340px));
   justify-content: center;
   align-items: start;
-  gap: 22px;
-  padding: 0 16px 22px;
+  gap: 26px;
+  padding: 0 16px 28px;
 }
 
 .country-team-card.open .country-roster {
@@ -2252,6 +2252,10 @@ td {
   color: #aebbd0;
 }
 
+.opc-hidden-placeholder {
+  display: none;
+}
+
 @media (max-width: 1300px) {
   .mc-body-grid {
     grid-template-columns: 1fr;
@@ -2968,7 +2972,7 @@ display: none;
 
 .opc-frame {
   position: relative;
-  min-height: 620px;
+  min-height: 690px;
   overflow: hidden;
   border-radius: 26px;
   padding: 16px;
@@ -3135,9 +3139,9 @@ display: none;
 .opc-main {
   position: relative;
   z-index: 9;
-  height: 215px;
+  height: 205px;
   display: block;
-  margin-top: -8px;
+  margin-top: -6px;
 }
 
 .opc-name-block {
@@ -3222,9 +3226,9 @@ display: none;
   position: absolute;
   z-index: 3;
   right: -10px;
-  bottom: 18px;
+  bottom: 10px;
   width: 50%;
-  height: 225px;
+  height: 210px;
   display: flex;
   justify-content: center;
   align-items: flex-end;

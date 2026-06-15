@@ -2123,7 +2123,8 @@ function renderPlayerCard(player, rank) {
           <div class="opc-photo-block">
             ${
               photo
-                ? `<img class="opc-player-photo" src="${photo}" alt="${player.displayName}">`
+                ? `<img class="opc-player-photo" src="${photo}" alt="${player.displayName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+                    <div class="opc-player-photo-placeholder opc-hidden-placeholder">${getInitials(player.displayName)}</div>`
                 : `<div class="opc-player-photo-placeholder">${getInitials(player.displayName)}</div>`
             }
           </div>
