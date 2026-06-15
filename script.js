@@ -1437,6 +1437,7 @@ function buildTournamentStandings(teams, matches) {
     table.set(teamId, {
       teamId,
       unit: team.unit || "",
+      status: team.status || "Pendiente",
       played: 0,
       wins: 0,
       losses: 0,
@@ -1544,7 +1545,7 @@ function renderTournamentStandings(standings) {
   if (!standings || !standings.length) {
     body.innerHTML = `
       <tr>
-        <td colspan="10">
+        <td colspan="9">
           <div class="empty-state">
             <strong>Sin standings</strong>
             <p>Todavía no hay equipos disponibles para calcular la tabla.</p>
