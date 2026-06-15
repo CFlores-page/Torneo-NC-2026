@@ -3386,3 +3386,25 @@ display: none;
   height: auto;
   object-fit: contain;
 }
+
+/* =========================================================
+   OFFICIAL PLAYER CARD — FLAG BREATHING ROOM
+========================================================= */
+
+/* Let the flag sit naturally without looking trapped in a mini box */
+.official-player-card .opc-country-pill {
+  overflow: visible !important;
+  padding-left: 5px !important;
+}
+
+/* Remove the restrictive crop/box from the flag */
+.official-player-card .opc-country-pill img {
+  width: 32px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  flex: 0 0 auto;
+  transform: translateX(-2px) scale(1.15);
+}
