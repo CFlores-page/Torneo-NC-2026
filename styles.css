@@ -3230,3 +3230,144 @@ display: none;
 .official-player-card .opc-serial {
   z-index: 18;
 }
+
+/* =========================================================
+   OFFICIAL PLAYER CARD — NAME DEPTH LAYER
+   Allows long names to sit over the player image
+========================================================= */
+
+.official-player-card .opc-name-block {
+  z-index: 22 !important;
+  width: 72% !important;
+  left: 0 !important;
+  bottom: 34px !important;
+  pointer-events: none;
+}
+
+.official-player-card .opc-photo-block {
+  z-index: 14 !important;
+}
+
+.official-player-card .opc-player-photo {
+  z-index: 14 !important;
+}
+
+/* Dark soft plate behind name for readability over photo */
+.official-player-card .opc-name-block::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -10px;
+  right: -8px;
+  top: -8px;
+  bottom: -12px;
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, rgba(2, 7, 14, 0.76), rgba(2, 7, 14, 0.34), transparent);
+  filter: blur(0.2px);
+}
+
+/* Stronger depth shadow so name can cross over the player cleanly */
+.official-player-card .opc-first-name,
+.official-player-card .opc-last-name {
+  text-shadow:
+    0 6px 18px rgba(0,0,0,0.78),
+    0 2px 0 rgba(0,0,0,0.40),
+    0 0 16px rgba(0,0,0,0.45);
+}
+
+/* Give long last names room without exploding the card */
+.official-player-card .opc-first-name {
+  font-size: clamp(30px, 4vw, 36px) !important;
+  max-width: 100%;
+}
+
+.official-player-card .opc-last-name {
+  font-size: clamp(38px, 5vw, 46px) !important;
+  max-width: 100%;
+}
+
+/* Keep country/unit row above the photo too */
+.official-player-card .opc-identity-row {
+  position: relative;
+  z-index: 23 !important;
+}
+
+/* =========================================================
+   OFFICIAL PLAYER CARD — FINAL POSITION TWEAKS
+   1. Drop player image lower behind stats
+   2. Let legs continue behind stats instead of cutting awkwardly
+   3. Give country/unit pill more room
+========================================================= */
+
+/* Let hero/photo overflow downward into the stats area */
+.official-player-card .opc-main {
+  overflow: visible !important;
+}
+
+/* Move the player lower and slightly taller */
+.official-player-card .opc-photo-block {
+  right: -18px !important;
+  bottom: -42px !important;
+  width: 56% !important;
+  height: 300px !important;
+  overflow: visible !important;
+}
+
+/* Player image continues behind the stats panel */
+.official-player-card .opc-player-photo {
+  height: 310px !important;
+  width: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: translate(-12px, 18px) !important;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+/* Keep stats above the player image */
+.official-player-card .opc-stats-panel {
+  position: relative;
+  z-index: 30 !important;
+}
+
+/* Keep name above the player image too */
+.official-player-card .opc-name-block,
+.official-player-card .opc-identity-row {
+  z-index: 32 !important;
+}
+
+/* Make the identity box wider so long country names + unit fit */
+.official-player-card .opc-name-block {
+  width: 78% !important;
+}
+
+/* Let the country/unit row use more horizontal room */
+.official-player-card .opc-identity-row {
+  display: inline-flex;
+  width: auto;
+  max-width: 100%;
+  min-width: 170px;
+  padding: 6px 7px;
+}
+
+/* Country pill can shrink instead of pushing unit outside */
+.official-player-card .opc-country-pill {
+  min-width: 0;
+  max-width: 128px;
+  overflow: hidden;
+}
+
+.official-player-card .opc-country-pill span {
+  display: inline-block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Unit pill stays visible and comfortable */
+.official-player-card .opc-unit-pill {
+  flex: 0 0 auto;
+  padding: 4px 9px;
+}
