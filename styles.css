@@ -3177,3 +3177,56 @@ display: none;
   }
 }
 
+/* =========================================================
+   OFFICIAL PLAYER CARD — PHOTO CLEANUP
+   Removes portrait box and lets player image overflow naturally
+========================================================= */
+
+/* Remove the annoying rounded rectangle around the player */
+.official-player-card .opc-photo-block::before,
+.official-player-card .opc-photo-block::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Let the image escape the photo lane instead of being clipped */
+.official-player-card .opc-main {
+  overflow: visible !important;
+}
+
+.official-player-card .opc-photo-block {
+  overflow: visible !important;
+  right: -18px !important;
+  bottom: 0 !important;
+  width: 54% !important;
+  height: 250px !important;
+}
+
+/* Make the player bigger and allow overflow to top/left */
+.official-player-card .opc-player-photo {
+  position: relative;
+  z-index: 14;
+  max-width: none !important;
+  max-height: none !important;
+  width: auto !important;
+  height: 285px !important;
+  object-fit: contain;
+  object-position: center bottom;
+  transform: translate(-16px, -18px);
+  filter:
+    drop-shadow(0 22px 24px rgba(0,0,0,0.50))
+    drop-shadow(0 0 14px color-mix(in srgb, var(--opc-primary) 22%, transparent));
+}
+
+/* Keep the image above the background but behind text/stats */
+.official-player-card .opc-name-block,
+.official-player-card .opc-identity-row {
+  z-index: 16;
+}
+
+.official-player-card .opc-stats-panel,
+.official-player-card .opc-team-share,
+.official-player-card .opc-footer,
+.official-player-card .opc-serial {
+  z-index: 18;
+}
