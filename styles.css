@@ -3089,7 +3089,7 @@ display: none;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  min-height: 58px;
+  min-height: 52px;
 }
 
 .opc-logo-block {
@@ -3135,16 +3135,16 @@ display: none;
 .opc-main {
   position: relative;
   z-index: 9;
-  height: 235px;
+  height: 215px;
   display: block;
-  margin-top: 6px;
+  margin-top: -8px;
 }
 
 .opc-name-block {
   position: absolute;
   z-index: 4;
   left: 0;
-  bottom: 18px;
+  bottom: 48px;
   width: 64%;
   min-width: 0;
 }
@@ -3222,7 +3222,7 @@ display: none;
   position: absolute;
   z-index: 3;
   right: -10px;
-  bottom: 0;
+  bottom: 18px;
   width: 50%;
   height: 225px;
   display: flex;
@@ -3232,7 +3232,7 @@ display: none;
 
 .opc-player-photo {
   display: block;
-  max-width: 118%;
+  max-width: 112%;
   max-height: 100%;
   object-fit: contain;
   object-position: center bottom;
@@ -3260,7 +3260,7 @@ display: none;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
-  margin-top: 8px;
+  margin-top: 2px;
   border-radius: 16px;
   overflow: hidden;
   background:
@@ -3417,53 +3417,29 @@ display: none;
 }
 
 @media (max-width: 700px) {
-  .official-player-card {
-    max-width: 330px;
-  }
-
-  .opc-frame {
-    padding: 15px;
-    border-radius: 24px;
-  }
-
-  .opc-logo-block {
-    width: 116px;
-  }
-
   .opc-top {
-    min-height: 56px;
+    min-height: 48px;
   }
 
   .opc-main {
-    height: 286px;
+    height: 205px;
+    margin-top: -8px;
   }
 
   .opc-name-block {
-    bottom: 28px;
-    width: 72%;
-  }
-
-  .opc-first-name {
-    font-size: 40px;
-  }
-
-  .opc-last-name {
-    font-size: 50px;
+    bottom: 44px;
+    width: 66%;
   }
 
   .opc-photo-block {
-    right: -20px;
-    width: 58%;
-    height: 276px;
+    right: -12px;
+    bottom: 16px;
+    width: 50%;
+    height: 215px;
   }
 
-  .opc-stat {
-    min-height: 68px;
-  }
-
-  .opc-footer {
-    font-size: 9px;
-    letter-spacing: 0.10em;
+  .opc-player-photo {
+    max-width: 110%;
   }
 }
 
