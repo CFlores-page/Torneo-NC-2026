@@ -2968,9 +2968,19 @@ display: none;
 
 .opc-frame {
   position: relative;
-  aspect-ratio: 4 / 5;
-  min-height: 0;
-  height: auto;
+  min-height: 620px;
+  overflow: hidden;
+  border-radius: 26px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at 78% 18%, var(--opc-glow), transparent 28%),
+    radial-gradient(circle at 16% 58%, color-mix(in srgb, var(--opc-secondary) 48%, transparent), transparent 36%),
+    linear-gradient(145deg, #071426 0%, #020711 58%, #090d14 100%);
+  border: 2px solid color-mix(in srgb, var(--opc-primary) 68%, rgba(255,255,255,0.18));
+  box-shadow:
+    0 24px 44px rgba(0,0,0,0.44),
+    0 0 30px color-mix(in srgb, var(--opc-primary) 22%, transparent),
+    inset 0 0 0 1px rgba(255,255,255,0.10);
 }
 
 /* =========================================================
@@ -3079,11 +3089,11 @@ display: none;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  min-height: 62px;
+  min-height: 58px;
 }
 
 .opc-logo-block {
-  width: 128px;
+  width: 122px;
   max-width: 55%;
 }
 
@@ -3125,7 +3135,7 @@ display: none;
 .opc-main {
   position: relative;
   z-index: 9;
-  height: 300px;
+  height: 235px;
   display: block;
   margin-top: 6px;
 }
@@ -3134,8 +3144,8 @@ display: none;
   position: absolute;
   z-index: 4;
   left: 0;
-  bottom: 30px;
-  width: 70%;
+  bottom: 18px;
+  width: 64%;
   min-width: 0;
 }
 
@@ -3152,20 +3162,20 @@ display: none;
 
 .opc-first-name {
   color: var(--opc-name-top);
-  font-size: 44px;
+  font-size: 36px;
 }
 
 .opc-last-name {
   margin-top: 3px;
   color: var(--opc-name-bottom);
-  font-size: 54px;
+  font-size: 46px;
 }
 
 .opc-identity-row {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-top: 10px;
+  margin-top: 8px;
   padding: 6px;
   max-width: 100%;
   border-radius: 13px;
@@ -3178,24 +3188,24 @@ display: none;
 .opc-unit-pill {
   display: inline-flex;
   align-items: center;
-  min-height: 26px;
+  min-height: 24px;
   border-radius: 9px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 .opc-country-pill {
-  gap: 7px;
+  gap: 6px;
   padding: 4px 7px;
   color: #ffffff;
 }
 
 .opc-country-pill img {
-  width: 26px;
-  height: 18px;
+  width: 24px;
+  height: 16px;
   object-fit: cover;
   border-radius: 4px;
   box-shadow: 0 0 0 1px rgba(255,255,255,0.22);
@@ -3211,10 +3221,10 @@ display: none;
 .opc-photo-block {
   position: absolute;
   z-index: 3;
-  right: -18px;
+  right: -10px;
   bottom: 0;
-  width: 58%;
-  height: 290px;
+  width: 50%;
+  height: 225px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -3222,7 +3232,7 @@ display: none;
 
 .opc-player-photo {
   display: block;
-  max-width: 125%;
+  max-width: 118%;
   max-height: 100%;
   object-fit: contain;
   object-position: center bottom;
@@ -3250,7 +3260,7 @@ display: none;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
-  margin-top: 2px;
+  margin-top: 8px;
   border-radius: 16px;
   overflow: hidden;
   background:
@@ -3263,7 +3273,7 @@ display: none;
 }
 
 .opc-stat {
-  min-height: 72px;
+  min-height: 74px;
   padding: 10px 8px;
   display: grid;
   place-items: center;
@@ -3277,7 +3287,7 @@ display: none;
 
 .opc-stat-icon {
   color: var(--opc-primary);
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1;
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--opc-primary) 60%, transparent));
 }
@@ -3287,13 +3297,13 @@ display: none;
   color: color-mix(in srgb, var(--opc-primary) 72%, #ffffff);
   font-size: 9px;
   font-weight: 900;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
 }
 
 .opc-stat strong {
   color: #ffffff;
-  font-size: 20px;
+  font-size: 19px;
   line-height: 1;
   font-weight: 900;
 }
@@ -3330,7 +3340,7 @@ display: none;
 
 .opc-team-share-head strong {
   color: var(--opc-primary);
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .opc-share-bar {
@@ -3367,7 +3377,7 @@ display: none;
   text-transform: uppercase;
   font-size: 10px;
   font-weight: 900;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.10em;
   text-align: center;
 }
 
@@ -3380,8 +3390,8 @@ display: none;
 }
 
 .opc-footer-emblem {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -3398,7 +3408,7 @@ display: none;
   text-align: center;
   font-size: 9px;
   font-weight: 900;
-  letter-spacing: 0.17em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
