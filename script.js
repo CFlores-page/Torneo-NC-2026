@@ -14,6 +14,88 @@ let dashboardState = {
   allTournamentMatches: []
 }
 
+let refreshInFlight = false
+
+let renderCache = {
+  summary: "",
+  standings: "",
+  upcomingMatches: "",
+  liveMatches: "",
+  liveFeed: "",
+  teamsPlayers: "",
+  tournamentStandings: "",
+  previousMatches: "",
+  matchCenter: ""
+}
+
+function makeSignature(value) {
+  return JSON.stringify(value ?? null)
+}
+
+function shouldRender(key, value, force = false) {
+  const nextSignature = makeSignature(value)
+
+  if (force || renderCache[key] !== nextSignature) {
+    renderCache[key] = nextSignature
+    return true
+  }
+
+  return false
+}
+
+function isViewVisible(viewId) {
+  const view = document.getElementById(viewId)
+  return view && !view.classList.contains("hidden")
+}
+
+async function fetchDashboardPayload() {
+  const [
+    phaseRows,
+    summaryRows,
+    standingsRows,
+    upcomingRows,
+    liveRows,
+    teamsRows,
+    playersRows,
+    liveFeedRows,
+    partidosRows
+  ] = await Promise.all([
+    getSheet("B4:B4", "DASHBOARD"),
+    getSheet("A2:B25", "DASHBOARD"),
+    getSheet("A28:G40", "DASHBOARD"),
+    getSheet("A44:F49", "DASHBOARD"),
+    getSheet("A53:G58", "DASHBOARD"),
+    getSheet("A2:H50", "EQUIPOS"),
+    getSheet("A2:P300", "JUGADORES"),
+    getSheet("A2:Q100", "LIVE_FEED"),
+    getSheet("A2:K200", "PARTIDOS")
+  ])
+
+  const summary = summaryRowsToObject(summaryRows)
+  summary.currentPhase = phaseRows?.[0]?.[0] || summary.currentPhase || "Pendiente"
+
+  const standings = standingsRowsToObjects(standingsRows)
+  const upcomingMatches = upcomingRowsToObjects(upcomingRows)
+  const liveMatches = liveRowsToObjects(liveRows)
+  const teams = teamRowsToObjects(teamsRows)
+  const players = playerRowsToObjects(playersRows)
+  const liveFeed = liveFeedRowsToObjects(liveFeedRows)
+  const allTournamentMatches = tournamentMatchRowsToObjects(partidosRows)
+  const tournamentStandings = buildTournamentStandings(teams, allTournamentMatches)
+
+  return {
+    summary,
+    standings,
+    upcomingMatches,
+    liveMatches,
+    teams,
+    players,
+    liveFeed,
+    tournamentStandings,
+    allTournamentMatches
+  }
+}
+
 let currentTeamFilter = "ALL"
 let openTeamIds = new Set()
 
@@ -790,35 +872,11 @@ function renderMatchCenterStage(match, players) {
 
 async function loadMatchCenterData() {
   try {
-    const [partidosRows, playerRows, summaryRows] = await Promise.all([
-      getSheetFrom("PARTIDOS", "A2:K200"),
-      getSheetFrom("JUGADORES", "A2:O500"),
-      getSheetFrom("DASHBOARD", "A2:B25")
-    ])
-
-    const matches = partidosRowsToObjects(partidosRows)
-      .filter(match => {
-        const status = String(match.status || "").toUpperCase()
-        return status === "EN VIVO" || status === "LIVE" || status === "ACTIVO"
-      })
-
-    const players = matchCenterPlayerRowsToObjects(playerRows)
-    const summary = summaryRowsToObject(summaryRows)
-
-    matchCenterState.matches = matches
-    matchCenterState.players = players
-
-    if (!matchCenterState.selectedMatchId && matches.length) {
-      matchCenterState.selectedMatchId = matches[0].matchId
+    if (!dashboardState.allTournamentMatches || !dashboardState.allTournamentMatches.length) {
+      await loadDashboardData({ force: true })
     }
 
-    const selectedMatch =
-      matches.find(match => match.matchId === matchCenterState.selectedMatchId) ||
-      matches[0] ||
-      null
-
-    renderMatchCenter(matches, selectedMatch, players, summary)
-    updateMatchCenterClock()
+    renderMatchCenterFromDashboardState()
   } catch (error) {
     console.error("Error loading Match Center:", error)
 
@@ -978,67 +1036,91 @@ function setupMatchCenterStripArrows() {
   })
 }
 
-async function loadDashboardData() {
+async function loadDashboardData(options = {}) {
+  const force = Boolean(options.force)
+
+  if (refreshInFlight) return
+
+  refreshInFlight = true
+
   try {
-    const [
-      phaseRows,
-      summaryRows,
-      standingsRows,
-      upcomingRows,
-      liveRows,
-      teamsRows,
-      playersRows,
-      liveFeedRows,
-      partidosRows
-    ] = await Promise.all([
-      getSheet("B4:B4", "DASHBOARD"),
-      getSheet("A2:B25", "DASHBOARD"),
-      getSheet("A28:G40", "DASHBOARD"),
-      getSheet("A44:F49", "DASHBOARD"),
-      getSheet("A53:G58", "DASHBOARD"),
-      getSheet("A2:H50", "EQUIPOS"),
-      getSheet("A2:P300", "JUGADORES"),
-      getSheet("A2:Q100", "LIVE_FEED"),
-      getSheet("A2:K200", "PARTIDOS")
-    ])
+    const nextState = await fetchDashboardPayload()
 
-    const summary = summaryRowsToObject(summaryRows)
-    summary.currentPhase = phaseRows?.[0]?.[0] || summary.currentPhase || "Pendiente"
+    dashboardState = nextState
 
-    const standings = standingsRowsToObjects(standingsRows)
-    const upcomingMatches = upcomingRowsToObjects(upcomingRows)
-    const liveMatches = liveRowsToObjects(liveRows)
-    const teams = teamRowsToObjects(teamsRows)
-    const players = playerRowsToObjects(playersRows)
-    const liveFeed = liveFeedRowsToObjects(liveFeedRows)
-    const allTournamentMatches = tournamentMatchRowsToObjects(partidosRows)
-    const tournamentStandings = buildTournamentStandings(teams, allTournamentMatches)
-
-    dashboardState = {
-      summary,
-      standings,
-      upcomingMatches,
-      liveMatches,
-      teams,
-      players,
-      liveFeed,
-      tournamentStandings,
-      allTournamentMatches
+    if (shouldRender("summary", nextState.summary, force)) {
+      updateDashboardCards(nextState.summary)
     }
 
-    updateDashboardCards(summary)
-    renderStandings(tournamentStandings.slice(0, 8))
-    renderUpcomingMatches(upcomingMatches)
-    renderLiveMatches(liveMatches)
-    renderLiveFeed(liveFeed)
-    renderTeamsPage(teams, players)
-    renderTournamentStandings(tournamentStandings)
-    renderPreviousMatches(allTournamentMatches)
+    if (shouldRender("standings", nextState.tournamentStandings.slice(0, 8), force)) {
+      renderStandings(nextState.tournamentStandings.slice(0, 8))
+    }
+
+    if (shouldRender("upcomingMatches", nextState.upcomingMatches, force)) {
+      renderUpcomingMatches(nextState.upcomingMatches)
+    }
+
+    if (shouldRender("liveMatches", nextState.liveMatches, force)) {
+      renderLiveMatches(nextState.liveMatches)
+    }
+
+    if (shouldRender("liveFeed", nextState.liveFeed, force)) {
+      renderLiveFeed(nextState.liveFeed)
+    }
+
+    if (
+      shouldRender(
+        "teamsPlayers",
+        {
+          teams: nextState.teams,
+          players: nextState.players,
+          currentTeamFilter,
+          openTeamIds: [...openTeamIds]
+        },
+        force
+      )
+    ) {
+      renderTeamsPage(nextState.teams, nextState.players)
+    }
+
+    if (shouldRender("tournamentStandings", nextState.tournamentStandings, force)) {
+      renderTournamentStandings(nextState.tournamentStandings)
+    }
+
+    const finishedMatches = nextState.allTournamentMatches.filter(isFinishedMatch)
+
+    if (shouldRender("previousMatches", finishedMatches, force)) {
+      renderPreviousMatches(nextState.allTournamentMatches)
+    }
+
+    const matchCenterSignature = {
+      liveMatches: nextState.allTournamentMatches.filter(isLiveMatch),
+      players: nextState.players.map(player => ({
+        playerId: player.playerId,
+        teamId: player.teamId,
+        points: player.points,
+        matchPoints: player.matchPoints,
+        photoUrl: player.photoUrl,
+        fullBodyUrl: player.fullBodyUrl,
+        headshotUrl: player.headshotUrl
+      })),
+      liveFeed: nextState.liveFeed,
+      selectedMatchId: matchCenterState.selectedMatchId
+    }
+
+    if (
+      isViewVisible("matchCenterView") &&
+      shouldRender("matchCenter", matchCenterSignature, force)
+    ) {
+      renderMatchCenterFromDashboardState()
+    }
 
     console.log("Datos cargados:", dashboardState)
   } catch (error) {
     console.error("Error cargando datos del torneo:", error)
     showTeamsError(error)
+  } finally {
+    refreshInFlight = false
   }
 }
 
@@ -1767,6 +1849,37 @@ function renderUpcomingMatches(matches) {
       Ver calendario completo en Match Center
     </a>
   `
+}
+
+function getLiveMatchesForMatchCenter() {
+  return (dashboardState.allTournamentMatches || [])
+    .filter(isLiveMatch)
+    .map(match => ({
+      ...match,
+      scoreA: parseNumber(match.pointsA),
+      scoreB: parseNumber(match.pointsB)
+    }))
+}
+
+function renderMatchCenterFromDashboardState() {
+  const matches = getLiveMatchesForMatchCenter()
+  const players = dashboardState.players || []
+  const summary = dashboardState.summary || {}
+
+  matchCenterState.matches = matches
+  matchCenterState.players = players
+
+  if (!matchCenterState.selectedMatchId && matches.length) {
+    matchCenterState.selectedMatchId = matches[0].matchId
+  }
+
+  const selectedMatch =
+    matches.find(match => match.matchId === matchCenterState.selectedMatchId) ||
+    matches[0] ||
+    null
+
+  renderMatchCenter(matches, selectedMatch, players, summary)
+  updateMatchCenterClock()
 }
 
 function renderLiveMatches(matches) {
@@ -2708,11 +2821,13 @@ document.addEventListener("DOMContentLoaded", () => {
   setupMobileMenu()
   setupMatchCenterStripArrows()
 
-  loadDashboardData()
+  loadDashboardData({ force: true })
   loadMatchCenterData()
   updateMatchCenterClock()
 
-  setInterval(loadDashboardData, REFRESH_MS)
+  setInterval(() => {
+    loadDashboardData({ force: false })
+  }, REFRESH_MS)
   setInterval(loadMatchCenterData, REFRESH_MS)
   setInterval(updateMatchCenterClock, 30000)
 })
