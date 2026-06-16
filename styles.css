@@ -3528,3 +3528,59 @@ display: none;
   overflow: visible !important;
   flex: 0 0 auto;
 }
+
+/* =========================================================
+   MATCH CENTER + STANDINGS MATCHES FLAGS — LET FLAGS BREATHE
+========================================================= */
+
+/* Match Center top strip flags */
+.mc-strip-team img {
+  width: 42px !important;
+  height: auto !important;
+  max-height: 32px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Match Center hero flags */
+.mc-team-flag {
+  width: 90px !important;
+  height: auto !important;
+  max-height: 68px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Standings / Matches previous match flags */
+.previous-match-team img {
+  width: 54px !important;
+  height: auto !important;
+  max-height: 42px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Prevent parent containers from clipping the flags */
+.mc-strip-team,
+.mc-team-hero,
+.previous-match-team {
+  overflow: visible !important;
+}
