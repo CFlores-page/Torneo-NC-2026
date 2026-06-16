@@ -3403,3 +3403,61 @@ display: none;
   flex: 0 0 auto;
   transform: translateX(-2px) scale(1.15);
 }
+
+/* =========================================================
+   LIVE FEED — EVENT TYPE VARIETY
+========================================================= */
+
+.feed-message.feed-first-goal .feed-bubble {
+  border-color: rgba(93, 168, 255, 0.34);
+}
+
+.feed-message.feed-tie .feed-bubble {
+  border-color: rgba(255, 212, 71, 0.36);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 212, 71, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.025)),
+    rgba(5, 12, 22, 0.80);
+}
+
+.feed-message.feed-takes-lead .feed-bubble {
+  border-color: rgba(61, 242, 143, 0.32);
+}
+
+.feed-message.feed-pulling-away .feed-bubble {
+  border-color: rgba(255, 212, 71, 0.44);
+  box-shadow:
+    0 12px 22px rgba(0,0,0,0.18),
+    0 0 18px rgba(255, 212, 71, 0.08);
+}
+
+.feed-message.feed-big-play .feed-bubble {
+  border-color: rgba(255, 48, 79, 0.42);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 48, 79, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.028)),
+    rgba(5, 12, 22, 0.84);
+}
+
+.feed-message.feed-captain .feed-bubble {
+  border-color: rgba(255, 212, 71, 0.52);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 212, 71, 0.16), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.028)),
+    rgba(5, 12, 22, 0.86);
+}
+
+.feed-message.feed-first-goal .feed-avatar,
+.feed-message.feed-takes-lead .feed-avatar {
+  border-color: rgba(93, 168, 255, 0.34);
+}
+
+.feed-message.feed-big-play .feed-avatar {
+  border-color: rgba(255, 48, 79, 0.42);
+}
+
+.feed-message.feed-captain .feed-avatar,
+.feed-message.feed-tie .feed-avatar,
+.feed-message.feed-pulling-away .feed-avatar {
+  border-color: rgba(255, 212, 71, 0.42);
+}

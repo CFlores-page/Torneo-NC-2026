@@ -1030,6 +1030,193 @@ function parseFeedDateValue(value) {
 let lastLiveFeedNewestEventId = null
 let liveFeedFirstRender = true
 
+function getStableIndex(key, length) {
+  if (!length) return 0
+
+  const raw = String(key || "feed-event")
+  let hash = 0
+
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash) + raw.charCodeAt(i)
+    hash |= 0
+  }
+
+  return Math.abs(hash) % length
+}
+
+function pickStable(list, key) {
+  return list[getStableIndex(key, list.length)]
+}
+
+function feedEventIsCaptain(item) {
+  const playerName = normalizeHeader(item.playerName || item.playerShortName)
+  const teamId = normalizeId(item.teamId)
+
+  if (!playerName || !teamId) return false
+
+  return (dashboardState.players || []).some(player => {
+    const sameTeam = normalizeId(player.teamId) === teamId
+    const sameName =
+      normalizeHeader(player.displayName) === playerName ||
+      normalizeHeader(player.fullName) === playerName
+
+    return sameTeam && sameName && player.isCaptain
+  })
+}
+
+function getFeedEventType(item) {
+  const teamScore = parseNumber(item.teamScoreAtEvent)
+  const opponentScore = parseNumber(item.opponentScoreAtEvent)
+  const pointsAdded = parseNumber(item.pointsAdded)
+  const isCaptain = feedEventIsCaptain(item)
+
+  if (teamScore === opponentScore) return "feed-tie"
+  if (teamScore === 1 && opponentScore === 0) return "feed-first-goal"
+  if (pointsAdded >= 2) return "feed-big-play"
+  if (teamScore > opponentScore && teamScore - opponentScore >= 2) return "feed-pulling-away"
+  if (isCaptain) return "feed-captain"
+  if (teamScore > opponentScore) return "feed-takes-lead"
+
+  return "feed-default"
+}
+
+function buildFeedScoreText(item) {
+  if (item.scoreText) return item.scoreText
+
+  const team = item.teamName || getTeamInfo(item.teamId).name || "Equipo"
+  const opponent = item.opponentName || getTeamInfo(item.opponentId).name || "Rival"
+
+  return `${team} ${formatNumber(item.teamScoreAtEvent)} - ${formatNumber(item.opponentScoreAtEvent)} ${opponent}`
+}
+
+function buildFeedCommentary(item) {
+  const player = item.playerShortName || item.playerName || "Un jugador"
+  const team = item.teamName || getTeamInfo(item.teamId).name || "El equipo"
+  const opponent = item.opponentName || getTeamInfo(item.opponentId).name || "el rival"
+  const eventType = getFeedEventType(item)
+  const key = `${item.eventId || ""}-${item.matchId || ""}-${item.playerName || ""}`
+
+  const templates = {
+    "feed-first-goal": [
+      {
+        title: "¡SE ABRE EL MARCADOR!",
+        body: `${player} pone a ${team} arriba. El partido ya tiene dueño momentáneo.`
+      },
+      {
+        title: "¡PRIMER GOL DEL PARTIDO!",
+        body: `${team} pega primero con punto de ${player}. Ahora ${opponent} tiene que responder.`
+      },
+      {
+        title: "¡ARRANCA LA ACCIÓN!",
+        body: `${player} inaugura el marcador para ${team}. Esto apenas empieza.`
+      }
+    ],
+
+    "feed-tie": [
+      {
+        title: "¡SE EMPATA EL PARTIDO!",
+        body: `${team} no se queda atrás. ${player} mete a su selección de lleno en la pelea.`
+      },
+      {
+        title: "¡TODO IGUALADO!",
+        body: `${player} aparece en el momento justo y deja el partido empatado.`
+      },
+      {
+        title: "¡TENEMOS PARTIDO!",
+        body: `${team} responde y empareja las cosas. Nadie se quiere quedar atrás.`
+      }
+    ],
+
+    "feed-takes-lead": [
+      {
+        title: "¡SE VAN ARRIBA!",
+        body: `${player} pone a ${team} al frente. ${opponent} empieza a sentir presión.`
+      },
+      {
+        title: "¡CAMBIA EL LÍDER!",
+        body: `${team} toma ventaja con aportación de ${player}. El partido se mueve.`
+      },
+      {
+        title: "¡GOLPE EN LA MESA!",
+        body: `${player} suma y ${team} toma control parcial del marcador.`
+      }
+    ],
+
+    "feed-pulling-away": [
+      {
+        title: "¡SE EMPIEZAN A ESCAPAR!",
+        body: `${team} abre distancia. ${opponent} necesita reaccionar pronto.`
+      },
+      {
+        title: "¡VENTAJA PELIGROSA!",
+        body: `${player} ayuda a que ${team} tome más aire en el marcador.`
+      },
+      {
+        title: "¡EL PARTIDO SE INCLINA!",
+        body: `${team} empieza a marcar diferencia. El reloj ya juega en contra de ${opponent}.`
+      }
+    ],
+
+    "feed-big-play": [
+      {
+        title: "¡GOL DE AUTORIDAD!",
+        body: `${player} suma fuerte para ${team}. Este punto pesa en el partido.`
+      },
+      {
+        title: "¡JUGADA GRANDE!",
+        body: `${player} aparece con una venta importante y mueve el marcador.`
+      },
+      {
+        title: "¡PUNTO DE IMPACTO!",
+        body: `${team} recibe un impulso fuerte gracias a ${player}.`
+      }
+    ],
+
+    "feed-captain": [
+      {
+        title: "¡EL CAPITÁN APARECE!",
+        body: `${player} responde como líder y suma para ${team}.`
+      },
+      {
+        title: "¡LIDERAZGO EN CANCHA!",
+        body: `${player} toma responsabilidad y mete a ${team} en la conversación.`
+      },
+      {
+        title: "¡CAPITÁN AL RESCATE!",
+        body: `${team} recibe puntos de su capitán cuando más lo necesitaba.`
+      }
+    ],
+
+    "feed-default": [
+      {
+        title: "¡SUMAN PUNTOS!",
+        body: `${player} aporta para ${team}. Cada punto cuenta en esta ronda.`
+      },
+      {
+        title: "¡SE MUEVE EL MARCADOR!",
+        body: `${team} suma gracias a ${player}. El partido sigue vivo.`
+      },
+      {
+        title: "¡PUNTO IMPORTANTE!",
+        body: `${player} mantiene a ${team} compitiendo en el marcador.`
+      },
+      {
+        title: "¡APARECE EN EL MOMENTO JUSTO!",
+        body: `${player} suma y mantiene la presión sobre ${opponent}.`
+      }
+    ]
+  }
+
+  const selected = pickStable(templates[eventType] || templates["feed-default"], key)
+
+  return {
+    type: eventType,
+    title: selected.title,
+    body: selected.body,
+    score: buildFeedScoreText(item)
+  }
+}
+
 function renderLiveFeed(feedItems = []) {
   const container = document.getElementById("liveFeedTicker")
   if (!container) return
@@ -1067,24 +1254,28 @@ function renderLiveFeed(feedItems = []) {
 
   container.innerHTML = `
     <div class="live-chat-feed">
-      ${itemsOldestFirst.map(item => `
-        <article class="feed-message">
-          <div class="feed-avatar">${item.emoji || "⚽"}</div>
+      ${itemsOldestFirst.map(item => {
+        const commentary = buildFeedCommentary(item)
 
-          <div class="feed-bubble">
-            <div class="feed-message-top">
-              <strong class="feed-author">${item.title}</strong>
-              <span class="feed-time">${formatFeedTime(item.saleTimestamp)}</span>
+        return `
+          <article class="feed-message ${commentary.type}">
+            <div class="feed-avatar">${item.emoji || "⚽"}</div>
+
+            <div class="feed-bubble">
+              <div class="feed-message-top">
+                <strong class="feed-author">${commentary.title}</strong>
+                <span class="feed-time">${formatFeedTime(item.saleTimestamp)}</span>
+              </div>
+
+              <p class="feed-commentary">${commentary.body}</p>
+
+              <div class="feed-score-pill">
+                ${commentary.score}
+              </div>
             </div>
-
-            <p class="feed-commentary">${item.commentary}</p>
-
-            <div class="feed-score-pill">
-              ${item.scoreText}
-            </div>
-          </div>
-        </article>
-      `).join("")}
+          </article>
+        `
+      }).join("")}
     </div>
   `
 
