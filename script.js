@@ -2271,7 +2271,7 @@ function renderPlayerCard(player, rank) {
   const { firstName, lastName } = splitPlayerName(player.displayName)
   const share = clamp(parseNumber(player.teamPointShare), 0, 100)
   const tournamentRank = parseNumber(player.tournamentRank) || rank
-  const serial = ({ ...player, tournamentRank })
+  const serial = buildPlayerSerial({ ...player, tournamentRank })
 
   return `
     <article
