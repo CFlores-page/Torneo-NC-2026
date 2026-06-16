@@ -3503,3 +3503,28 @@ display: none;
 .match-team {
   overflow: visible !important;
 }
+
+/* =========================================================
+   TEAMS TAB FLAGS — LET FLAGS BREATHE
+========================================================= */
+
+.country-team-main {
+  overflow: visible !important;
+}
+
+.country-team-flag {
+  width: 78px !important;
+  height: auto !important;
+  max-height: 58px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+
+  overflow: visible !important;
+  flex: 0 0 auto;
+}
