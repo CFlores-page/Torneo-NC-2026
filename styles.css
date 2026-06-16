@@ -3736,3 +3736,64 @@ display: none;
   font-size: 11px;
   line-height: 1.3;
 }
+
+/* =========================================================
+   MATCH CENTER — BOTTOM ROW 50/50
+========================================================= */
+
+.mc-info-grid.mc-info-grid-compact {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 18px !important;
+}
+
+.mc-live-feed-card,
+.mc-match-details-card {
+  min-height: 225px;
+}
+
+.mc-match-details-card {
+  overflow: hidden;
+}
+
+.mc-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
+}
+
+.mc-details-grid .mc-info-row {
+  display: grid;
+  gap: 5px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.mc-details-grid .mc-info-row span {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.mc-details-grid .mc-info-row strong {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+/* Give the mini feed more room now that it owns half the row */
+.mc-mini-live-feed {
+  max-height: 165px !important;
+}
+
+@media (max-width: 900px) {
+  .mc-info-grid.mc-info-grid-compact {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mc-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

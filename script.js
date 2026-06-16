@@ -721,21 +721,48 @@ function renderMatchCenterStage(match, players) {
               ${renderTopContributorShowcase(topB, teamB.name, "b")}
             </div>
 
-            <div class="mc-info-grid">
-              <div class="mc-info-card mc-live-feed-card">
-                <h4>Live Feed</h4>
-                ${renderMatchMiniLiveFeed(match)}
-              </div>
+            <div class="mc-info-grid mc-info-grid-compact">
+            <div class="mc-info-card mc-live-feed-card">
+              <h4>Live Feed</h4>
+              ${renderMatchMiniLiveFeed(match)}
+            </div>
 
-              <div class="mc-info-card">
-                <h4>About This Match</h4>
-                <div class="mc-info-list">
-                  <div class="mc-info-row"><span>Fase</span><strong>${match.phase || "—"}</strong></div>
-                  <div class="mc-info-row"><span>Finaliza</span><strong>${formatMatchDate(match.endDate)}</strong></div>
-                  <div class="mc-info-row"><span>Estado</span><strong>Live</strong></div>
+            <div class="mc-info-card mc-match-details-card">
+              <h4>Match Details</h4>
+
+              <div class="mc-details-grid">
+                <div class="mc-info-row">
+                  <span>Formato</span>
+                  <strong>Head-to-Head</strong>
+                </div>
+
+                <div class="mc-info-row">
+                  <span>Scoring</span>
+                  <strong>Total Sales Points</strong>
+                </div>
+
+                <div class="mc-info-row">
+                  <span>Tiebreaker</span>
+                  <strong>Most Volume</strong>
+                </div>
+
+                <div class="mc-info-row">
+                  <span>Fase</span>
+                  <strong>${match.phase || "—"}</strong>
+                </div>
+
+                <div class="mc-info-row">
+                  <span>Finaliza</span>
+                  <strong>${formatMatchDate(match.endDate)}</strong>
+                </div>
+
+                <div class="mc-info-row">
+                  <span>Estado</span>
+                  <strong>Live</strong>
                 </div>
               </div>
             </div>
+          </div>
           </div>
 
           <div class="mc-roster-card">
