@@ -533,6 +533,67 @@ function activateView(viewId) {
   targetView.classList.remove("hidden")
 }
 
+function renderMatchMiniLiveFeed(match) {
+  const teamA = normalizeId(match.teamA)
+  const teamB = normalizeId(match.teamB)
+  const matchId = String(match.matchId || "").trim()
+
+  const matchFeed = (dashboardState.liveFeed || [])
+    .filter(item => {
+      const itemMatchId = String(item.matchId || "").trim()
+      const itemTeamId = normalizeId(item.teamId)
+      const itemOpponentId = normalizeId(item.opponentId)
+
+      const sameMatch = matchId && itemMatchId === matchId
+
+      const involvesBothTeams =
+        [itemTeamId, itemOpponentId].includes(teamA) &&
+        [itemTeamId, itemOpponentId].includes(teamB)
+
+      return sameMatch || involvesBothTeams
+    })
+    .sort((a, b) => {
+      const dateA = parseFeedDateValue(a.createdAt || a.saleTimestamp)
+      const dateB = parseFeedDateValue(b.createdAt || b.saleTimestamp)
+      return dateB - dateA
+    })
+    .slice(0, 4)
+
+  if (!matchFeed.length) {
+    return `
+      <div class="mc-mini-feed-empty">
+        <strong>Sin actividad reciente</strong>
+        <p>Cuando caigan puntos en este partido, aparecerán aquí.</p>
+      </div>
+    `
+  }
+
+  return `
+    <div class="mc-mini-live-feed">
+      ${matchFeed.map(item => {
+        const commentary = buildFeedCommentary(item)
+
+        return `
+          <div class="mc-mini-feed-item ${commentary.type}">
+            <div class="mc-mini-feed-icon">${item.emoji || "⚽"}</div>
+
+            <div class="mc-mini-feed-copy">
+              <div class="mc-mini-feed-top">
+                <strong>${commentary.title}</strong>
+                <span>${formatFeedTime(item.saleTimestamp)}</span>
+              </div>
+
+              <p>${commentary.body}</p>
+
+              <em>${commentary.score}</em>
+            </div>
+          </div>
+        `
+      }).join("")}
+    </div>
+  `
+}
+
 function renderMatchCenterStage(match, players) {
   const teamA = getTeamInfo(match.teamA)
   const teamB = getTeamInfo(match.teamB)
@@ -661,35 +722,9 @@ function renderMatchCenterStage(match, players) {
             </div>
 
             <div class="mc-info-grid">
-              <div class="mc-info-card">
-                <h4>Match Info</h4>
-                <div class="mc-info-list">
-                  <div class="mc-info-row"><span>Formato</span><strong>Head-to-Head</strong></div>
-                  <div class="mc-info-row"><span>Scoring</span><strong>Total Sales Points</strong></div>
-                  <div class="mc-info-row"><span>Tiebreaker</span><strong>Most Volume</strong></div>
-                </div>
-              </div>
-
-              <div class="mc-info-card">
-                <h4>Recent Activity</h4>
-                <div class="mc-activity-list">
-                  <div class="mc-activity-item">
-                    <span class="mc-activity-tag a">${teamA.name}</span>
-                    <span>${topA ? `${topA.displayName} lidera este partido con ${formatNumber(topA.matchPoints)} puntos` : "Sin actividad registrada"}</span>
-                  </div>
-                  <div class="mc-activity-item">
-                    <span class="mc-activity-tag b">${teamB.name}</span>
-                    <span>${topB ? `${topB.displayName} lidera este partido con ${formatNumber(topB.matchPoints)} puntos` : "Sin actividad registrada"}</span>
-                  </div>
-                  <div class="mc-activity-item">
-                    <span class="mc-activity-tag a">${teamA.name}</span>
-                    <span>Marcador actual: ${formatNumber(pointsA)}</span>
-                  </div>
-                  <div class="mc-activity-item">
-                    <span class="mc-activity-tag b">${teamB.name}</span>
-                    <span>Marcador actual: ${formatNumber(pointsB)}</span>
-                  </div>
-                </div>
+              <div class="mc-info-card mc-live-feed-card">
+                <h4>Live Feed</h4>
+                ${renderMatchMiniLiveFeed(match)}
               </div>
 
               <div class="mc-info-card">

@@ -3617,3 +3617,122 @@ display: none;
   object-position: center bottom !important;
   transform: none !important;
 }
+
+/* =========================================================
+   MATCH CENTER — MINI LIVE FEED
+========================================================= */
+
+.mc-live-feed-card {
+  overflow: hidden;
+}
+
+.mc-mini-live-feed {
+  display: grid;
+  gap: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.mc-mini-live-feed::-webkit-scrollbar {
+  width: 5px;
+}
+
+.mc-mini-live-feed::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.16);
+  border-radius: 999px;
+}
+
+.mc-mini-feed-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 9px;
+  align-items: start;
+  padding: 9px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.mc-mini-feed-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 212, 71, 0.12);
+  border: 1px solid rgba(255, 212, 71, 0.24);
+  font-size: 14px;
+}
+
+.mc-mini-feed-copy {
+  min-width: 0;
+}
+
+.mc-mini-feed-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mc-mini-feed-top strong {
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mc-mini-feed-top span {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.mc-mini-feed-copy p {
+  margin: 5px 0 0;
+  color: var(--text-soft);
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.mc-mini-feed-copy em {
+  display: inline-flex;
+  margin-top: 6px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: var(--sport-gold);
+  background: rgba(255, 212, 71, 0.10);
+  border: 1px solid rgba(255, 212, 71, 0.22);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.mc-mini-feed-empty {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.mc-mini-feed-empty strong {
+  color: #ffffff;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.mc-mini-feed-empty p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 11px;
+  line-height: 1.3;
+}
