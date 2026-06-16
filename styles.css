@@ -3461,3 +3461,45 @@ display: none;
 .feed-message.feed-pulling-away .feed-avatar {
   border-color: rgba(255, 212, 71, 0.42);
 }
+
+/* =========================================================
+   DASHBOARD FLAGS — LET FLAGS BREATHE
+========================================================= */
+
+/* Small flags in dashboard standings table */
+.standing-team-button .team-flag,
+.team-flag {
+  width: 34px !important;
+  height: auto !important;
+  max-height: 26px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* Larger flags in dashboard live match cards */
+.match-team .team-flag-large,
+.team-flag-large {
+  width: 58px !important;
+  height: auto !important;
+  max-height: 44px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* Make sure parent containers do not crop the flag */
+.standing-team-button,
+.match-team {
+  overflow: visible !important;
+}
