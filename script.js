@@ -538,7 +538,7 @@ function renderMatchMiniLiveFeed(match) {
   const teamB = normalizeId(match.teamB)
   const matchId = String(match.matchId || "").trim()
 
-  const matchFeed = (dashboardState.liveFeed || [])
+  const matchFeedNewestFirst = (dashboardState.liveFeed || [])
     .filter(item => {
       const itemMatchId = String(item.matchId || "").trim()
       const itemTeamId = normalizeId(item.teamId)
@@ -555,9 +555,14 @@ function renderMatchMiniLiveFeed(match) {
     .sort((a, b) => {
       const dateA = parseFeedDateValue(a.createdAt || a.saleTimestamp)
       const dateB = parseFeedDateValue(b.createdAt || b.saleTimestamp)
-      return dateB - dateA
+
+      if (dateB !== dateA) return dateB - dateA
+
+      return String(b.eventId || "").localeCompare(String(a.eventId || ""))
     })
-    .slice(0, 4)
+    .slice(0, 8)
+
+  const matchFeed = [...matchFeedNewestFirst].reverse()
 
   if (!matchFeed.length) {
     return `
@@ -912,6 +917,14 @@ function renderMatchCenter(matches, selectedMatch, players, summary = {}) {
         <p>Elige uno de los partidos activos de la franja superior.</p>
       </div>
     `
+
+    requestAnimationFrame(() => {
+      const miniFeed = stage.querySelector(".mc-mini-live-feed")
+
+      if (miniFeed) {
+        miniFeed.scrollTop = miniFeed.scrollHeight
+      }
+    })
 
   strip.querySelectorAll(".mc-strip-card").forEach(button => {
     button.addEventListener("click", () => {
