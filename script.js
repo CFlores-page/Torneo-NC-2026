@@ -571,8 +571,18 @@ function renderMatchCenterStage(match, players) {
   const topAImage = driveImage(topA?.fullBodyUrl || topA?.photoUrl || "")
   const topBImage = driveImage(topB?.fullBodyUrl || topB?.photoUrl || "")
 
-  const teamATotalTournamentPoints = teamAPlayers.reduce((sum, p) => sum + parseNumber(p.points), 0)
-  const teamBTotalTournamentPoints = teamBPlayers.reduce((sum, p) => sum + parseNumber(p.points), 0)
+  const standingsByTeam = new Map(
+    (dashboardState.tournamentStandings || []).map(row => [
+      normalizeId(row.teamId),
+      row
+    ])
+  )
+
+  const teamATournamentPoints =
+    parseNumber(standingsByTeam.get(normalizeId(match.teamA))?.tournamentPoints)
+
+  const teamBTournamentPoints =
+    parseNumber(standingsByTeam.get(normalizeId(match.teamB))?.tournamentPoints)
 
   return `
     <div
@@ -596,7 +606,7 @@ function renderMatchCenterStage(match, players) {
             <div class="mc-team-unit">${teamAPlayers[0]?.unit || ""}</div>
             <div class="mc-team-points">
               Tournament Points
-              <strong>${formatNumber(teamATotalTournamentPoints)}</strong>
+              <strong>${formatNumber(teamATournamentPoints)}</strong>
             </div>
           </div>
 
@@ -612,7 +622,7 @@ function renderMatchCenterStage(match, players) {
             <div class="mc-team-unit">${teamBPlayers[0]?.unit || ""}</div>
             <div class="mc-team-points">
               Tournament Points
-              <strong>${formatNumber(teamBTotalTournamentPoints)}</strong>
+              <strong>${formatNumber(teamBTournamentPoints)}</strong>
             </div>
           </div>
         </div>
