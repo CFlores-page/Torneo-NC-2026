@@ -1449,7 +1449,7 @@ function playerRowsToObjects(rows) {
       // Extra image / match / rank fields
       headshotUrl: row[13] || "",
       matchPoints: parseNumber(row[14]),
-      tournamentRank: parseNumber(row[15])
+      tournamentRank: String(row[15] ?? "").trim()
     }))
 }
 
@@ -2270,8 +2270,16 @@ function renderPlayerCard(player, rank) {
 
   const { firstName, lastName } = splitPlayerName(player.displayName)
   const share = clamp(parseNumber(player.teamPointShare), 0, 100)
-  const tournamentRank = parseNumber(player.tournamentRank) || rank
-  const serial = buildPlayerSerial({ ...player, tournamentRank })
+  const tournamentRankRaw = String(player.tournamentRank ?? "").trim()
+  const tournamentRank =
+    tournamentRankRaw === "-"
+      ? "-"
+      : formatNumber(tournamentRankRaw || rank)
+
+  const serial = buildPlayerSerial({
+    ...player,
+    tournamentRank: tournamentRankRaw === "-" ? rank : tournamentRankRaw || rank
+  })
 
   return `
     <article
@@ -2355,7 +2363,7 @@ function renderPlayerCard(player, rank) {
           <div class="opc-stat">
             <div class="opc-stat-icon">🏆</div>
             <span>Rank de torneo</span>
-            <strong>#${formatNumber(tournamentRank)}</strong>
+            <strong>${tournamentRank === "-" ? "-" : `#${tournamentRank}`}</strong>
           </div>
         </div>
 
