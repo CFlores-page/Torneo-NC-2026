@@ -1,6 +1,11 @@
 const SHEET_ID = "1oKylf8lidgxrwjOkG4MpN4sVH9HB7VzJpNmmDOlpGw8"
 const SHEET_NAME = "DASHBOARD"
 const REFRESH_MS = 10000
+const CHANGE_CHECK_SHEET = "DASHBOARD"
+const CHANGE_CHECK_RANGE = "G1:G1"
+
+let lastDataVersion = null
+let versionCheckInFlight = false
 
 let dashboardState = {
   summary: null,
@@ -26,6 +31,45 @@ let renderCache = {
   tournamentStandings: "",
   previousMatches: "",
   matchCenter: ""
+}
+
+async function fetchDataVersion() {
+  const rows = await getSheet(CHANGE_CHECK_RANGE, CHANGE_CHECK_SHEET)
+  return String(rows?.[0]?.[0] || "").trim()
+}
+
+async function pollForDashboardChanges() {
+  if (versionCheckInFlight || refreshInFlight) return
+
+  versionCheckInFlight = true
+
+  try {
+    const nextVersion = await fetchDataVersion()
+
+    if (!nextVersion) {
+      console.warn("DASHBOARD!G1 is empty. Skipping refresh check.")
+      return
+    }
+
+    if (lastDataVersion === null) {
+      lastDataVersion = nextVersion
+      await loadDashboardData({ force: true })
+      return
+    }
+
+    if (nextVersion !== lastDataVersion) {
+      console.log("Tournament data changed:", nextVersion)
+      lastDataVersion = nextVersion
+      await loadDashboardData({ force: false })
+      return
+    }
+
+    console.log("No tournament changes:", nextVersion)
+  } catch (error) {
+    console.error("Error checking DASHBOARD!G1:", error)
+  } finally {
+    versionCheckInFlight = false
+  }
 }
 
 function makeSignature(value) {
@@ -2821,12 +2865,12 @@ document.addEventListener("DOMContentLoaded", () => {
   setupMobileMenu()
   setupMatchCenterStripArrows()
 
-  loadDashboardData({ force: true })
+  pollForDashboardChanges()
   loadMatchCenterData()
   updateMatchCenterClock()
 
   setInterval(() => {
-    loadDashboardData({ force: false })
+    pollForDashboardChanges()
   }, REFRESH_MS)
   setInterval(loadMatchCenterData, REFRESH_MS)
   setInterval(updateMatchCenterClock, 30000)
