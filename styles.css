@@ -2921,11 +2921,6 @@ display: none;
   object-position: center bottom;
 }
 
-.official-player-card .opc-player-photo-placeholder,
-.official-player-card .opc-hidden-placeholder {
-  display: none !important;
-}
-
 /* Stats */
 
 .official-player-card .opc-stats-panel {

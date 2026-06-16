@@ -1284,9 +1284,6 @@ function splitPlayerName(displayName = "") {
 const CAPTAIN_BADGE_URL =
   "https://drive.google.com/thumbnail?id=1LVY4kH2lrDqhK32UOhzcYyaHNR7fFVaK&sz=w600"
 
-const STANDIN_PLAYER_IMAGE_URL =
-  "https://drive.google.com/thumbnail?id=1nOqh3rpvnZsrFaFPS6bae7q30RCebLNT"
-
 function buildPlayerSerial(player) {
   const team = normalizeId(player.teamId) || "TEAM"
   const rank = parseNumber(player.tournamentRank) || 0
@@ -2077,7 +2074,7 @@ function renderPlayerCard(player, rank) {
   const theme = getOfficialCardTheme(player.teamId)
   const unitColors = getUnitColors(player.unit)
 
-  const photo = driveImage(player.fullBodyUrl || player.photoUrl) || STANDIN_PLAYER_IMAGE_URL
+  const photo = driveImage(player.fullBodyUrl || player.photoUrl)
   const flag = driveImage(player.flagUrl || teamInfo.flagUrl)
 
   const { firstName, lastName } = splitPlayerName(player.displayName)
@@ -2136,12 +2133,18 @@ function renderPlayerCard(player, rank) {
           </div>
 
           <div class="opc-photo-block">
-            <img
-              class="opc-player-photo"
-              src="${photo}"
-              alt="${player.displayName}"
-              onerror="this.onerror=null; this.src='${STANDIN_PLAYER_IMAGE_URL}';"
-            />
+            ${
+              photo
+                ? `
+                  <img
+                    class="opc-player-photo"
+                    src="${photo}"
+                    alt="${player.displayName}"
+                    onerror="this.remove();"
+                  />
+                `
+                : ``
+            }
           </div>
         </div>
 
@@ -2317,28 +2320,25 @@ function getUnitColors(unit) {
 
 function driveImage(url) {
   const raw = String(url || "").trim()
-  if (!raw) return ""
 
-  if (raw.includes("thumbnail?id=")) {
-    return raw
+  if (
+    !raw ||
+    raw === "#N/A" ||
+    raw === "N/A" ||
+    raw === "MISSING_IMG" ||
+    raw === "MISSING_HS"
+  ) {
+    return ""
   }
 
-  if (raw.includes("uc?export=view&id=")) {
-    try {
-      const parsed = new URL(raw)
-      const id = parsed.searchParams.get("id")
+  const driveIdMatch = raw.match(/[-\w]{25,}/)
 
-      if (id) {
-        return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`
-      }
-    } catch (error) {
-      const id = raw.split("id=")[1]?.split("&")[0]
-
-      if (id) {
-        return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`
-      }
-    }
+  if (driveIdMatch) {
+    return `https://drive.google.com/thumbnail?id=${driveIdMatch[0]}&sz=w1000`
   }
+
+  return raw
+}
 
   const match = raw.match(/\/d\/([^/]+)/)
   if (match) {
