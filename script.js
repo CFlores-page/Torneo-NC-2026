@@ -2340,14 +2340,6 @@ function driveImage(url) {
   return raw
 }
 
-  const match = raw.match(/\/d\/([^/]+)/)
-  if (match) {
-    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`
-  }
-
-  return raw
-}
-
 function normalizeId(value) {
   return String(value || "").trim().toUpperCase()
 }
