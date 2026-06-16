@@ -3584,3 +3584,36 @@ display: none;
 .previous-match-team {
   overflow: visible !important;
 }
+
+/* =========================================================
+   MATCH CENTER — TOP CONTRIBUTOR IMAGE FITTING
+========================================================= */
+
+/* Let the image area contain the full person */
+.mc-showcase-stage {
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+}
+
+/* The image wrapper should use the available space without cropping */
+.mc-showcase-bg-figure {
+  position: absolute !important;
+  inset: 18px 18px 110px 18px !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  overflow: visible !important;
+}
+
+/* Scale the image down if it is too tall, but never crop it */
+.mc-showcase-bg-img {
+  width: auto !important;
+  height: auto !important;
+  max-width: 92% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  transform: none !important;
+}
