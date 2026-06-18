@@ -1857,7 +1857,7 @@ function renderUpcomingMatches(matches) {
   const container = document.getElementById("upcomingMatches")
   if (!container) return
 
-  if (!matches || matches.length === 0) {
+  if (!matches || !matches.length) {
     container.className = "empty-state"
     container.innerHTML = `
       <strong>Calendario pendiente</strong>
@@ -1866,33 +1866,26 @@ function renderUpcomingMatches(matches) {
     return
   }
 
-  container.className = "matches-list"
-  container.innerHTML = `
-    <div class="matches-scroll">
-      ${matches.map(match => {
-        const teamA = getTeamInfo(match.teamA)
-        const teamB = getTeamInfo(match.teamB)
+  container.className = "upcoming-compact-list"
 
-        return `
-          <div class="match-card">
-            <span>${match.phase || "Próximo partido"}</span>
+  container.innerHTML = matches.slice(0, 6).map(match => {
+    const teamA = getTeamInfo(match.teamA)
+    const teamB = getTeamInfo(match.teamB)
 
-            <div class="match-teams">
-              ${renderMatchTeam(teamA)}
-              <div class="match-vs">VS</div>
-              ${renderMatchTeam(teamB)}
-            </div>
+    return `
+      <article class="upcoming-compact-item">
+        <div class="upcoming-compact-date">
+          ${formatMatchDate(match.startDate)}
+        </div>
 
-            <p>${match.startDate || "Inicio pendiente"} — ${match.endDate || "Final pendiente"}</p>
-          </div>
-        `
-      }).join("")}
-    </div>
-
-    <a class="match-more-banner" href="#">
-      Ver calendario completo en Match Center
-    </a>
-  `
+        <div class="upcoming-compact-matchup">
+          <span>${teamA.flag ? `<img src="${driveImage(teamA.flag)}" alt="${teamA.name}">` : ""}${teamA.name || match.teamA}</span>
+          <strong>vs</strong>
+          <span>${teamB.flag ? `<img src="${driveImage(teamB.flag)}" alt="${teamB.name}">` : ""}${teamB.name || match.teamB}</span>
+        </div>
+      </article>
+    `
+  }).join("")
 }
 
 function getLiveMatchesForMatchCenter() {
