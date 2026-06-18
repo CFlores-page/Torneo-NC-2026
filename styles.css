@@ -387,7 +387,7 @@ body::before {
   z-index: 1;
   display: grid;
   grid-template-columns: 1.35fr 1fr 1fr;
-  grid-template-rows: 430px 240px auto;
+  grid-template-rows: 430px 335px auto;
   gap: 18px;
   grid-template-areas:
     "standings live feed"
@@ -407,8 +407,8 @@ body::before {
 
 .upcoming-panel {
   grid-area: upcoming;
-  height: 240px;
-  min-height: 240px;
+  height: 335px;
+  min-height: 335px;
   overflow: hidden;
 }
 
@@ -3604,6 +3604,7 @@ display: none;
 .upcoming-compact-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(74px, 1fr));
   gap: 12px;
   margin-top: 14px;
 }
@@ -3771,7 +3772,7 @@ display: none;
 
   .dashboard-grid {
     grid-template-columns: 1.25fr 0.95fr 1fr;
-    grid-template-rows: 410px 220px auto;
+    grid-template-rows: 410px 325px auto;
     gap: 14px;
   }
 
@@ -3786,12 +3787,8 @@ display: none;
   }
 
   .upcoming-panel {
-    height: 220px;
-    min-height: 220px;
-  }
-
-  .upcoming-compact-list {
-    max-height: 140px;
+    height: 325px;
+    min-height: 325px;
   }
 
   .panel-header h2 {
@@ -3893,12 +3890,12 @@ display: none;
   }
 
   .upcoming-panel {
-    height: auto;
+    height: auto; 
     min-height: 240px;
   }
 
   .upcoming-compact-list {
-    max-height: 178px;
+    max-height: none;
   }
 
   .upcoming-compact-item {
