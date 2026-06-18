@@ -1857,7 +1857,9 @@ function renderUpcomingMatches(matches) {
   const container = document.getElementById("upcomingMatches")
   if (!container) return
 
-  if (!matches || !matches.length) {
+  const upcoming = (matches || []).slice(0, 6)
+
+  if (!upcoming.length) {
     container.className = "empty-state"
     container.innerHTML = `
       <strong>Calendario pendiente</strong>
@@ -1868,24 +1870,64 @@ function renderUpcomingMatches(matches) {
 
   container.className = "upcoming-compact-list"
 
-  container.innerHTML = matches.slice(0, 6).map(match => {
+  container.innerHTML = upcoming.map(match => {
     const teamA = getTeamInfo(match.teamA)
     const teamB = getTeamInfo(match.teamB)
+
+    const teamAName = teamA?.name || match.teamA || "Equipo A"
+    const teamBName = teamB?.name || match.teamB || "Equipo B"
+
+    const teamAFlag = driveImage(teamA?.flag || teamA?.flagUrl || "")
+    const teamBFlag = driveImage(teamB?.flag || teamB?.flagUrl || "")
 
     return `
       <article class="upcoming-compact-item">
         <div class="upcoming-compact-date">
-          ${formatMatchDate(match.startDate)}
+          ${formatUpcomingDate(match.startDate || match.inicio)}
         </div>
 
         <div class="upcoming-compact-matchup">
-          <span>${teamA.flag ? `<img src="${driveImage(teamA.flag)}" alt="${teamA.name}">` : ""}${teamA.name || match.teamA}</span>
-          <strong>vs</strong>
-          <span>${teamB.flag ? `<img src="${driveImage(teamB.flag)}" alt="${teamB.name}">` : ""}${teamB.name || match.teamB}</span>
+          <div class="upcoming-team-side left">
+            ${teamAFlag ? `<img src="${teamAFlag}" alt="${teamAName}">` : ""}
+            <span>${teamAName}</span>
+          </div>
+
+          <div class="upcoming-compact-vs">VS</div>
+
+          <div class="upcoming-team-side right">
+            <span>${teamBName}</span>
+            ${teamBFlag ? `<img src="${teamBFlag}" alt="${teamBName}">` : ""}
+          </div>
         </div>
       </article>
     `
   }).join("")
+}
+
+function formatUpcomingDate(value) {
+  if (!value) return "Fecha pendiente"
+
+  const raw = String(value).trim()
+
+  const dateMatch = raw.match(/^Date\((\d+),(\d+),(\d+)/)
+
+  if (dateMatch) {
+    const year = Number(dateMatch[1])
+    const month = Number(dateMatch[2])
+    const day = Number(dateMatch[3])
+
+    const months = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"]
+
+    return `${String(day).padStart(2, "0")} ${months[month]} ${year}`
+  }
+
+  const date = new Date(raw)
+
+  if (isNaN(date.getTime())) return raw
+
+  const months = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"]
+
+  return `${String(date.getDate()).padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`
 }
 
 function getLiveMatchesForMatchCenter() {
