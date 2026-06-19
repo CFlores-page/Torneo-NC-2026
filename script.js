@@ -1328,6 +1328,111 @@ function buildFeedCommentary(item) {
   const key = `${item.eventId || ""}-${item.matchId || ""}-${item.playerName || ""}`
 
   const templates = {
+        "feed-first-goal": [
+        {
+          title: "¡SE ABRE EL MARCADOR!",
+          body: `${player} pone a ${team} arriba. El partido ya tiene dueño momentáneo.`
+        },
+        {
+          title: "¡PRIMER GOL DEL PARTIDO!",
+          body: `${team} pega primero con punto de ${player}. Ahora ${opponent} tiene que responder.`
+        },
+        {
+          title: "¡ARRANCA LA ACCIÓN!",
+          body: `${player} inaugura el marcador para ${team}. Esto apenas empieza.`
+        }
+      ],
+
+      "feed-tie": [
+        {
+          title: "¡SE EMPATA EL PARTIDO!",
+          body: `${team} no se queda atrás. ${player} mete a su selección de lleno en la pelea.`
+        },
+        {
+          title: "¡TODO IGUALADO!",
+          body: `${player} aparece en el momento justo y deja el partido empatado.`
+        },
+        {
+          title: "¡TENEMOS PARTIDO!",
+          body: `${team} responde y empareja las cosas. Nadie se quiere quedar atrás.`
+        }
+      ],
+
+      "feed-takes-lead": [
+        {
+          title: "¡SE VAN ARRIBA!",
+          body: `${player} pone a ${team} al frente. ${opponent} empieza a sentir presión.`
+        },
+        {
+          title: "¡CAMBIA EL LÍDER!",
+          body: `${team} toma ventaja con aportación de ${player}. El partido se mueve.`
+        },
+        {
+          title: "¡GOLPE EN LA MESA!",
+          body: `${player} suma y ${team} toma control parcial del marcador.`
+        }
+      ],
+
+      "feed-pulling-away": [
+        {
+          title: "¡SE EMPIEZAN A ESCAPAR!",
+          body: `${team} abre distancia. ${opponent} necesita reaccionar pronto.`
+        },
+        {
+          title: "¡VENTAJA PELIGROSA!",
+          body: `${player} ayuda a que ${team} tome más aire en el marcador.`
+        },
+        {
+          title: "¡EL PARTIDO SE INCLINA!",
+          body: `${team} empieza a marcar diferencia. El reloj ya juega en contra de ${opponent}.`
+        }
+      ],
+
+      "feed-big-play": [
+        {
+          title: "¡GOL DE AUTORIDAD!",
+          body: `${player} suma fuerte para ${team}. Este punto pesa en el partido.`
+        },
+        {
+          title: "¡JUGADA GRANDE!",
+          body: `${player} aparece con una venta importante y mueve el marcador.`
+        },
+        {
+          title: "¡PUNTO DE IMPACTO!",
+          body: `${team} recibe un impulso fuerte gracias a ${player}.`
+        }
+      ],
+
+      "feed-captain": [
+        {
+          title: "¡EL CAPITÁN APARECE!",
+          body: `${player} responde como líder y suma para ${team}.`
+        },
+        {
+          title: "¡LIDERAZGO EN CANCHA!",
+          body: `${player} toma responsabilidad y mete a ${team} en la conversación.`
+        },
+        {
+          title: "¡CAPITÁN AL RESCATE!",
+          body: `${team} recibe puntos de su capitán cuando más lo necesitaba.`
+        }
+      ],
+
+      "feed-default": [
+        {
+          title: "¡SUMAN PUNTOS!",
+          body: `${player} aporta para ${team}. Cada punto cuenta en esta ronda.`
+        },
+        {
+          title: "¡SE MUEVE EL MARCADOR!",
+          body: `${team} suma gracias a ${player}. El partido sigue vivo.`
+        },
+        {
+          title: "¡PUNTO IMPORTANTE!",
+          body: `${player} mantiene a ${team} compitiendo en el marcador.`
+        }
+      ],
+
         "feed-small-point": [
       {
         title: "¡SUMAN MEDIO PUNTO!",
