@@ -1269,14 +1269,44 @@ function getFeedEventType(item) {
   const teamScore = parseNumber(item.teamScoreAtEvent)
   const opponentScore = parseNumber(item.opponentScoreAtEvent)
   const pointsAdded = parseNumber(item.pointsAdded)
-  const isCaptain = feedEventIsCaptain(item)
 
-  if (teamScore === opponentScore) return "feed-tie"
-  if (teamScore === 1 && opponentScore === 0) return "feed-first-goal"
-  if (pointsAdded >= 2) return "feed-big-play"
-  if (teamScore > opponentScore && teamScore - opponentScore >= 2) return "feed-pulling-away"
-  if (isCaptain) return "feed-captain"
-  if (teamScore > opponentScore) return "feed-takes-lead"
+  const previousTeamScore = teamScore - pointsAdded
+  const previousDiff = previousTeamScore - opponentScore
+  const currentDiff = teamScore - opponentScore
+
+  const isSmallPoint = pointsAdded > 0 && pointsAdded < 1
+
+  if (isSmallPoint && currentDiff < 0) {
+    return "feed-small-point"
+  }
+
+  if (previousTeamScore === 0 && teamScore > 0 && opponentScore >= 2) {
+    return "feed-consolation"
+  }
+
+  if (currentDiff < 0) {
+    return "feed-still-behind"
+  }
+
+  if (teamScore === 1 && opponentScore === 0) {
+    return "feed-first-goal"
+  }
+
+  if (teamScore === opponentScore) {
+    return "feed-tie"
+  }
+
+  if (previousDiff <= 0 && currentDiff > 0) {
+    return "feed-takes-lead"
+  }
+
+  if (currentDiff >= 2) {
+    return "feed-pulling-away"
+  }
+
+  if (pointsAdded >= 2) {
+    return "feed-big-play"
+  }
 
   return "feed-default"
 }
@@ -1298,114 +1328,65 @@ function buildFeedCommentary(item) {
   const key = `${item.eventId || ""}-${item.matchId || ""}-${item.playerName || ""}`
 
   const templates = {
-    "feed-first-goal": [
+        "feed-small-point": [
       {
-        title: "¡SE ABRE EL MARCADOR!",
-        body: `${player} pone a ${team} arriba. El partido ya tiene dueño momentáneo.`
+        title: "¡SUMAN MEDIO PUNTO!",
+        body: `${player} aporta para ${team}. No cambia todo el partido, pero mantiene a su equipo en movimiento.`
       },
       {
-        title: "¡PRIMER GOL DEL PARTIDO!",
-        body: `${team} pega primero con punto de ${player}. Ahora ${opponent} tiene que responder.`
+        title: "¡APORTE AL MARCADOR!",
+        body: `${team} suma medio punto con ${player}. Todavía queda trabajo por hacer.`
       },
       {
-        title: "¡ARRANCA LA ACCIÓN!",
-        body: `${player} inaugura el marcador para ${team}. Esto apenas empieza.`
+        title: "¡PEQUEÑO AVANCE!",
+        body: `${player} suma para ${team}. Es un paso, pero el partido todavía exige más.`
       }
     ],
 
-    "feed-tie": [
+    "feed-trailing-score": [
       {
-        title: "¡SE EMPATA EL PARTIDO!",
-        body: `${team} no se queda atrás. ${player} mete a su selección de lleno en la pelea.`
+        title: "¡DESCUENTA!",
+        body: `${player} suma para ${team}. ${opponent} sigue arriba, pero el marcador se mueve.`
       },
       {
-        title: "¡TODO IGUALADO!",
-        body: `${player} aparece en el momento justo y deja el partido empatado.`
+        title: "¡RESPONDEN EN EL MARCADOR!",
+        body: `${team} consigue recortar distancia con aporte de ${player}. Todavía necesitan más.`
       },
       {
-        title: "¡TENEMOS PARTIDO!",
-        body: `${team} responde y empareja las cosas. Nadie se quiere quedar atrás.`
+        title: "¡NO SE VAN EN BLANCO!",
+        body: `${player} pone a ${team} en el marcador. ${opponent} aún conserva la ventaja.`
       }
     ],
 
-    "feed-takes-lead": [
+    "feed-still-behind": [
       {
-        title: "¡SE VAN ARRIBA!",
-        body: `${player} pone a ${team} al frente. ${opponent} empieza a sentir presión.`
+        title: "¡RECORTAN DISTANCIA!",
+        body: `${team} suma con ${player}, aunque ${opponent} todavía mantiene el control del partido.`
       },
       {
-        title: "¡CAMBIA EL LÍDER!",
-        body: `${team} toma ventaja con aportación de ${player}. El partido se mueve.`
+        title: "¡HAY RESPUESTA!",
+        body: `${player} aporta para ${team}. El marcador se acerca, pero todavía no alcanza.`
       },
       {
-        title: "¡GOLPE EN LA MESA!",
-        body: `${player} suma y ${team} toma control parcial del marcador.`
+        title: "¡SIGUEN PELEANDO!",
+        body: `${team} suma un punto importante. ${opponent} sigue arriba, pero esto aún no termina.`
       }
     ],
 
-    "feed-pulling-away": [
+    "feed-consolation": [
       {
-        title: "¡SE EMPIEZAN A ESCAPAR!",
-        body: `${team} abre distancia. ${opponent} necesita reaccionar pronto.`
+        title: "¡APARECEN EN EL MARCADOR!",
+        body: `${player} suma para ${team}. El partido sigue cuesta arriba, pero ya hay respuesta.`
       },
       {
-        title: "¡VENTAJA PELIGROSA!",
-        body: `${player} ayuda a que ${team} tome más aire en el marcador.`
+        title: "¡ROMPEN EL CERO!",
+        body: `${team} consigue moverse en el marcador con ${player}. ${opponent} todavía tiene ventaja clara.`
       },
       {
-        title: "¡EL PARTIDO SE INCLINA!",
-        body: `${team} empieza a marcar diferencia. El reloj ya juega en contra de ${opponent}.`
+        title: "¡PRIMERA RESPUESTA!",
+        body: `${player} pone a ${team} en el partido. Aún necesitan una reacción mayor.`
       }
     ],
-
-    "feed-big-play": [
-      {
-        title: "¡GOL DE AUTORIDAD!",
-        body: `${player} suma fuerte para ${team}. Este punto pesa en el partido.`
-      },
-      {
-        title: "¡JUGADA GRANDE!",
-        body: `${player} aparece con una venta importante y mueve el marcador.`
-      },
-      {
-        title: "¡PUNTO DE IMPACTO!",
-        body: `${team} recibe un impulso fuerte gracias a ${player}.`
-      }
-    ],
-
-    "feed-captain": [
-      {
-        title: "¡EL CAPITÁN APARECE!",
-        body: `${player} responde como líder y suma para ${team}.`
-      },
-      {
-        title: "¡LIDERAZGO EN CANCHA!",
-        body: `${player} toma responsabilidad y mete a ${team} en la conversación.`
-      },
-      {
-        title: "¡CAPITÁN AL RESCATE!",
-        body: `${team} recibe puntos de su capitán cuando más lo necesitaba.`
-      }
-    ],
-
-    "feed-default": [
-      {
-        title: "¡SUMAN PUNTOS!",
-        body: `${player} aporta para ${team}. Cada punto cuenta en esta ronda.`
-      },
-      {
-        title: "¡SE MUEVE EL MARCADOR!",
-        body: `${team} suma gracias a ${player}. El partido sigue vivo.`
-      },
-      {
-        title: "¡PUNTO IMPORTANTE!",
-        body: `${player} mantiene a ${team} compitiendo en el marcador.`
-      },
-      {
-        title: "¡APARECE EN EL MOMENTO JUSTO!",
-        body: `${player} suma y mantiene la presión sobre ${opponent}.`
-      }
-    ]
   }
 
   const selected = pickStable(templates[eventType] || templates["feed-default"], key)
