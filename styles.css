@@ -4497,3 +4497,100 @@ display: none;
     font-size: 14px;
   }
 }
+
+/* =========================================================
+   GROUP STANDINGS
+========================================================= */
+
+.group-standing-title-row td {
+  padding: 18px 0 8px !important;
+  border-bottom: 0 !important;
+}
+
+.group-standing-title {
+  padding: 10px 14px;
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg, rgba(29, 111, 255, 0.28), rgba(255, 212, 71, 0.08)),
+    rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.group-standing-title span {
+  color: var(--sport-gold);
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.group-standing-row td {
+  vertical-align: middle;
+}
+
+.standings-points-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.standings-points-wrap strong {
+  min-width: 24px;
+  color: var(--sport-gold);
+  font-size: 16px;
+}
+
+.result-bubbles {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.result-bubble {
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  border: 2px solid rgba(255,255,255,0.24);
+}
+
+.result-bubble.win {
+  color: #ffffff;
+  background: #2fbf71;
+  border-color: rgba(47, 191, 113, 0.95);
+}
+
+.result-bubble.draw {
+  color: #0d1424;
+  background: #d8dbe2;
+  border-color: rgba(216, 219, 226, 0.95);
+}
+
+.result-bubble.loss {
+  color: #ffffff;
+  background: #e33b4f;
+  border-color: rgba(227, 59, 79, 0.95);
+}
+
+.result-bubble.empty {
+  background: transparent;
+  border-color: rgba(255,255,255,0.28);
+}
+
+@media (max-width: 900px) {
+  .standings-points-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+  }
+
+  .result-bubble {
+    width: 17px;
+    height: 17px;
+    font-size: 9px;
+  }
+}
