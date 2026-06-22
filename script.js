@@ -1189,22 +1189,22 @@ function getQuarterFinalSeeds() {
       endDate: "Jun 27, 2026"
     },
     {
-      matchId: "CF002",
-      label: "Quarter Final 2",
-      teamA: b1,
-      teamB: c2,
-      seedA: "B1",
-      seedB: "C2",
-      startDate: "Jun 22, 2026",
-      endDate: "Jun 27, 2026"
-    },
-    {
       matchId: "CF003",
       label: "Quarter Final 3",
       teamA: c1,
       teamB: b2,
       seedA: "C1",
       seedB: "B2",
+      startDate: "Jun 22, 2026",
+      endDate: "Jun 27, 2026"
+    },
+    {
+      matchId: "CF002",
+      label: "Quarter Final 2",
+      teamA: b1,
+      teamB: c2,
+      seedA: "B1",
+      seedB: "C2",
       startDate: "Jun 22, 2026",
       endDate: "Jun 27, 2026"
     },
@@ -1316,7 +1316,15 @@ function renderBracketView(
   const container = document.getElementById("bracketView")
   if (!container) return;
 
-  const quarterfinals = (allMatches || []).filter(m => /^CF\d+/i.test(m.matchId || m.MATCH_ID || ""));
+  const quarterFinalOrder = ["CF001", "CF003", "CF002", "CF004"]
+
+  const quarterfinals = quarterFinalOrder
+    .map(id =>
+      (allMatches || []).find(match =>
+        String(match.matchId || match.MATCH_ID || "").trim().toUpperCase() === id
+      )
+    )
+    .filter(Boolean)
   const semifinals    = (allMatches || []).filter(m => /^SF\d+/i.test(m.matchId || m.MATCH_ID || ""));
   const grandFinal    = (allMatches || []).filter(m => /^GF\d+/i.test(m.matchId || m.MATCH_ID || ""));
 
@@ -1412,6 +1420,9 @@ function renderBracketMatch(match, teams, roundType, roundNumber) {
   const teamAFlag = driveImage(teamA?.flagUrl || "")
   const teamBFlag = driveImage(teamB?.flagUrl || "")
 
+  const teamAUnit = teamA?.unit || ""
+  const teamBUnit = teamB?.unit || ""
+
   const pointsA = valueOrBlank(match.pointsA ?? match.scoreA ?? match.PUNTOS_A)
   const pointsB = valueOrBlank(match.pointsB ?? match.scoreB ?? match.PUNTOS_B)
 
@@ -1431,6 +1442,7 @@ function renderBracketMatch(match, teams, roundType, roundNumber) {
           <div class="bracket-team-main">
             ${teamAFlag ? `<img class="bracket-flag" src="${teamAFlag}" alt="${teamAName}">` : ""}
             <span class="bracket-team-name">${teamAName}</span>
+            ${teamAUnit ? `<span class="bracket-unit-pill">${teamAUnit}</span>` : ""}
           </div>
           <div class="bracket-team-score">${pointsA}</div>
         </div>
@@ -1439,6 +1451,7 @@ function renderBracketMatch(match, teams, roundType, roundNumber) {
           <div class="bracket-team-main">
             ${teamBFlag ? `<img class="bracket-flag" src="${teamBFlag}" alt="${teamBName}">` : ""}
             <span class="bracket-team-name">${teamBName}</span>
+            ${teamBUnit ? `<span class="bracket-unit-pill">${teamBUnit}</span>` : ""}
           </div>
           <div class="bracket-team-score">${pointsB}</div>
         </div>
