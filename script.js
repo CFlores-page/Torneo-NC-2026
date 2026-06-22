@@ -1329,72 +1329,154 @@ function renderBracketMatch(slot) {
   `
 }
 
-function renderBracketView() {
-  const container = document.getElementById("bracketContainer")
-  if (!container) return
+function renderBracketView(allMatches, teams) {
+  const container = document.getElementById("bracketView");
+  if (!container) return;
 
-  const qfSlots = getQuarterFinalSeeds()
+  const quarterfinals = (allMatches || []).filter(m => /^CF\d+/i.test(m.matchId || m.MATCH_ID || ""));
+  const semifinals    = (allMatches || []).filter(m => /^SF\d+/i.test(m.matchId || m.MATCH_ID || ""));
+  const grandFinal    = (allMatches || []).filter(m => /^GF\d+/i.test(m.matchId || m.MATCH_ID || ""));
 
-  const semiSlots = [
+  const sfFallback = [
     {
       matchId: "SF001",
       label: "Semi Final 1",
-      teamA: getBracketTeamFromMatchWinner("CF001"),
-      teamB: getBracketTeamFromMatchWinner("CF003"),
+      startDate: "Jun 29, 2026",
+      endDate: "Jul 4, 2026",
       seedA: "Winner CF001",
       seedB: "Winner CF003",
-      startDate: "Jun 29, 2026",
-      endDate: "Jul 4, 2026"
+      teamA: null,
+      teamB: null,
+      pointsA: "",
+      pointsB: "",
+      status: "Pendiente"
     },
     {
       matchId: "SF002",
       label: "Semi Final 2",
-      teamA: getBracketTeamFromMatchWinner("CF002"),
-      teamB: getBracketTeamFromMatchWinner("CF004"),
+      startDate: "Jun 29, 2026",
+      endDate: "Jul 4, 2026",
       seedA: "Winner CF002",
       seedB: "Winner CF004",
-      startDate: "Jun 29, 2026",
-      endDate: "Jul 4, 2026"
+      teamA: null,
+      teamB: null,
+      pointsA: "",
+      pointsB: "",
+      status: "Pendiente"
     }
-  ]
+  ];
 
-  const finalSlot = {
-    matchId: "GF001",
-    label: "Grand Final",
-    teamA: getBracketTeamFromMatchWinner("SF001"),
-    teamB: getBracketTeamFromMatchWinner("SF002"),
-    seedA: "Winner SF001",
-    seedB: "Winner SF002",
-    startDate: "Jul 6, 2026",
-    endDate: "Jul 11, 2026"
-  }
+  const gfFallback = [
+    {
+      matchId: "GF001",
+      label: "Grand Final",
+      startDate: "Jul 6, 2026",
+      endDate: "Jul 11, 2026",
+      seedA: "Winner SF001",
+      seedB: "Winner SF002",
+      teamA: null,
+      teamB: null,
+      pointsA: "",
+      pointsB: "",
+      status: "Pendiente"
+    }
+  ];
 
-  const champion = getBracketTeamFromMatchWinner("GF001")
-  const championInfo = champion ? getTeamInfo(champion.teamId) : null
+  const sfToRender = semifinals.length ? semifinals : sfFallback;
+  const gfToRender = grandFinal.length ? grandFinal : gfFallback;
 
   container.innerHTML = `
-    <div class="bracket-round">
-      <h3 class="bracket-round-title">Quarter Finals</h3>
-      ${qfSlots.map(renderBracketMatch).join("")}
-    </div>
+    <div class="bracket-stage">
+      <div class="bracket-column qf">
+        <div class="bracket-round-title">Cuartos de Final</div>
+        <div class="bracket-round-dates">22 Jun 2026 - 27 Jun 2026</div>
+        ${quarterfinals.map((match, i) => renderBracketMatch(match, teams, "CF", i + 1)).join("")}
+      </div>
 
-    <div class="bracket-round">
-      <h3 class="bracket-round-title">Semi Finals</h3>
-      ${semiSlots.map(renderBracketMatch).join("")}
-    </div>
+      <div class="bracket-column sf">
+        <div class="bracket-round-title">Semifinales</div>
+        <div class="bracket-round-dates">29 Jun 2026 - 4 Jul 2026</div>
+        ${sfToRender.map((match, i) => renderBracketMatch(match, teams, "SF", i + 1)).join("")}
+      </div>
 
-    <div class="bracket-round">
-      <h3 class="bracket-round-title">Grand Final</h3>
-      <div class="bracket-final-card">
-        ${renderBracketMatch(finalSlot)}
+      <div class="bracket-column gf">
+        <div class="bracket-round-title">Gran Final</div>
+        <div class="bracket-round-dates">6 Jul 2026 - 11 Jul 2026</div>
+        ${gfToRender.map((match, i) => renderBracketMatch(match, teams, "GF", i + 1)).join("")}
 
-        <div class="bracket-champion">
-          <span>Champion</span>
-          <strong>${championInfo ? championInfo.name : "Pendiente"}</strong>
+        <div class="bracket-champion-box">
+          <div class="champion-label">Campeón</div>
+          <div class="champion-name">${getChampionName(gfToRender[0], teams)}</div>
         </div>
       </div>
     </div>
-  `
+  `;
+}
+
+function renderBracketMatch(match, teams, roundType, roundNumber) {
+  const matchId = match.matchId || match.MATCH_ID || `${roundType}${String(roundNumber).padStart(3, "0")}`;
+  const status = match.status || match.ESTADO || "Pendiente";
+
+  const teamAId = match.teamA || match.teamAId || match.EQUIPO_A || "";
+  const teamBId = match.teamB || match.teamBId || match.EQUIPO_B || "";
+
+  const teamA = findTeam(teamAId, teams);
+  const teamB = findTeam(teamBId, teams);
+
+  const teamAName = teamA?.name || match.seedA || "Pendiente";
+  const teamBName = teamB?.name || match.seedB || "Pendiente";
+
+  const teamAFlag = teamA?.flagUrl || "";
+  const teamBFlag = teamB?.flagUrl || "";
+
+  const pointsA = valueOrBlank(match.pointsA ?? match.PUNTOS_A);
+  const pointsB = valueOrBlank(match.pointsB ?? match.PUNTOS_B);
+
+  const winnerId = match.winner || match.GANADOR || "";
+  const isWinnerA = winnerId && teamAId && winnerId === teamAId;
+  const isWinnerB = winnerId && teamBId && winnerId === teamBId;
+
+  return `
+    <div class="bracket-slot">
+      <div class="bracket-match compact ${status.toLowerCase().replace(/\s+/g, "-")}">
+        <div class="bracket-match-head">
+          <span class="bracket-match-id">${matchId}</span>
+          <span class="bracket-match-status">${status}</span>
+        </div>
+
+        <div class="bracket-team-row ${isWinnerA ? "winner" : ""}">
+          <div class="bracket-team-main">
+            ${teamAFlag ? `<img class="bracket-flag" src="${teamAFlag}" alt="${teamAName}">` : ""}
+            <span class="bracket-team-name">${teamAName}</span>
+          </div>
+          <div class="bracket-team-score">${pointsA}</div>
+        </div>
+
+        <div class="bracket-team-row ${isWinnerB ? "winner" : ""}">
+          <div class="bracket-team-main">
+            ${teamBFlag ? `<img class="bracket-flag" src="${teamBFlag}" alt="${teamBName}">` : ""}
+            <span class="bracket-team-name">${teamBName}</span>
+          </div>
+          <div class="bracket-team-score">${pointsB}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function valueOrBlank(value) {
+  return value === 0 ? "0" : (value || "");
+}
+
+function getChampionName(finalMatch, teams) {
+  if (!finalMatch) return "Pendiente";
+
+  const winnerId = finalMatch.winner || finalMatch.GANADOR || "";
+  const winnerTeam = findTeam(winnerId, teams);
+
+  if (winnerTeam?.name) return winnerTeam.name;
+
+  return "Pendiente";
 }
 
 async function loadDashboardData(options = {}) {
