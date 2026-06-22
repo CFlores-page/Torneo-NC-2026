@@ -5060,6 +5060,308 @@ display: none;
 }
 
 /* =========================================================
+   BRACKET VIEW — SVG CONNECTOR VERSION
+   Clean bracket engine:
+   - Cards are positioned nodes
+   - Lines are one SVG layer
+   - No pseudo-element connector spaghetti
+========================================================= */
+
+.bracket-view {
+  position: relative;
+  min-height: calc(100vh - 70px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 0 26px;
+}
+
+.bracket-board {
+  position: relative;
+  width: 1180px;
+  height: 680px;
+  margin: 0 auto;
+}
+
+/* SVG line layer */
+
+.bracket-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.bracket-path {
+  fill: none;
+  stroke: rgba(102, 174, 255, 0.68);
+  stroke-width: 2;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  filter: drop-shadow(0 0 8px rgba(93, 168, 255, 0.14));
+}
+
+.bracket-path.active {
+  stroke: #ffd447;
+  stroke-width: 3;
+  filter:
+    drop-shadow(0 0 8px rgba(255, 212, 71, 0.35))
+    drop-shadow(0 0 18px rgba(255, 212, 71, 0.18));
+}
+
+/* Round labels */
+
+.bracket-round-title {
+  position: absolute;
+  z-index: 3;
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sport-gold);
+  text-shadow: var(--title-shadow);
+  white-space: nowrap;
+}
+
+.bracket-round-dates {
+  position: absolute;
+  z-index: 3;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sport-blue);
+  white-space: nowrap;
+}
+
+.bracket-title-qf { left: 0; top: 0; }
+.bracket-date-qf { left: 0; top: 54px; }
+
+.bracket-title-sf { left: 455px; top: 92px; }
+.bracket-date-sf { left: 455px; top: 150px; }
+
+.bracket-title-gf { left: 855px; top: 144px; }
+.bracket-date-gf { left: 855px; top: 204px; }
+
+/* Card nodes */
+
+.bracket-node {
+  position: absolute;
+  z-index: 4;
+  width: 350px;
+}
+
+.node-cf001 { left: 0; top: 92px; }
+.node-cf003 { left: 0; top: 212px; }
+.node-cf002 { left: 0; top: 352px; }
+.node-cf004 { left: 0; top: 472px; }
+
+.node-sf001 { left: 455px; top: 240px; }
+.node-sf002 { left: 455px; top: 390px; }
+
+.node-gf001 { left: 855px; top: 315px; }
+
+.bracket-champion-node {
+  position: absolute;
+  left: 855px;
+  top: 500px;
+  z-index: 4;
+  width: 350px;
+}
+
+/* Kill any old pseudo connector leftovers */
+
+.bracket-column .bracket-slot::before,
+.bracket-column .bracket-slot::after,
+.bracket-slot::before,
+.bracket-slot::after,
+.bracket-match::before,
+.bracket-match::after {
+  content: none !important;
+}
+
+/* Normalize nested slot wrapper */
+
+.bracket-node .bracket-slot {
+  position: static;
+  width: 100%;
+}
+
+/* Match card */
+
+.bracket-match.compact {
+  width: 100%;
+  min-height: unset;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 212, 71, 0.16);
+  background:
+    linear-gradient(90deg, rgba(16, 24, 38, 0.96), rgba(28, 35, 48, 0.92));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.03),
+    0 12px 26px rgba(0,0,0,0.20);
+  overflow: visible;
+}
+
+.bracket-match-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.bracket-match-id {
+  color: #8da7c9;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.bracket-match-status {
+  color: var(--sport-blue);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Team rows */
+
+.bracket-team-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.055);
+  transition: 0.22s ease;
+}
+
+.bracket-team-row + .bracket-team-row {
+  margin-top: 7px;
+}
+
+.bracket-team-row.winner {
+  border-color: rgba(255, 212, 71, 0.55);
+  background:
+    linear-gradient(90deg, rgba(255,212,71,0.12), rgba(255,255,255,0.035));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 212, 71, 0.16),
+    0 0 18px rgba(255, 212, 71, 0.18);
+}
+
+.bracket-team-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bracket-flag {
+  width: 24px;
+  height: auto;
+  max-height: 17px;
+  object-fit: contain;
+  object-position: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  flex: 0 0 auto;
+}
+
+.bracket-team-name {
+  min-width: 0;
+  color: #f4f7fb;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bracket-team-score {
+  min-width: 20px;
+  color: var(--sport-gold);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: right;
+}
+
+/* Unit pill */
+
+.bracket-unit-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--unit-primary, #6daeff);
+  background: color-mix(in srgb, var(--unit-bg, #071A33) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--unit-primary, #6daeff) 55%, transparent);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Champion */
+
+.bracket-champion-box {
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 212, 71, 0.28);
+  background:
+    linear-gradient(90deg, rgba(26, 31, 38, 0.96), rgba(52, 50, 28, 0.72));
+  box-shadow: 0 12px 30px rgba(0,0,0,0.20);
+  text-align: center;
+}
+
+.champion-label {
+  margin-bottom: 4px;
+  color: #8da7c9;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.champion-name {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 38px;
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Responsive fallback */
+
+@media (max-width: 1250px) {
+  .bracket-view {
+    overflow-x: auto;
+  }
+
+  .bracket-board {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* =========================================================
    BRACKET RESPONSIVE
 ========================================================= */
 

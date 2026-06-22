@@ -1314,94 +1314,115 @@ function renderBracketView(
   teams = dashboardState.teams
 ) {
   const container = document.getElementById("bracketView")
-  if (!container) return;
+  if (!container) return
 
-  const quarterFinalOrder = ["CF001", "CF003", "CF002", "CF004"]
+  const matchById = id =>
+    (allMatches || []).find(match =>
+      normalizeId(match.matchId || match.MATCH_ID || "") === normalizeId(id)
+    ) || null
 
-  const quarterfinals = quarterFinalOrder
-    .map(id =>
-      (allMatches || []).find(match =>
-        String(match.matchId || match.MATCH_ID || "").trim().toUpperCase() === id
-      )
-    )
-    .filter(Boolean)
-  const semifinals    = (allMatches || []).filter(m => /^SF\d+/i.test(m.matchId || m.MATCH_ID || ""));
-  const grandFinal    = (allMatches || []).filter(m => /^GF\d+/i.test(m.matchId || m.MATCH_ID || ""));
+  const fallbackQfs = getQuarterFinalSeeds()
+  const fallbackById = new Map(
+    fallbackQfs.map(match => [normalizeId(match.matchId), match])
+  )
 
-  const sfFallback = [
-    {
+  const getMatch = id =>
+    matchById(id) || fallbackById.get(normalizeId(id)) || {
+      matchId: id,
+      status: "Pendiente",
+      teamA: null,
+      teamB: null,
+      seedA: "Pendiente",
+      seedB: "Pendiente",
+      pointsA: "",
+      pointsB: ""
+    }
+
+  const matches = {
+    CF001: getMatch("CF001"),
+    CF003: getMatch("CF003"),
+    CF002: getMatch("CF002"),
+    CF004: getMatch("CF004"),
+
+    SF001: matchById("SF001") || {
       matchId: "SF001",
-      label: "Semi Final 1",
-      startDate: "Jun 29, 2026",
-      endDate: "Jul 4, 2026",
+      status: "Pendiente",
       seedA: "Winner CF001",
       seedB: "Winner CF003",
       teamA: null,
       teamB: null,
       pointsA: "",
-      pointsB: "",
-      status: "Pendiente"
+      pointsB: ""
     },
-    {
+
+    SF002: matchById("SF002") || {
       matchId: "SF002",
-      label: "Semi Final 2",
-      startDate: "Jun 29, 2026",
-      endDate: "Jul 4, 2026",
+      status: "Pendiente",
       seedA: "Winner CF002",
       seedB: "Winner CF004",
       teamA: null,
       teamB: null,
       pointsA: "",
-      pointsB: "",
-      status: "Pendiente"
-    }
-  ];
+      pointsB: ""
+    },
 
-  const gfFallback = [
-    {
+    GF001: matchById("GF001") || {
       matchId: "GF001",
-      label: "Grand Final",
-      startDate: "Jul 6, 2026",
-      endDate: "Jul 11, 2026",
+      status: "Pendiente",
       seedA: "Winner SF001",
       seedB: "Winner SF002",
       teamA: null,
       teamB: null,
       pointsA: "",
-      pointsB: "",
-      status: "Pendiente"
+      pointsB: ""
     }
-  ];
+  }
 
-  const sfToRender = semifinals.length ? semifinals : sfFallback;
-  const gfToRender = grandFinal.length ? grandFinal : gfFallback;
+  const hasWinner = match => {
+    const winner = normalizeId(match?.winner || match?.GANADOR || "")
+    return Boolean(winner && winner !== "TIE" && winner !== "EMPATE")
+  }
+
+  const pathClass = id => hasWinner(matchById(id)) ? "bracket-path active" : "bracket-path"
 
   container.innerHTML = `
-    <div class="bracket-stage">
-      <div class="bracket-column qf">
-        <div class="bracket-round-title">Cuartos de Final</div>
-        <div class="bracket-round-dates">22 Jun 2026 - 27 Jun 2026</div>
-        ${quarterfinals.map((match, i) => renderBracketMatch(match, teams, "CF", i + 1)).join("")}
-      </div>
+    <section class="bracket-board">
+      <svg class="bracket-lines" viewBox="0 0 1180 680" preserveAspectRatio="none" aria-hidden="true">
+        <path class="${pathClass("CF001")}" d="M 350 130 H 405 V 250 H 455" />
+        <path class="${pathClass("CF003")}" d="M 350 250 H 455" />
 
-      <div class="bracket-column sf">
-        <div class="bracket-round-title">Semifinales</div>
-        <div class="bracket-round-dates">29 Jun 2026 - 4 Jul 2026</div>
-        ${sfToRender.map((match, i) => renderBracketMatch(match, teams, "SF", i + 1)).join("")}
-      </div>
+        <path class="${pathClass("CF002")}" d="M 350 390 H 405 V 510 H 455" />
+        <path class="${pathClass("CF004")}" d="M 350 510 H 455" />
 
-      <div class="bracket-column gf">
-        <div class="bracket-round-title">Gran Final</div>
-        <div class="bracket-round-dates">6 Jul 2026 - 11 Jul 2026</div>
-        ${gfToRender.map((match, i) => renderBracketMatch(match, teams, "GF", i + 1)).join("")}
+        <path class="${pathClass("SF001")}" d="M 755 310 H 805 V 385 H 855" />
+        <path class="${pathClass("SF002")}" d="M 755 460 H 805 V 385 H 855" />
+      </svg>
 
-        <div class="bracket-champion-box">
-          <div class="champion-label">Campeón</div>
-          <div class="champion-name">${getChampionName(gfToRender[0], teams)}</div>
-        </div>
+      <div class="bracket-round-title bracket-title-qf">Cuartos de Final</div>
+      <div class="bracket-round-dates bracket-date-qf">22 Jun 2026 - 27 Jun 2026</div>
+
+      <div class="bracket-round-title bracket-title-sf">Semifinales</div>
+      <div class="bracket-round-dates bracket-date-sf">29 Jun 2026 - 4 Jul 2026</div>
+
+      <div class="bracket-round-title bracket-title-gf">Gran Final</div>
+      <div class="bracket-round-dates bracket-date-gf">6 Jul 2026 - 11 Jul 2026</div>
+
+      <div class="bracket-node node-cf001">${renderBracketMatch(matches.CF001, teams, "CF", 1)}</div>
+      <div class="bracket-node node-cf003">${renderBracketMatch(matches.CF003, teams, "CF", 3)}</div>
+      <div class="bracket-node node-cf002">${renderBracketMatch(matches.CF002, teams, "CF", 2)}</div>
+      <div class="bracket-node node-cf004">${renderBracketMatch(matches.CF004, teams, "CF", 4)}</div>
+
+      <div class="bracket-node node-sf001">${renderBracketMatch(matches.SF001, teams, "SF", 1)}</div>
+      <div class="bracket-node node-sf002">${renderBracketMatch(matches.SF002, teams, "SF", 2)}</div>
+
+      <div class="bracket-node node-gf001">${renderBracketMatch(matches.GF001, teams, "GF", 1)}</div>
+
+      <div class="bracket-champion-box bracket-champion-node">
+        <div class="champion-label">Campeón</div>
+        <div class="champion-name">${getChampionName(matches.GF001, teams)}</div>
       </div>
-    </div>
-  `;
+    </section>
+  `
 }
 
 function renderBracketMatch(match, teams, roundType, roundNumber) {
