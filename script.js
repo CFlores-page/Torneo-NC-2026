@@ -2471,6 +2471,7 @@ function buildTournamentStandings(teams, matches) {
 
     table.set(teamId, {
       teamId,
+      groupId: getTeamGroupId(teamId),
       unit: team.unit || "",
       status: team.status || "Pendiente",
       played: 0,
@@ -2478,7 +2479,8 @@ function buildTournamentStandings(teams, matches) {
       losses: 0,
       ties: 0,
       pointsFor: 0,
-      tournamentPoints: 0
+      tournamentPoints: 0,
+      lastResults: []
     })
   })
 
@@ -2511,23 +2513,35 @@ function buildTournamentStandings(teams, matches) {
       if (pointsA > pointsB) {
         rowA.wins += 1
         rowA.tournamentPoints += 3
+        rowA.lastResults.push("W")
+
         rowB.losses += 1
+        rowB.lastResults.push("L")
       } else if (pointsB > pointsA) {
         rowB.wins += 1
         rowB.tournamentPoints += 3
+        rowB.lastResults.push("W")
+
         rowA.losses += 1
+        rowA.lastResults.push("L")
       } else {
         rowA.ties += 1
         rowB.ties += 1
+
         rowA.tournamentPoints += 1
         rowB.tournamentPoints += 1
+
+        rowA.lastResults.push("D")
+        rowB.lastResults.push("D")
       }
     })
 
   return [...table.values()]
     .sort((a, b) => {
+      if (a.groupId !== b.groupId) return a.groupId.localeCompare(b.groupId)
       if (b.tournamentPoints !== a.tournamentPoints) return b.tournamentPoints - a.tournamentPoints
       if (b.wins !== a.wins) return b.wins - a.wins
+      if (b.ties !== a.ties) return b.ties - a.ties
       if (b.pointsFor !== a.pointsFor) return b.pointsFor - a.pointsFor
 
       const nameA = getTeamInfo(a.teamId).name
@@ -2562,6 +2576,7 @@ function formatTeamStatus(status) {
 function createEmptyStanding(teamId) {
   return {
     teamId,
+    groupId: getTeamGroupId(teamId),
     unit: "",
     status: "Pendiente",
     played: 0,
@@ -2569,8 +2584,25 @@ function createEmptyStanding(teamId) {
     losses: 0,
     ties: 0,
     pointsFor: 0,
-    tournamentPoints: 0
+    tournamentPoints: 0,
+    lastResults: []
   }
+}
+
+const TOURNAMENT_GROUPS = {
+  A: ["USA", "NED", "GER", "MAR"],
+  B: ["COL", "ENG", "BRA", "POR"],
+  C: ["FRA", "MEX", "ESP", "ARG"]
+}
+
+function getTeamGroupId(teamId) {
+  const cleanTeamId = normalizeId(teamId)
+
+  for (const [groupId, teamIds] of Object.entries(TOURNAMENT_GROUPS)) {
+    if (teamIds.includes(cleanTeamId)) return groupId
+  }
+
+  return "SIN GRUPO"
 }
 
 function renderTournamentStandings(standings) {
@@ -2580,7 +2612,7 @@ function renderTournamentStandings(standings) {
   if (!standings || !standings.length) {
     body.innerHTML = `
       <tr>
-        <td colspan="9">
+        <td colspan="8">
           <div class="empty-state">
             <strong>Sin standings</strong>
             <p>Todavía no hay equipos disponibles para calcular la tabla.</p>
@@ -2591,31 +2623,97 @@ function renderTournamentStandings(standings) {
     return
   }
 
-  body.innerHTML = standings.map((row, index) => {
-    const team = getTeamInfo(row.teamId)
-    const flag = driveImage(team.flagUrl)
+  const groupedStandings = Object.entries(TOURNAMENT_GROUPS).map(([groupId, teamIds]) => {
+    const rows = teamIds
+      .map(teamId => standings.find(row => normalizeId(row.teamId) === teamId) || createEmptyStanding(teamId))
+      .sort((a, b) => {
+        if (b.tournamentPoints !== a.tournamentPoints) return b.tournamentPoints - a.tournamentPoints
+        if (b.wins !== a.wins) return b.wins - a.wins
+        if (b.ties !== a.ties) return b.ties - a.ties
+        if (b.pointsFor !== a.pointsFor) return b.pointsFor - a.pointsFor
 
-    return `
-      <tr class="standing-click-row" data-standing-team="${row.teamId}">
-        <td>${index + 1}</td>
-        <td>
-          <button class="standing-team-button" type="button" data-standing-team="${row.teamId}">
-            ${flag ? `<img class="team-flag" src="${flag}" alt="${team.name}">` : ""}
-            <span>${team.name}</span>
-          </button>
-        </td>
-        <td>${row.unit || "—"}</td>
-        <td>${formatNumber(row.played)}</td>
-        <td>${formatNumber(row.wins)}</td>
-        <td>${formatNumber(row.losses)}</td>
-        <td>${formatNumber(row.ties)}</td>
-        <td>${formatNumber(row.pointsFor)}</td>
-        <td><strong>${formatNumber(row.tournamentPoints)}</strong></td>
-      </tr>
-    `
-  }).join("")
+        const nameA = getTeamInfo(a.teamId).name
+        const nameB = getTeamInfo(b.teamId).name
+
+        return nameA.localeCompare(nameB)
+      })
+
+    return { groupId, rows }
+  })
+
+  body.innerHTML = groupedStandings.map(group => `
+    <tr class="group-standing-title-row">
+      <td colspan="8">
+        <div class="group-standing-title">
+          <span>Grupo ${group.groupId}</span>
+        </div>
+      </td>
+    </tr>
+
+    ${group.rows.map((row, index) => {
+      const team = getTeamInfo(row.teamId)
+      const flag = driveImage(team.flagUrl)
+
+      return `
+        <tr class="group-standing-row standing-click-row" data-standing-team="${row.teamId}">
+          <td>${index + 1}</td>
+
+          <td>
+            <button class="standing-team-button" type="button" data-standing-team="${row.teamId}">
+              ${flag ? `<img class="team-flag" src="${flag}" alt="${team.name}">` : ""}
+              <span>${team.name}</span>
+            </button>
+          </td>
+
+          <td>${row.unit || "—"}</td>
+          <td>${formatNumber(row.played)}</td>
+          <td>${formatNumber(row.wins)}</td>
+          <td>${formatNumber(row.ties)}</td>
+          <td>${formatNumber(row.losses)}</td>
+
+          <td>
+            <div class="standings-points-wrap">
+              <strong>${formatNumber(row.tournamentPoints)}</strong>
+              ${renderResultBubbles(row.lastResults)}
+            </div>
+          </td>
+        </tr>
+      `
+    }).join("")}
+  `).join("")
 
   setupDashboardTeamLinks()
+}
+
+function renderResultBubbles(results = []) {
+  const lastFive = [...results].slice(-5)
+
+  const paddedResults = [
+    ...lastFive,
+    ...Array(Math.max(0, 5 - lastFive.length)).fill("")
+  ]
+
+  return `
+    <div class="result-bubbles" aria-label="Últimos resultados">
+      ${paddedResults.map(result => {
+        const clean = String(result || "").toUpperCase()
+
+        if (clean === "W") {
+          return `<span class="result-bubble win">W</span>`
+        }
+
+        if (clean === "D") {
+          return `<span class="result-bubble draw">D</span>`
+        }
+
+        if (clean === "L") {
+          return `<span class="result-bubble loss">L</span>`
+        }
+
+        return `<span class="result-bubble empty"></span>`
+      }).join("")}
+    </div>
+  `
 }
 
 function renderPreviousMatches(matches) {
