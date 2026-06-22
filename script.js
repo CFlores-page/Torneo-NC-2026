@@ -1292,45 +1292,28 @@ function renderBracketTeam(team, seed, match, side) {
   `
 }
 
-function renderBracketMatch(slot) {
-  const officialMatch = getMatchById(slot.matchId)
+function findTeam(teamId, teams = dashboardState.teams) {
+  const id = normalizeId(teamId)
 
-  const teamAFromMatch = officialMatch
-    ? { teamId: officialMatch.teamA }
-    : slot.teamA
+  if (!id) return null
 
-  const teamBFromMatch = officialMatch
-    ? { teamId: officialMatch.teamB }
-    : slot.teamB
+  const fromSheet = (teams || []).find(team => normalizeId(team.teamId) === id)
+  const fallback = getTeamInfo(id)
 
-  const startDate = officialMatch?.startDate || slot.startDate || ""
-  const endDate = officialMatch?.endDate || slot.endDate || ""
+  return {
+    id,
+    teamId: id,
+    name: fromSheet?.teamName || fallback.name || id,
+    flagUrl: fromSheet?.flagUrl || fallback.flagUrl || "",
+    unit: fromSheet?.unit || ""
+  }
+} 
 
-  const dateLabel =
-    startDate || endDate
-      ? `${formatMatchDate(startDate)} - ${formatMatchDate(endDate)}`
-      : "Fecha pendiente"
-
-  return `
-    <article class="bracket-match">
-      <div class="bracket-match-label">${slot.label} · ${slot.matchId}</div>
-
-      <div class="bracket-date">
-        ${dateLabel}
-      </div>
-
-      ${renderBracketTeam(teamAFromMatch, slot.seedA, officialMatch, "A")}
-      ${renderBracketTeam(teamBFromMatch, slot.seedB, officialMatch, "B")}
-
-      <div class="bracket-note">
-        ${officialMatch ? formatTeamStatus(officialMatch.status) : "Seed proyectado"}
-      </div>
-    </article>
-  `
-}
-
-function renderBracketView(allMatches, teams) {
-  const container = document.getElementById("bracketView");
+function renderBracketView(
+  allMatches = dashboardState.allTournamentMatches,
+  teams = dashboardState.teams
+) {
+  const container = document.getElementById("bracketView")
   if (!container) return;
 
   const quarterfinals = (allMatches || []).filter(m => /^CF\d+/i.test(m.matchId || m.MATCH_ID || ""));
@@ -1429,12 +1412,12 @@ function renderBracketMatch(match, teams, roundType, roundNumber) {
   const teamAFlag = teamA?.flagUrl || "";
   const teamBFlag = teamB?.flagUrl || "";
 
-  const pointsA = valueOrBlank(match.pointsA ?? match.PUNTOS_A);
-  const pointsB = valueOrBlank(match.pointsB ?? match.PUNTOS_B);
+  const pointsA = valueOrBlank(match.pointsA ?? match.scoreA ?? match.PUNTOS_A)
+  const pointsB = valueOrBlank(match.pointsB ?? match.scoreB ?? match.PUNTOS_B)
 
-  const winnerId = match.winner || match.GANADOR || "";
-  const isWinnerA = winnerId && teamAId && winnerId === teamAId;
-  const isWinnerB = winnerId && teamBId && winnerId === teamBId;
+  const winnerId = normalizeId(match.winner || match.GANADOR || "")
+  const isWinnerA = winnerId && normalizeId(teamAId) && winnerId === normalizeId(teamAId)
+  const isWinnerB = winnerId && normalizeId(teamBId) && winnerId === normalizeId(teamBId) 
 
   return `
     <div class="bracket-slot">
@@ -3030,7 +3013,7 @@ function renderUnitTeamsSection(unit, teams, players) {
 }
 
 function sortPlayersForTeam(players) {
-  return [...players].sort((a, b) => {
+  return [...(players || [])].sort((a, b) => {
     if (a.isCaptain !== b.isCaptain) return a.isCaptain ? -1 : 1
     if (b.points !== a.points) return b.points - a.points
     if (b.sales !== a.sales) return b.sales - a.sales
