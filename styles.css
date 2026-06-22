@@ -5083,3 +5083,94 @@ display: none;
   white-space: nowrap;
   flex: 0 0 auto;
 }
+
+/* =========================
+   BRACKET COMPACT WIDTH PASS
+========================= */
+
+.bracket-stage {
+  display: grid;
+  grid-template-columns: 470px 380px 380px;
+  column-gap: 70px;
+  align-items: start;
+  width: max-content;
+  min-width: 100%;
+}
+
+.bracket-column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.bracket-column.qf {
+  gap: 28px;
+}
+
+.bracket-column.sf {
+  gap: 118px;
+  padding-top: 112px;
+}
+
+.bracket-column.gf {
+  padding-top: 216px;
+}
+
+.bracket-match.compact {
+  width: 100%;
+  min-height: unset;
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+
+.bracket-match-head {
+  margin-bottom: 8px;
+}
+
+.bracket-team-row {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 10px;
+}
+
+.bracket-team-row + .bracket-team-row {
+  margin-top: 7px;
+}
+
+.bracket-team-main {
+  gap: 8px;
+}
+
+.bracket-flag {
+  width: 24px;
+  max-height: 17px;
+}
+
+.bracket-team-name {
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+
+.bracket-team-score {
+  font-size: 18px;
+}
+
+.bracket-unit-pill {
+  padding: 2px 7px;
+  font-size: 9px;
+}
+
+/* =========================
+   BRACKET CONNECTOR LENGTHS
+========================= */
+
+.bracket-column.qf .bracket-slot::after,
+.bracket-column.sf .bracket-slot::after {
+  right: -70px;
+  width: 70px;
+}
+
+.bracket-column.qf .bracket-slot::before,
+.bracket-column.sf .bracket-slot::before {
+  right: -70px;
+}
