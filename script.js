@@ -675,7 +675,7 @@ function activateView(viewId) {
 
   views.forEach(view => view.classList.add("hidden"))
   targetView.classList.remove("hidden")
-  
+
   if (viewId === "bracketView") {
     renderBracketView()
   }
@@ -1184,7 +1184,7 @@ function getQuarterFinalSeeds() {
       teamA: a1,
       teamB: qf1Third,
       seedA: "A1",
-      seedB: qf1Third ? `${qf1Third.group}3` : "Best 3rd"
+      seedB: qf1Third ? `${qf1Third.group}3` : "Best 3rd",
       startDate: "Jun 22, 2026",
       endDate: "Jun 27, 2026"
     },
@@ -1194,7 +1194,7 @@ function getQuarterFinalSeeds() {
       teamA: b1,
       teamB: c2,
       seedA: "B1",
-      seedB: "C2"
+      seedB: "C2",
       startDate: "Jun 22, 2026",
       endDate: "Jun 27, 2026"
     },
@@ -1204,7 +1204,7 @@ function getQuarterFinalSeeds() {
       teamA: c1,
       teamB: b2,
       seedA: "C1",
-      seedB: "B2"
+      seedB: "B2",
       startDate: "Jun 22, 2026",
       endDate: "Jun 27, 2026"
     },
@@ -1214,7 +1214,7 @@ function getQuarterFinalSeeds() {
       teamA: a2,
       teamB: qf4Third,
       seedA: "A2",
-      seedB: qf4Third ? `${qf4Third.group}3` : "Best 3rd"
+      seedB: qf4Third ? `${qf4Third.group}3` : "Best 3rd",
       startDate: "Jun 22, 2026",
       endDate: "Jun 27, 2026"
     }
@@ -1426,7 +1426,11 @@ async function loadDashboardData(options = {}) {
     }
 
     if (shouldRender("liveFeed", nextState.liveFeed, force)) {
-      renderLiveFeed(nextState.liveFeed)
+      try {
+        renderLiveFeed(nextState.liveFeed)
+      } catch (error) {
+        console.error("Live feed render failed:", error)
+      }
     }
 
     if (
@@ -1577,6 +1581,13 @@ function getStableIndex(key, length) {
 }
 
 function pickStable(list, key) {
+  if (!Array.isArray(list) || !list.length) {
+    return {
+      title: "¡SE MUEVE EL MARCADOR!",
+      body: "El partido registra movimiento en el marcador."
+    }
+  }
+
   return list[getStableIndex(key, list.length)]
 }
 
