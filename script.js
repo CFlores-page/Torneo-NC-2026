@@ -1409,8 +1409,8 @@ function renderBracketMatch(match, teams, roundType, roundNumber) {
   const teamAName = teamA?.name || match.seedA || "Pendiente";
   const teamBName = teamB?.name || match.seedB || "Pendiente";
 
-  const teamAFlag = teamA?.flagUrl || "";
-  const teamBFlag = teamB?.flagUrl || "";
+  const teamAFlag = driveImage(teamA?.flagUrl || "")
+  const teamBFlag = driveImage(teamB?.flagUrl || "")
 
   const pointsA = valueOrBlank(match.pointsA ?? match.scoreA ?? match.PUNTOS_A)
   const pointsB = valueOrBlank(match.pointsB ?? match.scoreB ?? match.PUNTOS_B)
