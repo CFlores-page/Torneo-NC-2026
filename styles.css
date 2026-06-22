@@ -5174,3 +5174,182 @@ display: none;
 .bracket-column.sf .bracket-slot::before {
   right: -70px;
 }
+
+/* =========================
+   BRACKET LINE REPAIR PASS
+   Smaller cards + proper connector story
+========================= */
+
+.bracket-stage {
+  display: grid;
+  grid-template-columns: 470px 380px 380px;
+  column-gap: 95px;
+  align-items: start;
+  width: max-content;
+  min-width: 100%;
+}
+
+/* Keep columns predictable */
+.bracket-column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* QF card spacing */
+.bracket-column.qf {
+  gap: 28px;
+}
+
+/* Semis should sit centered between their feeder matches */
+.bracket-column.sf {
+  gap: 122px;
+  padding-top: 112px;
+}
+
+/* Final centered between semis */
+.bracket-column.gf {
+  padding-top: 235px;
+}
+
+/* Compact cards */
+.bracket-match.compact {
+  width: 100%;
+  min-height: unset;
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+
+.bracket-team-row {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 10px;
+}
+
+.bracket-team-row + .bracket-team-row {
+  margin-top: 7px;
+}
+
+.bracket-match-head {
+  margin-bottom: 8px;
+}
+
+/* Kill the old connector assumptions first */
+.bracket-column.qf .bracket-slot::after,
+.bracket-column.qf .bracket-slot::before,
+.bracket-column.sf .bracket-slot::after,
+.bracket-column.sf .bracket-slot::before {
+  content: none !important;
+}
+
+/* =========================
+   QF -> SF CONNECTORS
+========================= */
+
+/* horizontal line from each QF card into the shared spine */
+.bracket-column.qf .bracket-slot {
+  position: relative;
+}
+
+.bracket-column.qf .bracket-slot::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -47px;
+  width: 47px;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(255, 212, 59, 0.70), rgba(93, 168, 255, 0.65));
+  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
+}
+
+/* vertical spine for CF001 + CF003 */
+.bracket-column.qf .bracket-slot:nth-of-type(1)::before {
+  content: "";
+  position: absolute;
+  right: -47px;
+  top: 50%;
+  width: 2px;
+  height: calc(100% + 28px);
+  background: linear-gradient(180deg, rgba(255, 212, 59, 0.75), rgba(93, 168, 255, 0.68));
+  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
+}
+
+/* vertical spine for CF002 + CF004 */
+.bracket-column.qf .bracket-slot:nth-of-type(3)::before {
+  content: "";
+  position: absolute;
+  right: -47px;
+  top: 50%;
+  width: 2px;
+  height: calc(100% + 28px);
+  background: linear-gradient(180deg, rgba(255, 212, 59, 0.75), rgba(93, 168, 255, 0.68));
+  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
+}
+
+/* line from shared QF spine into SF card */
+.bracket-column.sf .bracket-slot {
+  position: relative;
+}
+
+.bracket-column.sf .bracket-slot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -48px;
+  width: 48px;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(93, 168, 255, 0.65), rgba(255, 212, 59, 0.70));
+  box-shadow: 0 0 10px rgba(255, 212, 59, 0.16);
+}
+
+/* =========================
+   SF -> GF CONNECTORS
+========================= */
+
+/* horizontal line out of SF card */
+.bracket-column.sf .bracket-slot::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -47px;
+  width: 47px;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(255, 212, 59, 0.70), rgba(93, 168, 255, 0.65));
+  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
+}
+
+/* vertical spine between SF001 + SF002 */
+.bracket-column.sf .bracket-slot:nth-of-type(1)::after {
+  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
+}
+
+.bracket-column.sf .bracket-slot:nth-of-type(1) .bracket-match::after {
+  content: "";
+  position: absolute;
+  right: -47px;
+  top: 50%;
+  width: 2px;
+  height: calc(100% + 122px);
+  background: linear-gradient(180deg, rgba(255, 212, 59, 0.75), rgba(93, 168, 255, 0.68));
+  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
+}
+
+/* line from semifinal spine into final card */
+.bracket-column.gf .bracket-slot {
+  position: relative;
+}
+
+.bracket-column.gf .bracket-slot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -48px;
+  width: 48px;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(93, 168, 255, 0.65), rgba(255, 212, 59, 0.70));
+  box-shadow: 0 0 10px rgba(255, 212, 59, 0.16);
+}
