@@ -5005,6 +5005,60 @@ display: none;
   padding-top: 0;
 }
 
+/* =========================
+   SF → GF CONNECTOR FIX
+========================= */
+
+/* Give the semifinals column a controlled connector zone */
+.bracket-column.sf {
+  position: relative;
+}
+
+/* Kill the old individual SF outgoing lines */
+.bracket-column.sf .bracket-slot::after,
+.bracket-column.sf .bracket-slot .bracket-match::after {
+  content: none !important;
+}
+
+/* Small horizontal line from each SF card to the shared vertical spine */
+.bracket-column.sf .bracket-slot::after {
+  content: "" !important;
+  position: absolute;
+  top: 50%;
+  right: -38px;
+  width: 38px;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(255, 212, 59, 0.72), rgba(93, 168, 255, 0.68));
+  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
+}
+
+/* The shared vertical spine between SF001 and SF002 */
+.bracket-column.sf::after {
+  content: "";
+  position: absolute;
+  right: -38px;
+  top: 50%;
+  width: 2px;
+  height: 188px;
+  transform: translateY(-50%);
+  background: linear-gradient(180deg, rgba(255, 212, 59, 0.78), rgba(93, 168, 255, 0.72));
+  box-shadow: 0 0 10px rgba(93, 168, 255, 0.18);
+}
+
+/* Final card receives one clean incoming line from the spine */
+.bracket-column.gf .bracket-slot::before {
+  content: "" !important;
+  position: absolute;
+  top: 50%;
+  left: -58px;
+  width: 58px;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(93, 168, 255, 0.68), rgba(255, 212, 59, 0.72));
+  box-shadow: 0 0 10px rgba(255, 212, 59, 0.16);
+}
+
 /* =========================================================
    BRACKET RESPONSIVE
 ========================================================= */
