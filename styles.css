@@ -4898,7 +4898,7 @@ display: none;
 .bracket-team-main {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -4916,8 +4916,7 @@ display: none;
 }
 
 .bracket-team-name {
-  font-size: 1.02rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #f4f7fb;
   white-space: nowrap;
   overflow: hidden;
@@ -5060,4 +5059,27 @@ display: none;
   .bracket-round-title {
     font-size: 2rem;
   }
+}
+
+.bracket-unit-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  color: var(--unit-primary, #6daeff);
+  background: color-mix(in srgb, var(--unit-bg, #071A33) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--unit-primary, #6daeff) 55%, transparent);
+
+  white-space: nowrap;
+  flex: 0 0 auto;
 }

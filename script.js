@@ -1442,7 +1442,7 @@ function renderBracketMatch(match, teams, roundType, roundNumber) {
           <div class="bracket-team-main">
             ${teamAFlag ? `<img class="bracket-flag" src="${teamAFlag}" alt="${teamAName}">` : ""}
             <span class="bracket-team-name">${teamAName}</span>
-            ${teamAUnit ? `<span class="bracket-unit-pill">${teamAUnit}</span>` : ""}
+            ${teamAUnit ? `<span class="bracket-unit-pill" style="${getUnitStyle(teamAUnit)}">${teamAUnit}</span>` : ""}
           </div>
           <div class="bracket-team-score">${pointsA}</div>
         </div>
@@ -1451,7 +1451,7 @@ function renderBracketMatch(match, teams, roundType, roundNumber) {
           <div class="bracket-team-main">
             ${teamBFlag ? `<img class="bracket-flag" src="${teamBFlag}" alt="${teamBName}">` : ""}
             <span class="bracket-team-name">${teamBName}</span>
-            ${teamBUnit ? `<span class="bracket-unit-pill">${teamBUnit}</span>` : ""}
+            ${teamBUnit ? `<span class="bracket-unit-pill" style="${getUnitStyle(teamBUnit)}">${teamBUnit}</span>` : ""}
           </div>
           <div class="bracket-team-score">${pointsB}</div>
         </div>
@@ -3364,6 +3364,16 @@ function getTeamInfo(teamId) {
     name: id || "Equipo pendiente",
     flagUrl: ""
   }
+}
+
+function getUnitStyle(unit) {
+  const unitId = normalizeId(unit)
+  const colors = UNIT_COLORS[unitId] || UNIT_COLORS.ELITE
+
+  return `
+    --unit-primary: ${colors.primary};
+    --unit-bg: ${colors.bg};
+  `
 }
 
 function getTeamColors(teamId) {
