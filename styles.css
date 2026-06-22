@@ -5361,6 +5361,71 @@ display: none;
   }
 }
 
+/* =========================
+   BRACKET SPACING / LINE ALIGNMENT PASS
+========================= */
+
+.bracket-board {
+  width: 1220px;
+  height: 760px;
+}
+
+.bracket-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.bracket-path {
+  fill: none;
+  stroke: rgba(102, 174, 255, 0.72);
+  stroke-width: 2;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+.bracket-path.active {
+  stroke: #ffd447;
+  stroke-width: 3;
+  filter:
+    drop-shadow(0 0 8px rgba(255, 212, 71, 0.35))
+    drop-shadow(0 0 18px rgba(255, 212, 71, 0.18));
+}
+
+/* Round labels */
+.bracket-title-qf { left: 0; top: 0; }
+.bracket-date-qf { left: 0; top: 56px; }
+
+.bracket-title-sf { left: 470px; top: 82px; }
+.bracket-date-sf { left: 470px; top: 142px; }
+
+.bracket-title-gf { left: 920px; top: 112px; }
+.bracket-date-gf { left: 920px; top: 172px; }
+
+/* Cards */
+.bracket-node {
+  width: 350px;
+}
+
+.node-cf001 { left: 0; top: 105px; }
+.node-cf003 { left: 0; top: 250px; }
+.node-cf002 { left: 0; top: 430px; }
+.node-cf004 { left: 0; top: 575px; }
+
+.node-sf001 { left: 470px; top: 180px; }
+.node-sf002 { left: 470px; top: 505px; }
+
+.node-gf001 { left: 920px; top: 355px; }
+
+.bracket-champion-node {
+  left: 920px;
+  top: 585px;
+  width: 350px;
+}
+
 /* =========================================================
    BRACKET RESPONSIVE
 ========================================================= */

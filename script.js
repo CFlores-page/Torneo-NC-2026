@@ -1387,15 +1387,15 @@ function renderBracketView(
 
   container.innerHTML = `
     <section class="bracket-board">
-      <svg class="bracket-lines" viewBox="0 0 1180 680" preserveAspectRatio="none" aria-hidden="true">
-        <path class="${pathClass("CF001")}" d="M 350 130 H 405 V 250 H 455" />
-        <path class="${pathClass("CF003")}" d="M 350 250 H 455" />
+      <svg class="bracket-lines" viewBox="0 0 1220 760" preserveAspectRatio="none" aria-hidden="true">
+        <path class="${pathClass("CF001")}" d="M 350 155 H 410 V 300 H 470" />
+        <path class="${pathClass("CF003")}" d="M 350 300 H 470" />
 
-        <path class="${pathClass("CF002")}" d="M 350 390 H 405 V 510 H 455" />
-        <path class="${pathClass("CF004")}" d="M 350 510 H 455" />
+        <path class="${pathClass("CF002")}" d="M 350 480 H 410 V 625 H 470" />
+        <path class="${pathClass("CF004")}" d="M 350 625 H 470" />
 
-        <path class="${pathClass("SF001")}" d="M 755 310 H 805 V 385 H 855" />
-        <path class="${pathClass("SF002")}" d="M 755 460 H 805 V 385 H 855" />
+        <path class="${pathClass("SF001")}" d="M 820 230 H 870 V 405 H 920" />
+        <path class="${pathClass("SF002")}" d="M 820 555 H 870 V 405 H 920" />
       </svg>
 
       <div class="bracket-round-title bracket-title-qf">Cuartos de Final</div>
