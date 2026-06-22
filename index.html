@@ -38,7 +38,7 @@
         <button class="menu-item active" data-view="dashboardView">Dashboard</button>
         <button class="menu-item" data-view="teamsView">Teams</button>
         <button class="menu-item" data-view="matchCenterView">Match Center</button>
-        <button class="menu-item" data-view="bracketView">Bracket (coming soon)</button>
+        <button class="menu-item" data-view="bracketView">Bracket</button>
         <button class="menu-item" data-view="placingsView">Standings / Matches</button>
         <button class="menu-item" data-view="rulesView">Tournament Rules</button>
       </nav>
@@ -341,6 +341,34 @@
             </div>
           </section>
           </section>
+          <section id="bracketView" class="view bracket-view hidden">
+            <header class="view-header">
+              <div>
+                <p class="eyebrow">Camino a la final</p>
+                <h1>Bracket</h1>
+                <p class="subtitle">
+                  Clasifican los primeros 2 lugares de cada grupo y los 2 mejores terceros lugares.
+                </p>
+              </div>
+            </header>
+
+            <section class="panel bracket-panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Quarter Finals</h2>
+                  <p>Bracket rumbo a la Gran Final.</p>
+                </div>
+              </div>
+
+              <div id="bracketContainer" class="bracket-container">
+                <div class="empty-state">
+                  <strong>Bracket pendiente</strong>
+                  <p>El bracket aparecerá cuando carguen los standings del torneo.</p>
+                </div>
+              </div>
+            </section>
+          </section>
+
             <section id="rulesView" class="view rules-view hidden">
               <header class="view-header">
                 <div>

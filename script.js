@@ -30,7 +30,8 @@ let renderCache = {
   teamsPlayers: "",
   tournamentStandings: "",
   previousMatches: "",
-  matchCenter: ""
+  matchCenter: "",
+  bracket: ""
 }
 
 async function fetchDataVersion() {
@@ -138,6 +139,23 @@ async function fetchDashboardPayload() {
     tournamentStandings,
     allTournamentMatches
   }
+}
+
+const TEAM_GROUPS = {
+  USA: "A",
+  NED: "A",
+  MAR: "A",
+  GER: "A",
+
+  ENG: "B",
+  COL: "B",
+  BRA: "B",
+  POR: "B",
+
+  FRA: "C",
+  ESP: "C",
+  ARG: "C",
+  MEX: "C"
 }
 
 let currentTeamFilter = "ALL"
@@ -657,6 +675,10 @@ function activateView(viewId) {
 
   views.forEach(view => view.classList.add("hidden"))
   targetView.classList.remove("hidden")
+  
+  if (viewId === "bracketView") {
+    renderBracketView()
+  }
 }
 
 function renderMatchMiniLiveFeed(match) {
@@ -1080,6 +1102,301 @@ function setupMatchCenterStripArrows() {
   })
 }
 
+function compareBracketTeams(a, b) {
+  if (b.tournamentPoints !== a.tournamentPoints) return b.tournamentPoints - a.tournamentPoints
+  if (b.wins !== a.wins) return b.wins - a.wins
+  if (b.pointsFor !== a.pointsFor) return b.pointsFor - a.pointsFor
+
+  const nameA = getTeamInfo(a.teamId).name
+  const nameB = getTeamInfo(b.teamId).name
+
+  return nameA.localeCompare(nameB)
+}
+
+function getGroupedBracketStandings() {
+  const standings = dashboardState.tournamentStandings || []
+
+  const grouped = {
+    A: [],
+    B: [],
+    C: []
+  }
+
+  standings.forEach(row => {
+    const teamId = normalizeId(row.teamId)
+    const group = TEAM_GROUPS[teamId]
+
+    if (!group) return
+
+    grouped[group].push({
+      ...row,
+      teamId,
+      group
+    })
+  })
+
+  Object.keys(grouped).forEach(group => {
+    grouped[group].sort(compareBracketTeams)
+  })
+
+  return grouped
+}
+
+function pickBestThirdFor(opponentGroup, pool) {
+  const index = pool.findIndex(team => team.group !== opponentGroup)
+
+  if (index === -1) {
+    return pool.shift() || null
+  }
+
+  const [selected] = pool.splice(index, 1)
+  return selected || null
+}
+
+function getQuarterFinalSeeds() {
+  const grouped = getGroupedBracketStandings()
+
+  const a1 = grouped.A[0] || null
+  const a2 = grouped.A[1] || null
+  const b1 = grouped.B[0] || null
+  const b2 = grouped.B[1] || null
+  const c1 = grouped.C[0] || null
+  const c2 = grouped.C[1] || null
+
+  const thirdPlaces = [
+    grouped.A[2],
+    grouped.B[2],
+    grouped.C[2]
+  ]
+    .filter(Boolean)
+    .sort(compareBracketTeams)
+    .slice(0, 2)
+
+  const bestThirdPool = [...thirdPlaces]
+
+  const qf1Third = pickBestThirdFor("A", bestThirdPool)
+  const qf4Third = bestThirdPool.shift() || null
+
+  return [
+    {
+      matchId: "CF001",
+      label: "Quarter Final 1",
+      teamA: a1,
+      teamB: qf1Third,
+      seedA: "A1",
+      seedB: qf1Third ? `${qf1Third.group}3` : "Best 3rd"
+      startDate: "Jun 22, 2026",
+      endDate: "Jun 27, 2026"
+    },
+    {
+      matchId: "CF002",
+      label: "Quarter Final 2",
+      teamA: b1,
+      teamB: c2,
+      seedA: "B1",
+      seedB: "C2"
+      startDate: "Jun 22, 2026",
+      endDate: "Jun 27, 2026"
+    },
+    {
+      matchId: "CF003",
+      label: "Quarter Final 3",
+      teamA: c1,
+      teamB: b2,
+      seedA: "C1",
+      seedB: "B2"
+      startDate: "Jun 22, 2026",
+      endDate: "Jun 27, 2026"
+    },
+    {
+      matchId: "CF004",
+      label: "Quarter Final 4",
+      teamA: a2,
+      teamB: qf4Third,
+      seedA: "A2",
+      seedB: qf4Third ? `${qf4Third.group}3` : "Best 3rd"
+      startDate: "Jun 22, 2026",
+      endDate: "Jun 27, 2026"
+    }
+  ]
+}
+
+function getMatchById(matchId) {
+  return (dashboardState.allTournamentMatches || [])
+    .find(match => normalizeId(match.matchId) === normalizeId(matchId)) || null
+}
+
+function getMatchWinnerFromPartidos(match) {
+  if (!match) return ""
+
+  const winner = normalizeId(match.winner)
+
+  if (winner && winner !== "TIE") return winner
+
+  const pointsA = parseNumber(match.pointsA)
+  const pointsB = parseNumber(match.pointsB)
+
+  if (pointsA > pointsB) return normalizeId(match.teamA)
+  if (pointsB > pointsA) return normalizeId(match.teamB)
+
+  return ""
+}
+
+function getBracketTeamFromMatchWinner(matchId) {
+  const match = getMatchById(matchId)
+  const winner = getMatchWinnerFromPartidos(match)
+
+  if (!winner) return null
+
+  return (dashboardState.tournamentStandings || [])
+    .find(row => normalizeId(row.teamId) === winner) || {
+      teamId: winner,
+      tournamentPoints: 0,
+      wins: 0,
+      pointsFor: 0
+    }
+}
+
+function renderBracketTeam(team, seed, match, side) {
+  if (!team) {
+    return `
+      <div class="bracket-team placeholder">
+        <span></span>
+        <span class="bracket-team-name">Pendiente</span>
+        <span class="bracket-team-seed">${seed || ""}</span>
+      </div>
+    `
+  }
+
+  const teamId = normalizeId(team.teamId)
+  const info = getTeamInfo(teamId)
+  const flag = driveImage(info.flagUrl)
+
+  const winner = getMatchWinnerFromPartidos(match)
+  const isWinner = winner && winner === teamId
+
+  const score =
+    match
+      ? side === "A"
+        ? formatNumber(match.pointsA)
+        : formatNumber(match.pointsB)
+      : ""
+
+  return `
+    <div class="bracket-team ${isWinner ? "winner" : ""}">
+      ${flag ? `<img src="${flag}" alt="${info.name}">` : "<span></span>"}
+      <span class="bracket-team-name">${info.name}</span>
+      <span class="bracket-score">${score}</span>
+      <span class="bracket-team-seed">${seed || ""}</span>
+    </div>
+  `
+}
+
+function renderBracketMatch(slot) {
+  const officialMatch = getMatchById(slot.matchId)
+
+  const teamAFromMatch = officialMatch
+    ? { teamId: officialMatch.teamA }
+    : slot.teamA
+
+  const teamBFromMatch = officialMatch
+    ? { teamId: officialMatch.teamB }
+    : slot.teamB
+
+  const startDate = officialMatch?.startDate || slot.startDate || ""
+  const endDate = officialMatch?.endDate || slot.endDate || ""
+
+  const dateLabel =
+    startDate || endDate
+      ? `${formatMatchDate(startDate)} - ${formatMatchDate(endDate)}`
+      : "Fecha pendiente"
+
+  return `
+    <article class="bracket-match">
+      <div class="bracket-match-label">${slot.label} · ${slot.matchId}</div>
+
+      <div class="bracket-date">
+        ${dateLabel}
+      </div>
+
+      ${renderBracketTeam(teamAFromMatch, slot.seedA, officialMatch, "A")}
+      ${renderBracketTeam(teamBFromMatch, slot.seedB, officialMatch, "B")}
+
+      <div class="bracket-note">
+        ${officialMatch ? formatTeamStatus(officialMatch.status) : "Seed proyectado"}
+      </div>
+    </article>
+  `
+}
+
+function renderBracketView() {
+  const container = document.getElementById("bracketContainer")
+  if (!container) return
+
+  const qfSlots = getQuarterFinalSeeds()
+
+  const semiSlots = [
+    {
+      matchId: "SF001",
+      label: "Semi Final 1",
+      teamA: getBracketTeamFromMatchWinner("CF001"),
+      teamB: getBracketTeamFromMatchWinner("CF003"),
+      seedA: "Winner CF001",
+      seedB: "Winner CF003",
+      startDate: "Jun 29, 2026",
+      endDate: "Jul 4, 2026"
+    },
+    {
+      matchId: "SF002",
+      label: "Semi Final 2",
+      teamA: getBracketTeamFromMatchWinner("CF002"),
+      teamB: getBracketTeamFromMatchWinner("CF004"),
+      seedA: "Winner CF002",
+      seedB: "Winner CF004",
+      startDate: "Jun 29, 2026",
+      endDate: "Jul 4, 2026"
+    }
+  ]
+
+  const finalSlot = {
+    matchId: "GF001",
+    label: "Grand Final",
+    teamA: getBracketTeamFromMatchWinner("SF001"),
+    teamB: getBracketTeamFromMatchWinner("SF002"),
+    seedA: "Winner SF001",
+    seedB: "Winner SF002",
+    startDate: "Jul 6, 2026",
+    endDate: "Jul 11, 2026"
+  }
+
+  const champion = getBracketTeamFromMatchWinner("GF001")
+  const championInfo = champion ? getTeamInfo(champion.teamId) : null
+
+  container.innerHTML = `
+    <div class="bracket-round">
+      <h3 class="bracket-round-title">Quarter Finals</h3>
+      ${qfSlots.map(renderBracketMatch).join("")}
+    </div>
+
+    <div class="bracket-round">
+      <h3 class="bracket-round-title">Semi Finals</h3>
+      ${semiSlots.map(renderBracketMatch).join("")}
+    </div>
+
+    <div class="bracket-round">
+      <h3 class="bracket-round-title">Grand Final</h3>
+      <div class="bracket-final-card">
+        ${renderBracketMatch(finalSlot)}
+
+        <div class="bracket-champion">
+          <span>Champion</span>
+          <strong>${championInfo ? championInfo.name : "Pendiente"}</strong>
+        </div>
+      </div>
+    </div>
+  `
+}
+
 async function loadDashboardData(options = {}) {
   const force = Boolean(options.force)
 
@@ -1135,6 +1452,20 @@ async function loadDashboardData(options = {}) {
 
     if (shouldRender("previousMatches", finishedMatches, force)) {
       renderPreviousMatches(nextState.allTournamentMatches)
+    }
+
+    if (
+      isViewVisible("bracketView") &&
+      shouldRender(
+        "bracket",
+        {
+          standings: nextState.tournamentStandings,
+          matches: nextState.allTournamentMatches
+        },
+        force
+      )
+    ) {
+      renderBracketView()
     }
 
     const matchCenterSignature = {
