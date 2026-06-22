@@ -4974,6 +4974,37 @@ display: none;
   border-color: rgba(255, 212, 71, 0.38);
 }
 
+/* =========================
+   BRACKET VERTICAL CENTER PASS
+========================= */
+
+.bracket-view {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.bracket-stage {
+  margin-top: -20px;
+  align-items: center;
+}
+
+.bracket-column.qf {
+  justify-content: center;
+}
+
+.bracket-column.sf {
+  justify-content: center;
+  padding-top: 0;
+}
+
+.bracket-column.gf {
+  justify-content: center;
+  padding-top: 0;
+}
+
 /* =========================================================
    BRACKET RESPONSIVE
 ========================================================= */
