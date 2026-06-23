@@ -1351,8 +1351,8 @@ function renderBracketView(
     SF001: matchById("SF001") || {
       matchId: "SF001",
       status: "Pendiente",
-      seedA: "Winner CF001",
-      seedB: "Winner CF003",
+      seedA: "Ganador Cuartos 1",
+      seedB: "Ganador Cuartos 3",
       teamA: null,
       teamB: null,
       pointsA: "",
@@ -1362,8 +1362,8 @@ function renderBracketView(
     SF002: matchById("SF002") || {
       matchId: "SF002",
       status: "Pendiente",
-      seedA: "Winner CF002",
-      seedB: "Winner CF004",
+      seedA: "Ganador Cuartos 2",
+      seedB: "Ganador Cuartos 4",
       teamA: null,
       teamB: null,
       pointsA: "",
@@ -1373,8 +1373,8 @@ function renderBracketView(
     GF001: matchById("GF001") || {
       matchId: "GF001",
       status: "Pendiente",
-      seedA: "Winner SF001",
-      seedB: "Winner SF002",
+      seedA: "Ganador Semifinal 1",
+      seedB: "Ganador Semifinal 2",
       teamA: null,
       teamB: null,
       pointsA: "",
@@ -1411,15 +1411,15 @@ function renderBracketView(
       <div class="bracket-round-title bracket-title-gf">Gran Final</div>
       <div class="bracket-round-dates bracket-date-gf">6 Jul 2026 - 11 Jul 2026</div>
 
-      <div class="bracket-node node-cf001">${renderBracketMatch(matches.CF001, teams, "CF", 1)}</div>
-      <div class="bracket-node node-cf003">${renderBracketMatch(matches.CF003, teams, "CF", 3)}</div>
-      <div class="bracket-node node-cf002">${renderBracketMatch(matches.CF002, teams, "CF", 2)}</div>
-      <div class="bracket-node node-cf004">${renderBracketMatch(matches.CF004, teams, "CF", 4)}</div>
+      <div class="bracket-node node-cf001">${renderBracketMatch(matches.CF001, teams, "Cuartos de Final", 1)}</div>
+      <div class="bracket-node node-cf003">${renderBracketMatch(matches.CF003, teams, "Cuartos de Final", 3)}</div>
+      <div class="bracket-node node-cf002">${renderBracketMatch(matches.CF002, teams, "Cuartos de Final", 2)}</div>
+      <div class="bracket-node node-cf004">${renderBracketMatch(matches.CF004, teams, "Cuartos de Final", 4)}</div>
 
-      <div class="bracket-node node-sf001">${renderBracketMatch(matches.SF001, teams, "SF", 1)}</div>
-      <div class="bracket-node node-sf002">${renderBracketMatch(matches.SF002, teams, "SF", 2)}</div>
+      <div class="bracket-node node-sf001">${renderBracketMatch(matches.SF001, teams, "Semifinal", 1)}</div>
+      <div class="bracket-node node-sf002">${renderBracketMatch(matches.SF002, teams, "Semifinal", 2)}</div>
 
-      <div class="bracket-node node-gf001">${renderBracketMatch(matches.GF001, teams, "GF", 1)}</div>
+      <div class="bracket-node node-gf001">${renderBracketMatch(matches.GF001, teams, "Gran Final", 1)}</div>
 
       <div class="bracket-champion-box bracket-champion-node">
         <div class="champion-label">Campeón</div>
@@ -1431,6 +1431,7 @@ function renderBracketView(
 
 function renderBracketMatch(match, teams, roundType, roundNumber) {
   const matchId = match.matchId || match.MATCH_ID || `${roundType}${String(roundNumber).padStart(3, "0")}`;
+  const displayMatchLabel = `${roundType} ${roundNumber}`
   const status = match.status || match.ESTADO || "Pendiente";
 
   const teamAId = match.teamA || match.teamAId || match.EQUIPO_A || "";
@@ -1459,7 +1460,7 @@ function renderBracketMatch(match, teams, roundType, roundNumber) {
     <div class="bracket-slot">
       <div class="bracket-match compact ${status.toLowerCase().replace(/\s+/g, "-")}">
         <div class="bracket-match-head">
-          <span class="bracket-match-id">${matchId}</span>
+          <span class="bracket-match-id">${displayMatchLabel}</span>
           <span class="bracket-match-status">${status}</span>
         </div>
 
