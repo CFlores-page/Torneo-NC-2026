@@ -4596,17 +4596,17 @@ display: none;
 }
 
 /* =========================================================
-   BRACKET VIEW — CONSOLIDATED
-   Scope: Bracket tab only.
-   This replaces all older bracket blocks and connector override passes.
+   BRACKET VIEW — FINAL CLEAN VERSION
+   Scope: Bracket tab only
+   Requires SVG lines from renderBracketView()
 ========================================================= */
 
 .bracket-view {
   position: relative;
   z-index: 1;
   width: 100%;
-  min-height: calc(100vh - 44px);
-  padding: 10px 0 28px;
+  min-height: calc(100vh - 36px);
+  padding: 22px 0 32px;
   overflow-x: auto;
   overflow-y: visible;
   scrollbar-width: none;
@@ -4619,470 +4619,14 @@ display: none;
   display: none;
 }
 
-/* Desktop bracket geometry */
-.bracket-stage {
-  --qf-width: 430px;
-  --sf-width: 360px;
-  --gf-width: 360px;
-  --round-gap: 112px;
-  --line-half: 56px;
-  --line-color-a: rgba(255, 212, 71, 0.72);
-  --line-color-b: rgba(93, 168, 255, 0.70);
-
-  position: relative;
-  display: grid;
-  grid-template-columns: var(--qf-width) var(--sf-width) var(--gf-width);
-  column-gap: var(--round-gap);
-  align-items: start;
-  width: max-content;
-  min-width: 100%;
-  padding-right: 28px;
-}
-
-.bracket-column {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.bracket-round-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(34px, 2.25vw, 46px);
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: 0.085em;
-  text-transform: uppercase;
-  color: var(--sport-gold);
-  text-shadow: 0 8px 24px rgba(0,0,0,0.45);
-}
-
-.bracket-round-dates {
-  margin: 18px 0 52px;
-  color: var(--sport-blue);
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
-/* Slot placement */
-.bracket-slot {
-  position: relative;
-}
-
-.bracket-column.qf .bracket-slot + .bracket-slot {
-  margin-top: 30px;
-}
-
-.bracket-column.sf {
-  padding-top: 142px;
-}
-
-.bracket-column.sf .bracket-slot + .bracket-slot {
-  margin-top: 146px;
-}
-
-.bracket-column.gf {
-  padding-top: 292px;
-}
-
-.bracket-champion-box {
-  margin-top: 98px;
-}
-
-/* Match cards */
-.bracket-match.compact {
-  position: relative;
-  overflow: visible;
-  width: 100%;
-  min-height: unset;
-  padding: 10px 12px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 212, 71, 0.18);
-  background:
-    radial-gradient(circle at 100% 0%, rgba(255, 212, 71, 0.055), transparent 42%),
-    linear-gradient(90deg, rgba(16, 24, 38, 0.96), rgba(28, 35, 48, 0.92));
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.025),
-    0 12px 28px rgba(0,0,0,0.20);
-}
-
-.bracket-match-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.bracket-match-id,
-.bracket-match-status {
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.bracket-match-id {
-  color: #8da7c9;
-}
-
-.bracket-match-status {
-  color: var(--sport-blue);
-}
-
-/* Team rows */
-.bracket-team-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 10px;
-  min-height: 34px;
-  padding: 7px 10px;
-  border-radius: 11px;
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.055);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-
-.bracket-team-row + .bracket-team-row {
-  margin-top: 7px;
-}
-
-.bracket-team-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.bracket-flag {
-  width: 24px;
-  height: auto;
-  max-height: 18px;
-  object-fit: contain;
-  object-position: center;
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.bracket-team-name {
-  min-width: 0;
-  color: #f4f7fb;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.035em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bracket-team-score {
-  min-width: 18px;
-  color: var(--sport-gold);
-  font-size: 18px;
-  font-weight: 950;
-  line-height: 1;
-  text-align: right;
-}
-
-/* Unit pill: follows same token system as .unit-chip */
-.bracket-unit-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  margin-left: 2px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  color: var(--unit-primary, #6daeff);
-  background: color-mix(in srgb, var(--unit-bg, #071A33) 72%, transparent);
-  border: 1px solid color-mix(in srgb, var(--unit-primary, #6daeff) 55%, transparent);
-  font-size: 9px;
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.bracket-team-row.projected,
-.bracket-team-row.projected .bracket-team-name {
-  color: rgba(255,255,255,0.72);
-}
-
-/* Winner glow */
-.bracket-team-row.winner {
-  border-color: rgba(255, 212, 71, 0.62);
-  background:
-    linear-gradient(90deg, rgba(255,212,71,0.14), rgba(255,212,71,0.055) 42%, rgba(255,255,255,0.035));
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 212, 71, 0.18),
-    0 0 18px rgba(255, 212, 71, 0.20);
-}
-
-.bracket-team-row.winner .bracket-team-name,
-.bracket-team-row.winner .bracket-team-score {
-  color: var(--sport-gold);
-}
-
-/* Champion box */
-.bracket-champion-box {
-  padding: 18px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 212, 71, 0.30);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 212, 71, 0.12), transparent 50%),
-    linear-gradient(90deg, rgba(26, 31, 38, 0.96), rgba(52, 50, 28, 0.72));
-  box-shadow: 0 14px 32px rgba(0,0,0,0.22);
-  text-align: center;
-}
-
-.champion-label {
-  margin-bottom: 5px;
-  color: #8da7c9;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.17em;
-  text-transform: uppercase;
-}
-
-.champion-name {
-  color: #ffffff;
-  font-family: var(--font-display);
-  font-size: 44px;
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* =========================================================
-   BRACKET CONNECTORS
-   Geometry:
-   - QF order is expected to be CF001, CF003, CF002, CF004.
-   - SF001 receives QF slots 1 & 2.
-   - SF002 receives QF slots 3 & 4.
-========================================================= */
-
-/* Reset any older connector rules */
-.bracket-column.qf .bracket-slot::before,
-.bracket-column.qf .bracket-slot::after,
-.bracket-column.sf .bracket-slot::before,
-.bracket-column.sf .bracket-slot::after,
-.bracket-column.gf .bracket-slot::before {
-  content: none;
-}
-
-/* QF card -> QF spine */
-.bracket-column.qf .bracket-slot::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(var(--line-half) * -1);
-  width: var(--line-half);
-  height: 2px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, var(--line-color-a), var(--line-color-b));
-  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
-}
-
-/* QF pair spines: first and third QF slots only */
-.bracket-column.qf .bracket-slot:nth-child(3)::before,
-.bracket-column.qf .bracket-slot:nth-child(5)::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(var(--line-half) * -1);
-  width: 2px;
-  height: calc(100% + 30px);
-  background: linear-gradient(180deg, var(--line-color-a), var(--line-color-b));
-  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
-}
-
-/* QF spine -> SF card */
-.bracket-column.sf .bracket-slot::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: calc(var(--line-half) * -1);
-  width: var(--line-half);
-  height: 2px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, var(--line-color-b), var(--line-color-a));
-  box-shadow: 0 0 10px rgba(255, 212, 71, 0.16);
-}
-
-/* SF card -> SF spine */
-.bracket-column.sf .bracket-slot::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(var(--line-half) * -1);
-  width: var(--line-half);
-  height: 2px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, var(--line-color-a), var(--line-color-b));
-  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
-}
-
-/* SF pair spine */
-.bracket-column.sf .bracket-slot:first-of-type .bracket-match::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(var(--line-half) * -1);
-  width: 2px;
-  height: calc(100% + 146px);
-  background: linear-gradient(180deg, var(--line-color-a), var(--line-color-b));
-  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
-}
-
-/* SF spine -> GF card */
-.bracket-column.gf .bracket-slot::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: calc(var(--line-half) * -1);
-  width: var(--line-half);
-  height: 2px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, var(--line-color-b), var(--line-color-a));
-  box-shadow: 0 0 10px rgba(255, 212, 71, 0.16);
-}
-
-/* Active/golden path hooks, ready for JS classes later */
-.bracket-slot.path-active::before,
-.bracket-slot.path-active::after,
-.bracket-match.path-active::after {
-  background: linear-gradient(90deg, #ffe27a, #ffd447) !important;
-  box-shadow:
-    0 0 12px rgba(255, 212, 71, 0.36),
-    0 0 24px rgba(255, 212, 71, 0.18) !important;
-}
-
-.bracket-slot.path-active .bracket-match {
-  border-color: rgba(255, 212, 71, 0.38);
-}
-
-/* =========================
-   BRACKET VERTICAL CENTER PASS
-========================= */
-
-.bracket-view {
-  min-height: calc(100vh - 80px);
-  display: flex;
-  align-items: center;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
-.bracket-stage {
-  margin-top: -20px;
-  align-items: center;
-}
-
-.bracket-column.qf {
-  justify-content: center;
-}
-
-.bracket-column.sf {
-  justify-content: center;
-  padding-top: 0;
-}
-
-.bracket-column.gf {
-  justify-content: center;
-  padding-top: 0;
-}
-
-/* =========================
-   SF → GF CONNECTOR FIX
-========================= */
-
-/* Give the semifinals column a controlled connector zone */
-.bracket-column.sf {
-  position: relative;
-}
-
-/* Kill the old individual SF outgoing lines */
-.bracket-column.sf .bracket-slot::after,
-.bracket-column.sf .bracket-slot .bracket-match::after {
-  content: none !important;
-}
-
-/* Small horizontal line from each SF card to the shared vertical spine */
-.bracket-column.sf .bracket-slot::after {
-  content: "" !important;
-  position: absolute;
-  top: 50%;
-  right: -38px;
-  width: 38px;
-  height: 2px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, rgba(255, 212, 59, 0.72), rgba(93, 168, 255, 0.68));
-  box-shadow: 0 0 10px rgba(93, 168, 255, 0.16);
-}
-
-/* The shared vertical spine between SF001 and SF002 */
-.bracket-column.sf::after {
-  content: "";
-  position: absolute;
-  right: -38px;
-  top: 50%;
-  width: 2px;
-  height: 188px;
-  transform: translateY(-50%);
-  background: linear-gradient(180deg, rgba(255, 212, 59, 0.78), rgba(93, 168, 255, 0.72));
-  box-shadow: 0 0 10px rgba(93, 168, 255, 0.18);
-}
-
-/* Final card receives one clean incoming line from the spine */
-.bracket-column.gf .bracket-slot::before {
-  content: "" !important;
-  position: absolute;
-  top: 50%;
-  left: -58px;
-  width: 58px;
-  height: 2px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, rgba(93, 168, 255, 0.68), rgba(255, 212, 59, 0.72));
-  box-shadow: 0 0 10px rgba(255, 212, 59, 0.16);
-}
-
-/* =========================================================
-   BRACKET VIEW — SVG CONNECTOR VERSION
-   Clean bracket engine:
-   - Cards are positioned nodes
-   - Lines are one SVG layer
-   - No pseudo-element connector spaghetti
-========================================================= */
-
-.bracket-view {
-  position: relative;
-  min-height: calc(100vh - 70px);
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 10px 0 26px;
-}
-
 .bracket-board {
   position: relative;
-  width: 1180px;
-  height: 680px;
+  width: 1120px;
+  height: 640px;
   margin: 0 auto;
 }
 
-/* SVG line layer */
+/* SVG connector layer */
 
 .bracket-lines {
   position: absolute;
@@ -5094,18 +4638,19 @@ display: none;
 
 .bracket-path {
   fill: none;
-  stroke: rgba(102, 174, 255, 0.68);
+  stroke: rgba(102, 174, 255, 0.78);
   stroke-width: 2;
   stroke-linecap: square;
   stroke-linejoin: miter;
-  filter: drop-shadow(0 0 8px rgba(93, 168, 255, 0.14));
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 7px rgba(93, 168, 255, 0.16));
 }
 
 .bracket-path.active {
-  stroke: #ffd447;
+  stroke: var(--sport-gold);
   stroke-width: 3;
   filter:
-    drop-shadow(0 0 8px rgba(255, 212, 71, 0.35))
+    drop-shadow(0 0 8px rgba(255, 212, 71, 0.38))
     drop-shadow(0 0 18px rgba(255, 212, 71, 0.18));
 }
 
@@ -5115,7 +4660,7 @@ display: none;
   position: absolute;
   z-index: 3;
   font-family: var(--font-display);
-  font-size: 38px;
+  font-size: 34px;
   font-weight: 400;
   line-height: 0.95;
   letter-spacing: 0.12em;
@@ -5128,7 +4673,7 @@ display: none;
 .bracket-round-dates {
   position: absolute;
   z-index: 3;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -5137,41 +4682,41 @@ display: none;
 }
 
 .bracket-title-qf { left: 0; top: 0; }
-.bracket-date-qf { left: 0; top: 54px; }
+.bracket-date-qf { left: 0; top: 48px; }
 
-.bracket-title-sf { left: 455px; top: 92px; }
-.bracket-date-sf { left: 455px; top: 150px; }
+.bracket-title-sf { left: 410px; top: 58px; }
+.bracket-date-sf { left: 410px; top: 110px; }
 
-.bracket-title-gf { left: 855px; top: 144px; }
-.bracket-date-gf { left: 855px; top: 204px; }
+.bracket-title-gf { left: 820px; top: 86px; }
+.bracket-date-gf { left: 820px; top: 138px; }
 
-/* Card nodes */
+/* Node positions */
 
 .bracket-node {
   position: absolute;
   z-index: 4;
-  width: 350px;
+  width: 300px;
 }
 
-.node-cf001 { left: 0; top: 92px; }
-.node-cf003 { left: 0; top: 212px; }
-.node-cf002 { left: 0; top: 352px; }
-.node-cf004 { left: 0; top: 472px; }
+.node-cf001 { left: 0; top: 96px; }
+.node-cf003 { left: 0; top: 236px; }
+.node-cf002 { left: 0; top: 376px; }
+.node-cf004 { left: 0; top: 516px; }
 
-.node-sf001 { left: 455px; top: 240px; }
-.node-sf002 { left: 455px; top: 390px; }
+.node-sf001 { left: 410px; top: 180px; }
+.node-sf002 { left: 410px; top: 460px; }
 
-.node-gf001 { left: 855px; top: 315px; }
+.node-gf001 { left: 820px; top: 320px; }
 
 .bracket-champion-node {
   position: absolute;
-  left: 855px;
-  top: 500px;
+  left: 820px;
+  top: 505px;
   z-index: 4;
-  width: 350px;
+  width: 300px;
 }
 
-/* Kill any old pseudo connector leftovers */
+/* Kill old pseudo connectors permanently */
 
 .bracket-column .bracket-slot::before,
 .bracket-column .bracket-slot::after,
@@ -5182,7 +4727,7 @@ display: none;
   content: none !important;
 }
 
-/* Normalize nested slot wrapper */
+/* Wrapper normalization */
 
 .bracket-node .bracket-slot {
   position: static;
@@ -5194,7 +4739,7 @@ display: none;
 .bracket-match.compact {
   width: 100%;
   min-height: unset;
-  padding: 10px 12px;
+  padding: 9px 11px;
   border-radius: 14px;
   border: 1px solid rgba(255, 212, 71, 0.16);
   background:
@@ -5210,12 +4755,12 @@ display: none;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 }
 
 .bracket-match-id {
   color: #8da7c9;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -5223,7 +4768,7 @@ display: none;
 
 .bracket-match-status {
   color: var(--sport-blue);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -5233,11 +4778,11 @@ display: none;
 
 .bracket-team-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  min-height: 34px;
-  padding: 7px 10px;
+  min-height: 31px;
+  padding: 6px 9px;
   border-radius: 10px;
   background: rgba(255,255,255,0.035);
   border: 1px solid rgba(255,255,255,0.055);
@@ -5245,13 +4790,13 @@ display: none;
 }
 
 .bracket-team-row + .bracket-team-row {
-  margin-top: 7px;
+  margin-top: 6px;
 }
 
 .bracket-team-row.winner {
-  border-color: rgba(255, 212, 71, 0.55);
+  border-color: rgba(255, 212, 71, 0.58);
   background:
-    linear-gradient(90deg, rgba(255,212,71,0.12), rgba(255,255,255,0.035));
+    linear-gradient(90deg, rgba(255,212,71,0.14), rgba(255,255,255,0.035));
   box-shadow:
     inset 0 0 0 1px rgba(255, 212, 71, 0.16),
     0 0 18px rgba(255, 212, 71, 0.18);
@@ -5260,14 +4805,14 @@ display: none;
 .bracket-team-main {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
 }
 
 .bracket-flag {
-  width: 24px;
+  width: 22px;
   height: auto;
-  max-height: 17px;
+  max-height: 16px;
   object-fit: contain;
   object-position: center;
   border: 0;
@@ -5280,7 +4825,7 @@ display: none;
 .bracket-team-name {
   min-width: 0;
   color: #f4f7fb;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.035em;
   text-transform: uppercase;
@@ -5290,9 +4835,9 @@ display: none;
 }
 
 .bracket-team-score {
-  min-width: 20px;
+  min-width: 18px;
   color: var(--sport-gold);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
   line-height: 1;
   text-align: right;
@@ -5348,214 +4893,23 @@ display: none;
   text-transform: uppercase;
 }
 
-/* Responsive fallback */
+/* Responsive */
 
-@media (max-width: 1250px) {
-  .bracket-view {
-    overflow-x: auto;
-  }
-
+@media (max-width: 1350px) {
   .bracket-board {
     margin-left: 0;
     margin-right: 0;
   }
 }
 
-/* =========================
-   BRACKET SPACING / LINE ALIGNMENT PASS
-========================= */
-
-.bracket-board {
-  width: 1220px;
-  height: 760px;
-}
-
-.bracket-lines {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: visible;
-}
-
-.bracket-path {
-  fill: none;
-  stroke: rgba(102, 174, 255, 0.72);
-  stroke-width: 2;
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-  vector-effect: non-scaling-stroke;
-}
-
-.bracket-path.active {
-  stroke: #ffd447;
-  stroke-width: 3;
-  filter:
-    drop-shadow(0 0 8px rgba(255, 212, 71, 0.35))
-    drop-shadow(0 0 18px rgba(255, 212, 71, 0.18));
-}
-
-/* Round labels */
-.bracket-title-qf { left: 0; top: 0; }
-.bracket-date-qf { left: 0; top: 56px; }
-
-.bracket-title-sf { left: 470px; top: 82px; }
-.bracket-date-sf { left: 470px; top: 142px; }
-
-.bracket-title-gf { left: 920px; top: 112px; }
-.bracket-date-gf { left: 920px; top: 172px; }
-
-/* Cards */
-.bracket-node {
-  width: 350px;
-}
-
-.node-cf001 { left: 0; top: 105px; }
-.node-cf003 { left: 0; top: 250px; }
-.node-cf002 { left: 0; top: 430px; }
-.node-cf004 { left: 0; top: 575px; }
-
-.node-sf001 { left: 470px; top: 180px; }
-.node-sf002 { left: 470px; top: 505px; }
-
-.node-gf001 { left: 920px; top: 355px; }
-
-.bracket-champion-node {
-  left: 920px;
-  top: 585px;
-  width: 350px;
-}
-
-/* =========================
-   BRACKET FINAL FIT PASS
-   Keep the SVG geometry, but make the board actually fill the page
-========================= */
-
-.bracket-view {
-  position: relative;
-  height: calc(100vh - 36px);
-  min-height: 760px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.bracket-board {
-  position: relative;
-  width: 1120px;
-  height: 640px;
-  margin: 0;
-  transform: scale(1.22);
-  transform-origin: center center;
-}
-
-/* Remove any leftover offsets from previous passes */
-.bracket-board {
-  left: auto;
-  top: auto;
-}
-
-/* Keep the SVG on the same coordinate system */
-.bracket-lines {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: visible;
-}
-
-/* If the sidebar view feels too tight vertically, lower this to 1.15 */
-@media (max-height: 850px) {
-  .bracket-board {
-    transform: scale(1.12);
-  }
-}
-
-@media (max-width: 1450px) {
-  .bracket-board {
-    transform: scale(1.05);
-  }
-}
-
-@media (max-width: 1200px) {
-  .bracket-view {
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding-left: 24px;
-  }
-
-  .bracket-board {
-    transform: scale(1);
-    transform-origin: left center;
-  }
-}
-
-/* =========================================================
-   BRACKET RESPONSIVE
-========================================================= */
-
-@media (max-width: 1500px) {
-  .bracket-stage {
-    --qf-width: 400px;
-    --sf-width: 340px;
-    --gf-width: 340px;
-    --round-gap: 90px;
-    --line-half: 45px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .bracket-view {
-    overflow-x: auto;
-    padding-bottom: 18px;
-  }
-
-  .bracket-stage {
-    --qf-width: 370px;
-    --sf-width: 320px;
-    --gf-width: 320px;
-    --round-gap: 72px;
-    --line-half: 36px;
-    min-width: 1180px;
-  }
-}
-
 @media (max-width: 900px) {
   .bracket-view {
-    padding: 4px 0 18px;
+    padding: 12px 0 24px;
   }
 
-  .bracket-stage {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-width: 0;
-    gap: 28px;
-    padding-right: 0;
-  }
-
-  .bracket-column.sf,
-  .bracket-column.gf {
-    padding-top: 0;
-  }
-
-  .bracket-column.qf .bracket-slot + .bracket-slot,
-  .bracket-column.sf .bracket-slot + .bracket-slot {
-    margin-top: 14px;
-  }
-
-  .bracket-champion-box {
-    margin-top: 18px;
-  }
-
-  .bracket-column.qf .bracket-slot::before,
-  .bracket-column.qf .bracket-slot::after,
-  .bracket-column.sf .bracket-slot::before,
-  .bracket-column.sf .bracket-slot::after,
-  .bracket-column.gf .bracket-slot::before,
-  .bracket-column.sf .bracket-slot:first-of-type .bracket-match::after {
-    content: none;
+  .bracket-board {
+    width: 1120px;
+    height: 640px;
+    margin: 0;
   }
 }
