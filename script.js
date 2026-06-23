@@ -1394,8 +1394,8 @@ function renderBracketView(
         <path class="${pathClass("CF002")}" d="M 300 425 H 350 V 565 H 410" />
         <path class="${pathClass("CF004")}" d="M 300 565 H 410" />
 
-        <path class="${pathClass("SF001")}" d="M 710 225 H 765 V 365 H 820" />
-        <path class="${pathClass("SF002")}" d="M 710 505 H 765 V 365 H 820" />
+        <path class="${pathClass("SF001")}" d="M 710 220 H 765 V 360 H 820" />
+        <path class="${pathClass("SF002")}" d="M 710 500 H 765 V 360 H 820" />
       </svg>
 
       <div class="bracket-round-title bracket-title-qf">Cuartos de Final</div>
