@@ -5426,6 +5426,90 @@ display: none;
   width: 350px;
 }
 
+/* =========================
+   BRACKET DEAD-SPACE KILL PASS
+========================= */
+
+.bracket-view {
+  min-height: auto;
+  display: block;
+  align-items: unset;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 0 16px;
+}
+
+.bracket-board {
+  width: 1080px;
+  height: 560px;
+  margin: 0;
+}
+
+/* Round labels */
+.bracket-title-qf { left: 0; top: 0; }
+.bracket-date-qf { left: 0; top: 46px; }
+
+.bracket-title-sf { left: 410px; top: 50px; }
+.bracket-date-sf { left: 410px; top: 102px; }
+
+.bracket-title-gf { left: 820px; top: 78px; }
+.bracket-date-gf { left: 820px; top: 130px; }
+
+/* Card width */
+.bracket-node {
+  width: 300px;
+}
+
+/* Quarterfinals */
+.node-cf001 { left: 0; top: 95px; }
+.node-cf003 { left: 0; top: 235px; }
+.node-cf002 { left: 0; top: 365px; }
+.node-cf004 { left: 0; top: 505px; }
+
+/* Semifinals */
+.node-sf001 { left: 410px; top: 165px; }
+.node-sf002 { left: 410px; top: 435px; }
+
+/* Final */
+.node-gf001 { left: 820px; top: 300px; }
+
+/* Champion box */
+.bracket-champion-node {
+  left: 820px;
+  top: 465px;
+  width: 300px;
+}
+
+/* Slightly tighter cards */
+.bracket-match.compact {
+  padding: 9px 11px;
+}
+
+.bracket-team-row {
+  min-height: 31px;
+  padding: 6px 9px;
+}
+
+.bracket-team-row + .bracket-team-row {
+  margin-top: 6px;
+}
+
+.bracket-team-name {
+  font-size: 12px;
+}
+
+.bracket-team-score {
+  font-size: 16px;
+}
+
+.bracket-round-title {
+  font-size: 34px;
+}
+
+.bracket-round-dates {
+  font-size: 12px;
+}
+
 /* =========================================================
    BRACKET RESPONSIVE
 ========================================================= */
