@@ -4654,6 +4654,24 @@ display: none;
     drop-shadow(0 0 18px rgba(255, 212, 71, 0.18));
 }
 
+/* =========================
+   BRACKET SIZE BOOST
+   Scales the whole bracket as one object
+========================= */
+
+.bracket-view {
+  min-height: calc(100vh - 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bracket-board {
+  transform: scale(1.22);
+  transform-origin: center center;
+}
+
 /* Round labels */
 
 .bracket-round-title {
