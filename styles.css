@@ -5427,28 +5427,37 @@ display: none;
 }
 
 /* =========================
-   BRACKET FIT PASS
-   Keeps SVG bracket stable without clipping the champion
+   BRACKET FINAL FIT PASS
+   Keep the SVG geometry, but make the board actually fill the page
 ========================= */
 
 .bracket-view {
   position: relative;
-  min-height: calc(100vh - 36px);
-  display: block;
-  overflow-x: auto;
-  overflow-y: visible;
-  padding: 24px 0 40px;
+  height: calc(100vh - 36px);
+  min-height: 760px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-/* Main fixed bracket canvas */
 .bracket-board {
   position: relative;
   width: 1120px;
   height: 640px;
-  margin: 0 0 0 48px;
+  margin: 0;
+  transform: scale(1.22);
+  transform-origin: center center;
 }
 
-/* SVG should match the board */
+/* Remove any leftover offsets from previous passes */
+.bracket-board {
+  left: auto;
+  top: auto;
+}
+
+/* Keep the SVG on the same coordinate system */
 .bracket-lines {
   position: absolute;
   inset: 0;
@@ -5457,39 +5466,30 @@ display: none;
   overflow: visible;
 }
 
-/* Round labels */
-.bracket-title-qf { left: 0; top: 0; }
-.bracket-date-qf { left: 0; top: 48px; }
-
-.bracket-title-sf { left: 410px; top: 62px; }
-.bracket-date-sf { left: 410px; top: 114px; }
-
-.bracket-title-gf { left: 820px; top: 92px; }
-.bracket-date-gf { left: 820px; top: 144px; }
-
-/* Card width */
-.bracket-node {
-  width: 300px;
+/* If the sidebar view feels too tight vertically, lower this to 1.15 */
+@media (max-height: 850px) {
+  .bracket-board {
+    transform: scale(1.12);
+  }
 }
 
-/* Quarterfinals */
-.node-cf001 { left: 0; top: 96px; }
-.node-cf003 { left: 0; top: 236px; }
-.node-cf002 { left: 0; top: 376px; }
-.node-cf004 { left: 0; top: 516px; }
+@media (max-width: 1450px) {
+  .bracket-board {
+    transform: scale(1.05);
+  }
+}
 
-/* Semifinals */
-.node-sf001 { left: 410px; top: 180px; }
-.node-sf002 { left: 410px; top: 460px; }
+@media (max-width: 1200px) {
+  .bracket-view {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-left: 24px;
+  }
 
-/* Final */
-.node-gf001 { left: 820px; top: 320px; }
-
-/* Champion box */
-.bracket-champion-node {
-  left: 820px;
-  top: 505px;
-  width: 300px;
+  .bracket-board {
+    transform: scale(1);
+    transform-origin: left center;
+  }
 }
 
 /* =========================================================
