@@ -1388,11 +1388,11 @@ function renderBracketView(
   container.innerHTML = `
     <section class="bracket-board">
       <svg class="bracket-lines" viewBox="0 0 1120 640" preserveAspectRatio="none" aria-hidden="true">
-        <path class="${pathClass("CF001")}" d="M 300 145 H 350 V 285 H 410" />
-        <path class="${pathClass("CF003")}" d="M 300 285 H 410" />
+        <path class="${pathClass("CF001")}" d="M 300 145 H 350 V 230 H 410" />
+        <path class="${pathClass("CF003")}" d="M 300 285 H 350 V 230 H 410" />
 
-        <path class="${pathClass("CF002")}" d="M 300 425 H 350 V 565 H 410" />
-        <path class="${pathClass("CF004")}" d="M 300 565 H 410" />
+        <path class="${pathClass("CF002")}" d="M 300 425 H 350 V 510 H 410" />
+        <path class="${pathClass("CF004")}" d="M 300 565 H 350 V 510 H 410" />
 
         <path class="${pathClass("SF001")}" d="M 710 220 H 765 V 360 H 820" />
         <path class="${pathClass("SF002")}" d="M 710 500 H 765 V 360 H 820" />
