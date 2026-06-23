@@ -120,6 +120,10 @@ async function fetchDashboardPayload() {
   summary.currentPhase = phaseRows?.[0]?.[0] || summary.currentPhase || "Pendiente"
 
   const standings = standingsRowsToObjects(standingsRows)
+    .map(row => ({
+      ...row,
+      tournamentPoints: row.points
+    }))
   const upcomingMatches = upcomingRowsToObjects(upcomingRows)
   const liveMatches = liveRowsToObjects(liveRows)
   const teams = teamRowsToObjects(teamsRows)
@@ -1512,8 +1516,8 @@ async function loadDashboardData(options = {}) {
       updateDashboardCards(nextState.summary)
     }
 
-    if (shouldRender("standings", nextState.tournamentStandings.slice(0, 8), force)) {
-      renderStandings(nextState.tournamentStandings.slice(0, 8))
+    if (shouldRender("standings", nextState.standings.slice(0, 8), force)) {
+      renderStandings(nextState.standings.slice(0, 8))
     }
 
     if (shouldRender("upcomingMatches", nextState.upcomingMatches, force)) {
