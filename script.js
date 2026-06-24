@@ -93,6 +93,13 @@ function isViewVisible(viewId) {
   return view && !view.classList.contains("hidden")
 }
 
+function toggleMaintenanceOverlay(isOn) {
+  const overlay = document.getElementById("maintenanceOverlay")
+  if (!overlay) return
+
+  overlay.classList.toggle("hidden", !isOn)
+}
+
 async function fetchDashboardPayload() {
   const [
     phaseRows,
@@ -103,7 +110,8 @@ async function fetchDashboardPayload() {
     teamsRows,
     playersRows,
     liveFeedRows,
-    partidosRows
+    partidosRows,
+    maintenanceRows
   ] = await Promise.all([
     getSheet("B4:B4", "DASHBOARD"),
     getSheet("A2:B25", "DASHBOARD"),
@@ -113,9 +121,9 @@ async function fetchDashboardPayload() {
     getSheet("A2:H50", "EQUIPOS"),
     getSheet("A2:P300", "JUGADORES"),
     getSheet("A2:Q100", "LIVE_FEED"),
-    getSheet("A2:K200", "PARTIDOS")
-  ])
-
+    getSheet("A2:K200", "PARTIDOS"),
+    getSheet("J1:J1", "DASHBOARD")
+    ])
   const summary = summaryRowsToObject(summaryRows)
   summary.currentPhase = phaseRows?.[0]?.[0] || summary.currentPhase || "Pendiente"
 
@@ -132,6 +140,12 @@ async function fetchDashboardPayload() {
   const allTournamentMatches = tournamentMatchRowsToObjects(partidosRows)
   const tournamentStandings = buildTournamentStandings(teams, allTournamentMatches)
 
+  const maintenanceValue = maintenanceRows?.[0]?.[0]
+
+  const maintenanceMode =
+    maintenanceValue === true ||
+    String(maintenanceValue || "").trim().toUpperCase() === "TRUE"
+
   return {
     summary,
     standings,
@@ -141,7 +155,9 @@ async function fetchDashboardPayload() {
     players,
     liveFeed,
     tournamentStandings,
-    allTournamentMatches
+    allTournamentMatches,
+    maintenanceMode
+
   }
 }
 
@@ -1512,6 +1528,8 @@ async function loadDashboardData(options = {}) {
     const nextState = await fetchDashboardPayload()
 
     dashboardState = nextState
+
+    toggleMaintenanceOverlay(nextState.maintenanceMode)
 
     if (shouldRender("summary", nextState.summary, force)) {
       updateDashboardCards(nextState.summary)
