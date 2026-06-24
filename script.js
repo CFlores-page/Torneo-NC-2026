@@ -2,7 +2,7 @@ const SHEET_ID = "1oKylf8lidgxrwjOkG4MpN4sVH9HB7VzJpNmmDOlpGw8"
 const SHEET_NAME = "DASHBOARD"
 const REFRESH_MS = 10000
 const CHANGE_CHECK_SHEET = "DASHBOARD"
-const CHANGE_CHECK_RANGE = "G1:G1"
+const CHANGE_CHECK_RANGE = "G1:J1"
 
 let lastDataVersion = null
 let versionCheckInFlight = false
@@ -34,9 +34,27 @@ let renderCache = {
   bracket: ""
 }
 
+function isTruthyCell(value) {
+  if (value === true) return true
+
+  const raw = String(value || "")
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+
+  return ["TRUE", "VERDADERO", "SI", "YES", "1", "ON"].includes(raw)
+}
+
 async function fetchDataVersion() {
   const rows = await getSheet(CHANGE_CHECK_RANGE, CHANGE_CHECK_SHEET)
-  return String(rows?.[0]?.[0] || "").trim()
+  const row = rows?.[0] || []
+
+  const dataVersion = String(row[0] || "").trim() // G1
+  const maintenanceValue = row[3]                 // J1, because G-H-I-J
+  const maintenanceSignature = isTruthyCell(maintenanceValue) ? "MAINT_ON" : "MAINT_OFF"
+
+  return `${dataVersion}|${maintenanceSignature}`
 }
 
 async function pollForDashboardChanges() {
@@ -142,9 +160,7 @@ async function fetchDashboardPayload() {
 
   const maintenanceValue = maintenanceRows?.[0]?.[0]
 
-  const maintenanceMode =
-    maintenanceValue === true ||
-    String(maintenanceValue || "").trim().toUpperCase() === "TRUE"
+  const maintenanceMode = isTruthyCell(maintenanceValue)
 
   return {
     summary,
