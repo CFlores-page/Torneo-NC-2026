@@ -47,14 +47,30 @@ function isTruthyCell(value) {
 }
 
 async function fetchDataVersion() {
-  const rows = await getSheet(CHANGE_CHECK_RANGE, CHANGE_CHECK_SHEET)
-  const row = rows?.[0] || []
+  const [dashboardRows, partidosRows] = await Promise.all([
+    getSheet(CHANGE_CHECK_RANGE, CHANGE_CHECK_SHEET),
+    getSheet("A20:K26", "PARTIDOS")
+  ])
 
-  const dataVersion = String(row[0] || "").trim() // G1
-  const maintenanceValue = row[3]                 // J1, because G-H-I-J
+  const dashboardRow = dashboardRows?.[0] || []
+
+  const dataVersion = String(dashboardRow[0] || "").trim() // DASHBOARD!G1
+  const maintenanceValue = dashboardRow[3]                 // DASHBOARD!J1
   const maintenanceSignature = isTruthyCell(maintenanceValue) ? "MAINT_ON" : "MAINT_OFF"
 
-  return `${dataVersion}|${maintenanceSignature}`
+  const bracketSignature = JSON.stringify(
+    (partidosRows || []).map(row => ({
+      matchId: String(row[0] || "").trim(),
+      teamA: normalizeId(row[3] || ""),
+      teamB: normalizeId(row[4] || ""),
+      status: String(row[7] || "").trim(),
+      pointsA: String(row[8] || "").trim(),
+      pointsB: String(row[9] || "").trim(),
+      winner: normalizeId(row[10] || "")
+    }))
+  )
+
+  return `${dataVersion}|${maintenanceSignature}|${bracketSignature}`
 }
 
 async function pollForDashboardChanges() {
@@ -2573,7 +2589,7 @@ function renderLiveMatches(matches) {
 
 function tournamentMatchRowsToObjects(rows) {
   return rows
-    .filter(row => row[0] && row[3] && row[4])
+    .filter(row => row[0])
     .map(row => ({
       matchId: String(row[0] || "").trim(),
       phase: row[1] || "",
