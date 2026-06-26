@@ -3218,14 +3218,19 @@ function renderPlayerCard(player, rank) {
   const { firstName, lastName } = splitPlayerName(player.displayName)
   const share = clamp(parseNumber(player.teamPointShare), 0, 100)
   const tournamentRankRaw = String(player.tournamentRank ?? "").trim()
-  const tournamentRank =
-    tournamentRankRaw === "-"
-      ? "-"
-      : formatNumber(tournamentRankRaw || rank)
+
+  const hasTournamentRank =
+    tournamentRankRaw !== "" &&
+    tournamentRankRaw !== "-" &&
+    parseNumber(tournamentRankRaw) > 0
+
+  const tournamentRank = hasTournamentRank
+    ? formatNumber(tournamentRankRaw)
+    : "-"
 
   const serial = buildPlayerSerial({
     ...player,
-    tournamentRank: tournamentRankRaw === "-" ? rank : tournamentRankRaw || rank
+    tournamentRank: hasTournamentRank ? tournamentRankRaw : 0
   })
 
   return `
