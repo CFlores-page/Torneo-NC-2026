@@ -154,7 +154,7 @@ async function fetchDashboardPayload() {
     getSheet("A53:G58", "DASHBOARD"),
     getSheet("A2:H50", "EQUIPOS"),
     getSheet("A2:P300", "JUGADORES"),
-    getSheet("A2:Q100", "LIVE_FEED"),
+    getSheet("A2:Q1000", "LIVE_FEED"),
     getSheet("A2:K200", "PARTIDOS"),
     getSheet("J1:J1", "DASHBOARD")
     ])
