@@ -622,6 +622,110 @@ function buildRosterList(teamId, players) {
   }).join("")
 }
 
+function getPlayerPreviewRank(player) {
+  const rawRank = String(player?.tournamentRank ?? "").trim()
+
+  if (
+    rawRank &&
+    rawRank !== "-" &&
+    parseNumber(rawRank) > 0
+  ) {
+    return parseNumber(rawRank)
+  }
+
+  return 0
+}
+
+function showPlayerHoverPreview(playerId, event) {
+  const preview = document.getElementById("playerHoverPreview")
+  if (!preview) return
+
+  const cleanPlayerId = String(playerId || "").trim()
+
+  const player = (dashboardState.players || []).find(item =>
+    String(item.playerId || "").trim() === cleanPlayerId
+  )
+
+  if (!player) {
+    hidePlayerHoverPreview()
+    return
+  }
+
+  const rank = getPlayerPreviewRank(player)
+
+  preview.innerHTML = `
+    <div class="player-hover-card-shell">
+      ${renderPlayerCard(player, rank)}
+    </div>
+  `
+
+  preview.classList.remove("hidden")
+  movePlayerHoverPreview(event)
+}
+
+function movePlayerHoverPreview(event) {
+  const preview = document.getElementById("playerHoverPreview")
+  if (!preview || preview.classList.contains("hidden")) return
+
+  const padding = 22
+  const offsetX = 22
+  const offsetY = 18
+
+  let left = event.clientX + offsetX
+  let top = event.clientY + offsetY
+
+  const rect = preview.getBoundingClientRect()
+
+  if (left + rect.width + padding > window.innerWidth) {
+    left = event.clientX - rect.width - offsetX
+  }
+
+  if (top + rect.height + padding > window.innerHeight) {
+    top = window.innerHeight - rect.height - padding
+  }
+
+  preview.style.left = `${Math.max(padding, left)}px`
+  preview.style.top = `${Math.max(padding, top)}px`
+}
+
+function hidePlayerHoverPreview() {
+  const preview = document.getElementById("playerHoverPreview")
+  if (!preview) return
+
+  preview.classList.add("hidden")
+  preview.innerHTML = ""
+}
+
+function setupPlayerHoverPreview() {
+  document.addEventListener("mouseover", event => {
+    const row = event.target.closest(".mc-player-row[data-player-id]")
+    if (!row) return
+
+    showPlayerHoverPreview(row.dataset.playerId, event)
+  })
+
+  document.addEventListener("mousemove", event => {
+    const row = event.target.closest(".mc-player-row[data-player-id]")
+    if (!row) return
+
+    movePlayerHoverPreview(event)
+  })
+
+  document.addEventListener("mouseout", event => {
+    const row = event.target.closest(".mc-player-row[data-player-id]")
+    if (!row) return
+
+    const nextTarget = event.relatedTarget
+
+    if (nextTarget && row.contains(nextTarget)) return
+
+    hidePlayerHoverPreview()
+  })
+
+  document.addEventListener("scroll", hidePlayerHoverPreview, true)
+  window.addEventListener("resize", hidePlayerHoverPreview)
+}
+
 function buildPlayerSpotlightCarousel(teamId, players, sideClass = "") {
   const cleanTeamId = normalizeId(teamId)
 
@@ -3880,6 +3984,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupViewNavigation()
   setupMobileMenu()
   setupMatchCenterStripArrows()
+  setupPlayerHoverPreview()
   setupCountdownClock()
 
   pollForDashboardChanges()

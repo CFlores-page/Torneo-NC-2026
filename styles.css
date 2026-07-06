@@ -5930,3 +5930,36 @@ display: none;
 .mc-player-carousel-grid {
   display: none;
 }
+
+/* =========================================================
+   PLAYER HOVER CARD PREVIEW
+========================================================= */
+
+.player-hover-preview {
+  position: fixed;
+  z-index: 99998;
+  width: 270px;
+  pointer-events: none;
+  transform-origin: top left;
+  filter:
+    drop-shadow(0 24px 42px rgba(0,0,0,0.58))
+    drop-shadow(0 0 22px rgba(255, 212, 71, 0.16));
+}
+
+.player-hover-preview.hidden {
+  display: none;
+}
+
+.player-hover-card-shell {
+  width: 360px;
+  transform: scale(0.72);
+  transform-origin: top left;
+}
+
+.player-hover-preview .official-player-card {
+  margin: 0 !important;
+}
+
+.player-hover-preview .player-card {
+  margin: 0 !important;
+}
