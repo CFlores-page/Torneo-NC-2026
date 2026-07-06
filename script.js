@@ -1030,9 +1030,6 @@ function renderMatchCenterStage(match, players) {
   const teamAPlayers = players.filter(player => normalizeId(player.teamId) === normalizeId(match.teamA))
   const teamBPlayers = players.filter(player => normalizeId(player.teamId) === normalizeId(match.teamB))
 
-  const teamACarousel = buildPlayerSpotlightCarousel(match.teamA, players, "left")
-  const teamBCarousel = buildPlayerSpotlightCarousel(match.teamB, players, "right")
-
   const pointsA = parseNumber(match.scoreA)
   const pointsB = parseNumber(match.scoreB)
   const total = Math.max(pointsA + pointsB, 1)
@@ -1159,9 +1156,9 @@ function renderMatchCenterStage(match, players) {
           </div>
 
           <div class="mc-center-card">
-            <div class="mc-mini-stats mc-player-carousel-grid">
-              ${teamACarousel}
-              ${teamBCarousel}
+            <div class="mc-mini-stats">
+              ${renderTopContributorShowcase(topA, teamA.name, "a")}
+              ${renderTopContributorShowcase(topB, teamB.name, "b")}
             </div>
 
             <div class="mc-info-grid mc-info-grid-compact">

@@ -5839,3 +5839,94 @@ display: none;
     transform: translateX(-50%);
   }
 }
+
+/* =========================================================
+   FINALS SIDE ROSTER AS OFFICIAL SCROLLING MATCH SHEET
+========================================================= */
+
+.mc-stage.finals-stage .mc-roster-card {
+  max-height: 520px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mc-stage.finals-stage .mc-roster-card h3,
+.mc-stage.finals-stage .mc-roster-card h2,
+.mc-stage.finals-stage .mc-roster-title {
+  flex: 0 0 auto;
+}
+
+.mc-stage.finals-stage .mc-roster-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 212, 71, 0.32) transparent;
+}
+
+.mc-stage.finals-stage .mc-roster-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mc-stage.finals-stage .mc-roster-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mc-stage.finals-stage .mc-roster-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 212, 71, 0.28);
+  border-radius: 999px;
+}
+
+.mc-stage.finals-stage .mc-player-row.upgraded {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 14px;
+}
+
+.mc-stage.finals-stage .mc-player-row.upgraded .mc-player-avatar,
+.mc-stage.finals-stage .mc-player-row.upgraded .mc-player-avatar-placeholder {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+}
+
+.mc-stage.finals-stage .mc-player-row.upgraded .mc-player-name {
+  font-size: 13px;
+  line-height: 1.08;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.mc-stage.finals-stage .mc-player-row.upgraded .mc-player-sub {
+  margin-top: 4px;
+  font-size: 9px;
+  flex-wrap: wrap;
+}
+
+.mc-stage.finals-stage .mc-player-stat-stack {
+  grid-template-columns: repeat(2, 44px);
+  width: auto;
+  gap: 5px;
+}
+
+.mc-stage.finals-stage .mc-player-stat {
+  padding: 5px 5px;
+}
+
+.mc-stage.finals-stage .mc-player-stat strong {
+  font-size: 16px;
+}
+
+.mc-player-carousel-grid {
+  display: none;
+}
