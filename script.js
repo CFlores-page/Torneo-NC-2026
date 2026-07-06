@@ -3,6 +3,7 @@ const SHEET_NAME = "DASHBOARD"
 const REFRESH_MS = 10000
 const CHANGE_CHECK_SHEET = "DASHBOARD"
 const CHANGE_CHECK_RANGE = "G1:J1"
+const FEATURED_MATCH_IDS = ["GF001", "TL001"]
 
 let lastDataVersion = null
 let versionCheckInFlight = false
@@ -2512,9 +2513,26 @@ function formatUpcomingDate(value) {
   return `${String(date.getDate()).padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`
 }
 
+function isFeaturedMatch(match) {
+  const matchId = String(match?.matchId || "").trim().toUpperCase()
+  return FEATURED_MATCH_IDS.includes(matchId)
+}
+
 function getLiveMatchesForMatchCenter() {
-  return (dashboardState.allTournamentMatches || [])
-    .filter(isLiveMatch)
+  const allMatches = dashboardState.allTournamentMatches || []
+
+  const featuredMatches = FEATURED_MATCH_IDS
+    .map(matchId =>
+      allMatches.find(match =>
+        String(match.matchId || "").trim().toUpperCase() === matchId
+      )
+    )
+    .filter(Boolean)
+
+  const fallbackLiveMatches = allMatches
+    .filter(match => isLiveMatch(match) && !isFeaturedMatch(match))
+
+  return [...featuredMatches, ...fallbackLiveMatches]
     .map(match => ({
       ...match,
       scoreA: parseNumber(match.pointsA),
@@ -2530,14 +2548,20 @@ function renderMatchCenterFromDashboardState() {
   matchCenterState.matches = matches
   matchCenterState.players = players
 
-  if (!matchCenterState.selectedMatchId && matches.length) {
-    matchCenterState.selectedMatchId = matches[0].matchId
-  }
+const selectedStillExists = matches.some(match =>
+  String(match.matchId || "").trim() === String(matchCenterState.selectedMatchId || "").trim()
+)
 
-  const selectedMatch =
-    matches.find(match => match.matchId === matchCenterState.selectedMatchId) ||
-    matches[0] ||
-    null
+if ((!matchCenterState.selectedMatchId || !selectedStillExists) && matches.length) {
+  matchCenterState.selectedMatchId = matches[0].matchId
+}
+
+const selectedMatch =
+  matches.find(match =>
+    String(match.matchId || "").trim() === String(matchCenterState.selectedMatchId || "").trim()
+  ) ||
+  matches[0] ||
+  null
 
   renderMatchCenter(matches, selectedMatch, players, summary)
   updateMatchCenterClock()
