@@ -7,6 +7,7 @@ const FEATURED_MATCH_IDS = ["GF001", "TL001"]
 
 let lastDataVersion = null
 let versionCheckInFlight = false
+let countdownInterval = null
 
 let dashboardState = {
   summary: null,
@@ -622,7 +623,12 @@ function renderMatchStripCard(match, active = false) {
 
       <div class="mc-strip-footer">
         <span>${match.phase || "Partido en vivo"}</span>
-        <strong>Termina: ${formatMatchDate(match.endDate)}</strong>
+        <strong>
+          Quedan
+          <em data-countdown-end="${match.endDate || ""}">
+            ${formatMatchCountdown(match.endDate)}
+          </em>
+        </strong>
       </div>
     </button>
   `
@@ -668,6 +674,91 @@ function formatMatchDate(value) {
     month: "short",
     year: "numeric"
   })
+}
+
+function getGdlDeadlineFromMatchDate(value) {
+  if (!value) return null
+
+  const GDL_UTC_OFFSET = "-06:00"
+
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    const year = value.getFullYear()
+    const month = String(value.getMonth() + 1).padStart(2, "0")
+    const day = String(value.getDate()).padStart(2, "0")
+
+    return new Date(`${year}-${month}-${day}T23:59:59${GDL_UTC_OFFSET}`)
+  }
+
+  const raw = String(value).trim()
+
+  const gvizMatch = raw.match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/)
+
+  if (gvizMatch) {
+    const year = Number(gvizMatch[1])
+    const month = Number(gvizMatch[2]) + 1
+    const day = Number(gvizMatch[3])
+
+    const hour = gvizMatch[4] !== undefined ? Number(gvizMatch[4]) : 23
+    const minute = gvizMatch[5] !== undefined ? Number(gvizMatch[5]) : 59
+    const second = gvizMatch[6] !== undefined ? Number(gvizMatch[6]) : 59
+
+    const isoYear = String(year)
+    const isoMonth = String(month).padStart(2, "0")
+    const isoDay = String(day).padStart(2, "0")
+    const isoHour = String(hour).padStart(2, "0")
+    const isoMinute = String(minute).padStart(2, "0")
+    const isoSecond = String(second).padStart(2, "0")
+
+    return new Date(`${isoYear}-${isoMonth}-${isoDay}T${isoHour}:${isoMinute}:${isoSecond}${GDL_UTC_OFFSET}`)
+  }
+
+  const parsed = new Date(raw)
+
+  if (isNaN(parsed.getTime())) return null
+
+  const year = parsed.getFullYear()
+  const month = String(parsed.getMonth() + 1).padStart(2, "0")
+  const day = String(parsed.getDate()).padStart(2, "0")
+
+  return new Date(`${year}-${month}-${day}T23:59:59${GDL_UTC_OFFSET}`)
+}
+
+function formatMatchCountdown(value) {
+  const deadline = getGdlDeadlineFromMatchDate(value)
+
+  if (!deadline) return "Pendiente"
+
+  const diff = deadline.getTime() - Date.now()
+
+  if (diff <= 0) return "Tiempo cumplido"
+
+  const totalSeconds = Math.floor(diff / 1000)
+  const days = Math.floor(totalSeconds / 86400)
+  const hours = Math.floor((totalSeconds % 86400) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+
+  if (days > 0) {
+    return `${days}d ${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m`
+  }
+
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+}
+
+function updateMatchCountdowns() {
+  document.querySelectorAll("[data-countdown-end]").forEach(element => {
+    element.textContent = formatMatchCountdown(element.dataset.countdownEnd)
+  })
+}
+
+function setupCountdownClock() {
+  if (countdownInterval) return
+
+  updateMatchCountdowns()
+
+  countdownInterval = window.setInterval(() => {
+    updateMatchCountdowns()
+  }, 1000)
 }
 
 function renderTopContributorShowcase(player, teamName, sideClass) {
@@ -3618,6 +3709,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupViewNavigation()
   setupMobileMenu()
   setupMatchCenterStripArrows()
+  setupCountdownClock()
 
   pollForDashboardChanges()
   loadMatchCenterData()

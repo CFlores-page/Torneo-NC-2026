@@ -5031,3 +5031,10 @@ display: none;
     line-height: 1;
   }
 }
+
+.mc-strip-footer strong em {
+  margin-left: 4px;
+  color: var(--sport-gold);
+  font-style: normal;
+  letter-spacing: 0.06em;
+}
