@@ -564,6 +564,7 @@ function buildRosterList(teamId, players) {
       if (!a.isCaptain && b.isCaptain) return 1
       if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints
       if (b.points !== a.points) return b.points - a.points
+      if (b.sales !== a.sales) return b.sales - a.sales
       return String(a.displayName || "").localeCompare(String(b.displayName || ""))
     })
 
@@ -577,20 +578,45 @@ function buildRosterList(teamId, players) {
 
   return teamPlayers.map(player => {
     const photo = driveImage(player.headshotUrl || player.photoUrl || player.fullBodyUrl)
+    const unitStyle = getUnitStyle(player.unit)
+    const matchPoints = parseNumber(player.matchPoints)
+    const tournamentPoints = parseNumber(player.points)
+
     const avatar = photo
       ? `<img class="mc-player-avatar" src="${photo}" alt="${player.displayName}">`
       : `<div class="mc-player-avatar-placeholder">${getInitials(player.displayName)}</div>`
 
+    const roleLabel = player.isCaptain ? "Capitán" : "Jugador"
+
     return `
-      <div class="mc-player-row">
-        ${avatar}
-        <div class="mc-player-meta">
-          <div class="mc-player-name">${player.displayName}</div>
-          <div class="mc-player-sub">
-            ${player.isCaptain ? "Capitán" : "Jugador"} · ${formatNumber(player.points)} pts torneo
+      <div class="mc-player-row upgraded" data-player-id="${player.playerId}">
+        <div class="mc-player-identity">
+          ${avatar}
+
+          <div class="mc-player-meta">
+            <div class="mc-player-name-line">
+              <span class="mc-player-name">${player.displayName}</span>
+              ${player.isCaptain ? `<span class="mc-captain-chip">CAP</span>` : ""}
+            </div>
+
+            <div class="mc-player-sub">
+              <span>${roleLabel}</span>
+              ${player.unit ? `<span class="mc-roster-unit-pill" style="${unitStyle}">${player.unit}</span>` : ""}
+            </div>
           </div>
         </div>
-        <div class="mc-player-points">${formatNumber(player.matchPoints)}</div>
+
+        <div class="mc-player-stat-stack">
+          <div class="mc-player-stat">
+            <span>Partido</span>
+            <strong>${formatNumber(matchPoints)}</strong>
+          </div>
+
+          <div class="mc-player-stat">
+            <span>Torneo</span>
+            <strong>${formatNumber(tournamentPoints)}</strong>
+          </div>
+        </div>
       </div>
     `
   }).join("")
