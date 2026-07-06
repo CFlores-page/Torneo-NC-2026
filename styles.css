@@ -5963,3 +5963,68 @@ display: none;
 .player-hover-preview .player-card {
   margin: 0 !important;
 }
+
+/* =========================================================
+   LIVE FEED URGENCY TONE
+========================================================= */
+
+.feed-message.urgency-pressure .feed-bubble,
+.mc-mini-feed-item.urgency-pressure {
+  border-color: rgba(255, 212, 71, 0.20);
+}
+
+.feed-message.urgency-urgent .feed-bubble,
+.mc-mini-feed-item.urgency-urgent {
+  border-color: rgba(255, 153, 51, 0.26);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 153, 51, 0.10), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.025)),
+    rgba(5, 12, 22, 0.82);
+}
+
+.feed-message.urgency-final-day .feed-bubble,
+.mc-mini-feed-item.urgency-final-day {
+  border-color: rgba(255, 78, 97, 0.30);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 78, 97, 0.12), transparent 40%),
+    linear-gradient(180deg, rgba(255,255,255,0.072), rgba(255,255,255,0.028)),
+    rgba(5, 12, 22, 0.86);
+}
+
+.feed-message.urgency-last-call .feed-bubble,
+.mc-mini-feed-item.urgency-last-call {
+  border-color: rgba(255, 48, 79, 0.44);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 48, 79, 0.18), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.032)),
+    rgba(5, 12, 22, 0.90);
+  box-shadow:
+    0 12px 26px rgba(0,0,0,0.24),
+    0 0 22px rgba(255, 48, 79, 0.08);
+}
+
+.feed-message.urgency-closed .feed-bubble,
+.mc-mini-feed-item.urgency-closed {
+  opacity: 0.84;
+  border-color: rgba(255,255,255,0.14);
+}
+
+.feed-message.urgency-pressure .feed-author,
+.mc-mini-feed-item.urgency-pressure strong {
+  color: var(--sport-gold);
+}
+
+.feed-message.urgency-urgent .feed-author,
+.mc-mini-feed-item.urgency-urgent strong {
+  color: #ffb15c;
+}
+
+.feed-message.urgency-final-day .feed-author,
+.mc-mini-feed-item.urgency-final-day strong {
+  color: #ff7b8c;
+}
+
+.feed-message.urgency-last-call .feed-author,
+.mc-mini-feed-item.urgency-last-call strong {
+  color: #ff4d6d;
+}

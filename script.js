@@ -1091,7 +1091,7 @@ function renderMatchMiniLiveFeed(match) {
         const commentary = buildFeedCommentary(item)
 
         return `
-          <div class="mc-mini-feed-item ${commentary.type}">
+          <div class="mc-mini-feed-item ${commentary.type} urgency-${commentary.urgency || "normal"}">
             <div class="mc-mini-feed-icon">${item.emoji || "⚽"}</div>
 
             <div class="mc-mini-feed-copy">
@@ -1177,14 +1177,15 @@ function renderMatchCenterStage(match, players) {
 
   return `
     <div
-      class="mc-stage ${finalsStageClass}"class="mc-stage"
-      style="
-        --team-a-primary: ${teamAColors.primary};
-        --team-b-primary: ${teamBColors.primary};
-        --team-a-share: ${shareA}%;
-        --team-b-share: ${shareB}%;
-      "
-    >
+      <div
+        class="mc-stage ${finalsStageClass}"class="mc-stage"
+        style="
+          --team-a-primary: ${teamAColors.primary};
+          --team-b-primary: ${teamBColors.primary};
+          --team-a-share: ${shareA}%;
+          --team-b-share: ${shareB}%;
+        "
+      >
       <div class="mc-stage-inner">
         <div class="mc-stage-topline">
           <div class="mc-stage-badge">
@@ -2155,6 +2156,144 @@ function buildFeedScoreText(item) {
   return `${team} ${formatNumber(item.teamScoreAtEvent)} - ${formatNumber(item.opponentScoreAtEvent)} ${opponent}`
 }
 
+function getMatchForFeedItem(item) {
+  const itemMatchId = String(item?.matchId || "").trim()
+
+  if (!itemMatchId) return null
+
+  return (dashboardState.allTournamentMatches || []).find(match =>
+    String(match.matchId || "").trim() === itemMatchId
+  ) || null
+}
+
+function getHoursUntilMatchDeadline(match) {
+  if (!match || !match.endDate) return null
+
+  const deadline = getGdlDeadlineFromMatchDate(match.endDate)
+
+  if (!deadline) return null
+
+  const diffMs = deadline.getTime() - Date.now()
+
+  return diffMs / 36e5
+}
+
+function getFeedUrgencyLevel(item) {
+  const match = getMatchForFeedItem(item)
+  const hoursLeft = getHoursUntilMatchDeadline(match)
+
+  if (hoursLeft === null) return "normal"
+  if (hoursLeft <= 0) return "closed"
+  if (hoursLeft <= 6) return "last-call"
+  if (hoursLeft <= 24) return "final-day"
+  if (hoursLeft <= 48) return "urgent"
+  if (hoursLeft <= 72) return "pressure"
+
+  return "normal"
+}
+
+function applyFeedUrgencyTone(commentary, item) {
+  const urgency = getFeedUrgencyLevel(item)
+
+  if (urgency === "normal") {
+    return {
+      ...commentary,
+      urgency
+    }
+  }
+
+  const team = item.teamName || getTeamInfo(item.teamId).name || "El equipo"
+  const opponent = item.opponentName || getTeamInfo(item.opponentId).name || "el rival"
+  const player = item.playerShortName || item.playerName || "Un jugador"
+  const key = `${item.eventId || ""}-${item.matchId || ""}-${urgency}`
+
+  const urgencyTemplates = {
+    "pressure": [
+      {
+        prefix: "LA PRESIÓN EMPIEZA A SUBIR",
+        suffix: `Con el cierre acercándose, este movimiento de ${player} empieza a pesar para ${team}.`
+      },
+      {
+        prefix: "EL RELOJ YA ENTRA AL PARTIDO",
+        suffix: `${team} suma, y cada punto empieza a sentirse más caro.`
+      },
+      {
+        prefix: "SE ACERCA EL CIERRE",
+        suffix: `${opponent} todavía tiene tiempo, pero ya no puede regalar terreno.`
+      }
+    ],
+
+    "urgent": [
+      {
+        prefix: "TRAMO URGENTE DEL PARTIDO",
+        suffix: `${team} suma en una ventana donde cada movimiento puede cambiar el cierre.`
+      },
+      {
+        prefix: "YA NO HAY TANTO MARGEN",
+        suffix: `${player} mete presión directa. ${opponent} necesita responder pronto.`
+      },
+      {
+        prefix: "EL PARTIDO ENTRA EN ZONA ROJA",
+        suffix: `Este punto de ${team} empieza a sentirse como algo más que una venta.`
+      }
+    ],
+
+    "final-day": [
+      {
+        prefix: "ÚLTIMO DÍA DE PARTIDO",
+        suffix: `${player} suma cuando el margen ya es mínimo. Cada punto puede decidirlo todo.`
+      },
+      {
+        prefix: "TODO PESA MÁS HOY",
+        suffix: `${team} mueve el marcador en el día más importante del match.`
+      },
+      {
+        prefix: "CIERRE DE ALTA TENSIÓN",
+        suffix: `${opponent} ya no puede esperar. El reloj empieza a apretar de verdad.`
+      }
+    ],
+
+    "last-call": [
+      {
+        prefix: "ÚLTIMAS HORAS",
+        suffix: `${player} suma en el tramo final. Ya no hay espacio para respuestas lentas.`
+      },
+      {
+        prefix: "CADA VENTA PUEDE SER LA DEFINITIVA",
+        suffix: `${team} golpea cuando el partido está por cerrarse.`
+      },
+      {
+        prefix: "MOMENTO DE TODO O NADA",
+        suffix: `${opponent} tiene que reaccionar ya. El reloj no perdona.`
+      }
+    ],
+
+    "closed": [
+      {
+        prefix: "TIEMPO CUMPLIDO",
+        suffix: `Este movimiento queda registrado en el cierre del partido.`
+      }
+    ]
+  }
+
+  const selectedUrgency =
+    pickStable(urgencyTemplates[urgency] || urgencyTemplates.normal || [], key)
+
+  if (!selectedUrgency) {
+    return {
+      ...commentary,
+      urgency
+    }
+  }
+
+  return {
+    ...commentary,
+    urgency,
+    title: `¡${selectedUrgency.prefix}!`,
+    body: `${commentary.body} ${selectedUrgency.suffix}`
+  }
+}
+
 function buildFeedCommentary(item) {
   const player = item.playerShortName || item.playerName || "Un jugador"
   const team = item.teamName || getTeamInfo(item.teamId).name || "El equipo"
@@ -2331,12 +2470,14 @@ function buildFeedCommentary(item) {
 
   const selected = pickStable(templates[eventType] || templates["feed-default"], key)
 
-  return {
-    type: eventType,
-    title: selected.title,
-    body: selected.body,
-    score: buildFeedScoreText(item)
+  const baseCommentary = {
+      type: eventType,
+      title: selected.title,
+      body: selected.body,
+      score: buildFeedScoreText(item)
   }
+
+return applyFeedUrgencyTone(baseCommentary, item)
 }
 
 function renderLiveFeed(feedItems = []) {
@@ -2380,7 +2521,7 @@ function renderLiveFeed(feedItems = []) {
         const commentary = buildFeedCommentary(item)
 
         return `
-          <article class="feed-message ${commentary.type}">
+          <article class="feed-message ${commentary.type} urgency-${commentary.urgency || "normal"}">
             <div class="feed-avatar">${item.emoji || "⚽"}</div>
 
             <div class="feed-bubble">
