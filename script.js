@@ -917,6 +917,19 @@ function renderMatchCenterStage(match, players) {
   const teamA = getTeamInfo(match.teamA)
   const teamB = getTeamInfo(match.teamB)
 
+  const matchId = String(match.matchId || "").trim().toUpperCase()
+  const isGrandFinal = matchId === "GF001"
+  const isThirdPlace = matchId === "TL001"
+
+  const matchEventLabel = getFeaturedMatchLabel(match)
+  const matchEventIcon = getFeaturedMatchIcon(match)
+
+  const finalsStageClass = isGrandFinal
+    ? "finals-stage grand-final-stage"
+    : isThirdPlace
+      ? "finals-stage third-place-stage"
+      : ""
+
   const teamAColors = getTeamColors(match.teamA)
   const teamBColors = getTeamColors(match.teamB)
 
@@ -966,7 +979,7 @@ function renderMatchCenterStage(match, players) {
 
   return `
     <div
-      class="mc-stage"
+      class="mc-stage ${finalsStageClass}"class="mc-stage"
       style="
         --team-a-primary: ${teamAColors.primary};
         --team-b-primary: ${teamBColors.primary};
@@ -976,7 +989,10 @@ function renderMatchCenterStage(match, players) {
     >
       <div class="mc-stage-inner">
         <div class="mc-stage-topline">
-          <div class="mc-stage-badge">LIVE MATCH</div>
+          <div class="mc-stage-badge">
+            <span>${matchEventIcon}</span>
+            ${match.status || "En vivo"}
+          </div>
         </div>
 
         <div class="mc-headline">
@@ -991,8 +1007,19 @@ function renderMatchCenterStage(match, players) {
           </div>
 
           <div class="mc-score-center">
-            <div class="mc-phase-line">${match.phase || "Partido en vivo"}</div>
-            <div class="mc-time-line">Termina: ${formatMatchDate(match.endDate)}</div>
+            <div class="mc-phase-line">${matchEventLabel}</div>
+
+            <div class="mc-time-line">
+              Termina: ${formatMatchDate(match.endDate)}
+            </div>
+
+            <div class="mc-countdown-line">
+              <span>Tiempo restante</span>
+              <strong data-countdown-end="${match.endDate || ""}">
+                ${formatMatchCountdown(match.endDate)}
+              </strong>
+            </div>
+
             <div class="mc-main-score">${formatNumber(pointsA)} - ${formatNumber(pointsB)}</div>
           </div>
 
@@ -1067,7 +1094,7 @@ function renderMatchCenterStage(match, players) {
 
                 <div class="mc-info-row">
                   <span>Fase</span>
-                  <strong>${match.phase || "—"}</strong>
+                  <strong>${matchEventLabel}</strong>
                 </div>
 
                 <div class="mc-info-row">

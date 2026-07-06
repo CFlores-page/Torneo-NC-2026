@@ -5224,3 +5224,150 @@ display: none;
     flex-basis: min(460px, 86vw);
   }
 }
+
+/* =========================================================
+   FINALS MAIN MATCH CENTER STAGE
+========================================================= */
+
+.mc-stage.finals-stage {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(5, 12, 24, 0.70), rgba(3, 8, 18, 0.94)),
+    var(--card-stadium-bg);
+  background-size: cover;
+  background-position: center;
+}
+
+.mc-stage.finals-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(93, 168, 255, 0.20), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(255, 212, 71, 0.16), transparent 28%),
+    linear-gradient(90deg, rgba(3, 8, 18, 0.82), transparent 42%, rgba(3, 8, 18, 0.82));
+  pointer-events: none;
+}
+
+.mc-stage.finals-stage .mc-stage-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.mc-stage.grand-final-stage {
+  border-color: rgba(255, 212, 71, 0.34);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.42),
+    inset 0 0 0 1px rgba(255, 212, 71, 0.08);
+}
+
+.mc-stage.third-place-stage {
+  border-color: rgba(205, 127, 50, 0.34);
+  box-shadow:
+    0 22px 54px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 1px rgba(205, 127, 50, 0.08);
+}
+
+.mc-stage.finals-stage .mc-stage-badge {
+  background: rgba(255, 48, 79, 0.18);
+  border-color: rgba(255, 48, 79, 0.34);
+  color: #ff8ba0;
+}
+
+.mc-stage.grand-final-stage .mc-stage-badge {
+  background: rgba(255, 212, 71, 0.13);
+  border-color: rgba(255, 212, 71, 0.30);
+  color: var(--sport-gold);
+}
+
+.mc-stage.third-place-stage .mc-stage-badge {
+  background: rgba(205, 127, 50, 0.13);
+  border-color: rgba(205, 127, 50, 0.28);
+  color: #d9a066;
+}
+
+.mc-stage.finals-stage .mc-phase-line {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 0.95;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 12px 28px rgba(0,0,0,0.50);
+}
+
+.mc-stage.finals-stage .mc-time-line {
+  color: rgba(219, 231, 255, 0.78);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mc-countdown-line {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 4px auto 2px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(5, 12, 22, 0.70);
+  border: 1px solid rgba(255, 212, 71, 0.22);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.24);
+}
+
+.mc-countdown-line span {
+  color: rgba(205, 218, 236, 0.82);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.mc-countdown-line strong {
+  color: var(--sport-gold);
+  font-family: var(--font-display);
+  font-size: 30px;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.mc-stage.finals-stage .mc-main-score {
+  font-size: clamp(74px, 8vw, 118px);
+  line-height: 0.85;
+  text-shadow: 0 18px 42px rgba(0,0,0,0.58);
+}
+
+.mc-stage.finals-stage .mc-team-name {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4vw, 58px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 14px 32px rgba(0,0,0,0.56);
+}
+
+.mc-stage.finals-stage .mc-team-flag {
+  width: 96px;
+  height: auto;
+  max-height: 68px;
+  object-fit: contain;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mc-stage.finals-stage .mc-roster-card,
+.mc-stage.finals-stage .mc-center-card,
+.mc-stage.finals-stage .mc-info-card {
+  background: rgba(3, 10, 22, 0.74);
+  border-color: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+}
+
+.mc-stage.finals-stage .mc-progress-wrap {
+  border-color: rgba(255, 212, 71, 0.16);
+  background: rgba(3, 10, 22, 0.74);
+}
