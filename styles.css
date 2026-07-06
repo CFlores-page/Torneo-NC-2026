@@ -5617,3 +5617,225 @@ display: none;
 .mc-player-stat strong {
   font-size: 18px;
 }
+
+/* =========================================================
+   MATCH CENTER PLAYER SPOTLIGHT CAROUSEL
+========================================================= */
+
+.mc-player-carousel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mc-player-carousel {
+  position: relative;
+  min-height: 250px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 42%),
+    rgba(3, 10, 22, 0.58);
+  overflow: hidden;
+}
+
+.mc-player-carousel::before,
+.mc-player-carousel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  width: 52px;
+  pointer-events: none;
+}
+
+.mc-player-carousel::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(3, 10, 22, 0.96), transparent);
+}
+
+.mc-player-carousel::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(3, 10, 22, 0.96), transparent);
+}
+
+.mc-carousel-track {
+  display: flex;
+  width: max-content;
+  min-height: 250px;
+  gap: 14px;
+  padding: 16px;
+  animation: mcPlayerCarouselScroll 26s linear infinite;
+}
+
+.mc-player-carousel.right .mc-carousel-track {
+  animation-direction: reverse;
+}
+
+.mc-player-carousel:hover .mc-carousel-track {
+  animation-play-state: paused;
+}
+
+.mc-carousel-player-card {
+  position: relative;
+  flex: 0 0 190px;
+  height: 218px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.11);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
+    rgba(5, 12, 24, 0.74);
+  overflow: hidden;
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.mc-carousel-player-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 212, 71, 0.30);
+  box-shadow: 0 18px 34px rgba(0,0,0,0.32);
+}
+
+.mc-carousel-image-wrap {
+  position: absolute;
+  inset: 0 0 62px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.mc-carousel-player-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter:
+    drop-shadow(0 18px 24px rgba(0,0,0,0.48))
+    drop-shadow(0 0 18px rgba(255,255,255,0.08));
+}
+
+.mc-carousel-player-placeholder {
+  width: 82px;
+  height: 82px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 30px;
+  border-radius: 50%;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,255,255,0.20), transparent 36%),
+    linear-gradient(180deg, rgba(93, 168, 255, 0.34), rgba(29, 111, 255, 0.12));
+  border: 1px solid rgba(93, 168, 255, 0.30);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.mc-carousel-player-info {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(3, 10, 22, 0.82);
+  border: 1px solid rgba(255,255,255,0.10);
+  backdrop-filter: blur(10px);
+}
+
+.mc-carousel-player-info span {
+  display: block;
+  color: rgba(203, 216, 236, 0.72);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mc-carousel-player-info strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 0.95;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mc-carousel-player-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mc-carousel-player-stats div {
+  padding: 5px 6px;
+  border-radius: 9px;
+  background: rgba(255,255,255,0.055);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.mc-carousel-player-stats small {
+  display: block;
+  color: rgba(184, 198, 220, 0.70);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mc-carousel-player-stats b {
+  display: block;
+  margin-top: 1px;
+  color: var(--sport-gold);
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.mc-player-carousel.empty {
+  display: grid;
+  place-items: center;
+  min-height: 250px;
+}
+
+.mc-carousel-empty {
+  text-align: center;
+  color: rgba(203, 216, 236, 0.76);
+}
+
+.mc-carousel-empty strong {
+  display: block;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mc-carousel-empty span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+@keyframes mcPlayerCarouselScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}

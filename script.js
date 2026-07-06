@@ -622,6 +622,74 @@ function buildRosterList(teamId, players) {
   }).join("")
 }
 
+function buildPlayerSpotlightCarousel(teamId, players, sideClass = "") {
+  const cleanTeamId = normalizeId(teamId)
+
+  const teamPlayers = players
+    .filter(player => normalizeId(player.teamId) === cleanTeamId)
+    .sort((a, b) => {
+      if (a.isCaptain && !b.isCaptain) return -1
+      if (!a.isCaptain && b.isCaptain) return 1
+      if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints
+      if (b.points !== a.points) return b.points - a.points
+      if (b.sales !== a.sales) return b.sales - a.sales
+      return String(a.displayName || "").localeCompare(String(b.displayName || ""))
+    })
+
+  if (!teamPlayers.length) {
+    return `
+      <div class="mc-player-carousel ${sideClass} empty">
+        <div class="mc-carousel-empty">
+          <strong>Plantel pendiente</strong>
+          <span>Los jugadores aparecerán aquí cuando cargue el roster.</span>
+        </div>
+      </div>
+    `
+  }
+
+  const carouselPlayers = [...teamPlayers, ...teamPlayers]
+
+  return `
+    <div class="mc-player-carousel ${sideClass}" data-team-id="${cleanTeamId}">
+      <div class="mc-carousel-track">
+        ${carouselPlayers.map(player => {
+          const image = driveImage(player.fullBodyUrl || player.photoUrl || player.headshotUrl)
+          const roleLabel = player.isCaptain ? "Capitán" : "Jugador"
+
+          return `
+            <div class="mc-carousel-player-card" data-player-id="${player.playerId}">
+              <div class="mc-carousel-image-wrap">
+                ${
+                  image
+                    ? `<img src="${image}" alt="${player.displayName}" class="mc-carousel-player-img">`
+                    : `<div class="mc-carousel-player-placeholder">${getInitials(player.displayName)}</div>`
+                }
+              </div>
+
+              <div class="mc-carousel-player-info">
+                <span>${roleLabel}</span>
+                <strong>${player.displayName}</strong>
+
+                <div class="mc-carousel-player-stats">
+                  <div>
+                    <small>Partido</small>
+                    <b>${formatNumber(player.matchPoints)}</b>
+                  </div>
+
+                  <div>
+                    <small>Torneo</small>
+                    <b>${formatNumber(player.points)}</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        }).join("")}
+      </div>
+    </div>
+  `
+}
+
 function renderMatchStripCard(match, active = false) {
   const teamA = getTeamInfo(match.teamA)
   const teamB = getTeamInfo(match.teamB)
@@ -962,6 +1030,9 @@ function renderMatchCenterStage(match, players) {
   const teamAPlayers = players.filter(player => normalizeId(player.teamId) === normalizeId(match.teamA))
   const teamBPlayers = players.filter(player => normalizeId(player.teamId) === normalizeId(match.teamB))
 
+  const teamACarousel = buildPlayerSpotlightCarousel(match.teamA, players, "left")
+  const teamBCarousel = buildPlayerSpotlightCarousel(match.teamB, players, "right")
+
   const pointsA = parseNumber(match.scoreA)
   const pointsB = parseNumber(match.scoreB)
   const total = Math.max(pointsA + pointsB, 1)
@@ -1088,9 +1159,9 @@ function renderMatchCenterStage(match, players) {
           </div>
 
           <div class="mc-center-card">
-            <div class="mc-mini-stats">
-              ${renderTopContributorShowcase(topA, teamA.name, "a")}
-              ${renderTopContributorShowcase(topB, teamB.name, "b")}
+            <div class="mc-mini-stats mc-player-carousel-grid">
+              ${teamACarousel}
+              ${teamBCarousel}
             </div>
 
             <div class="mc-info-grid mc-info-grid-compact">
