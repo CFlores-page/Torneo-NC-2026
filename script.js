@@ -603,26 +603,48 @@ function renderMatchStripCard(match, active = false) {
   const flagA = driveImage(teamA.flagUrl)
   const flagB = driveImage(teamB.flagUrl)
 
+  const eventLabel = getFeaturedMatchLabel(match)
+  const eventIcon = getFeaturedMatchIcon(match)
+  const eventClass = getFeaturedMatchClass(match)
+
   return `
-    <button class="mc-strip-card ${active ? "active" : ""}" data-match-id="${match.matchId}">
-      <div class="mc-strip-vs">
-        <div class="mc-strip-team">
+    <button
+      class="mc-strip-card finals-selector-card ${eventClass} ${active ? "active" : ""}"
+      data-match-id="${match.matchId}"
+      type="button"
+    >
+      <div class="finals-selector-top">
+        <div class="finals-selector-event">
+          <span class="finals-selector-icon">${eventIcon}</span>
+          <div>
+            <strong>${eventLabel}</strong>
+            <small>${formatMatchDate(match.endDate)}</small>
+          </div>
+        </div>
+
+        <div class="finals-selector-status">
+          ${match.status || "Pendiente"}
+        </div>
+      </div>
+
+      <div class="finals-selector-main">
+        <div class="finals-selector-team">
           ${flagA ? `<img src="${flagA}" alt="${teamA.name}">` : ""}
           <span>${teamA.name}</span>
         </div>
 
-        <div class="mc-strip-score">
-          <strong>${formatNumber(match.scoreA)} - ${formatNumber(match.scoreB)}</strong>
+        <div class="finals-selector-score">
+          ${formatNumber(match.scoreA)} - ${formatNumber(match.scoreB)}
         </div>
 
-        <div class="mc-strip-team right">
+        <div class="finals-selector-team right">
           <span>${teamB.name}</span>
           ${flagB ? `<img src="${flagB}" alt="${teamB.name}">` : ""}
         </div>
       </div>
 
-      <div class="mc-strip-footer">
-        <span>${match.phase || "Partido en vivo"}</span>
+      <div class="finals-selector-footer">
+        <span>${match.matchId}</span>
         <strong>
           Quedan
           <em data-countdown-end="${match.endDate || ""}">
@@ -2607,6 +2629,34 @@ function formatUpcomingDate(value) {
 function isFeaturedMatch(match) {
   const matchId = String(match?.matchId || "").trim().toUpperCase()
   return FEATURED_MATCH_IDS.includes(matchId)
+}
+
+function getFeaturedMatchLabel(match) {
+  const matchId = String(match?.matchId || "").trim().toUpperCase()
+  const phase = String(match?.phase || "").trim()
+
+  if (matchId === "GF001") return "Gran Final"
+  if (matchId === "TL001") return "Tercer Lugar"
+
+  return phase || "Partido"
+}
+
+function getFeaturedMatchIcon(match) {
+  const matchId = String(match?.matchId || "").trim().toUpperCase()
+
+  if (matchId === "GF001") return "🏆"
+  if (matchId === "TL001") return "🥉"
+
+  return "⚽"
+}
+
+function getFeaturedMatchClass(match) {
+  const matchId = String(match?.matchId || "").trim().toUpperCase()
+
+  if (matchId === "GF001") return "grand-final-card"
+  if (matchId === "TL001") return "third-place-card"
+
+  return "standard-match-card"
 }
 
 function getLiveMatchesForMatchCenter() {
