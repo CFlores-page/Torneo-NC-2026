@@ -1171,11 +1171,8 @@ function renderMatchCenterStage(match, players) {
     ])
   )
 
-  const teamATournamentPoints =
-    parseNumber(standingsByTeam.get(normalizeId(match.teamA))?.tournamentPoints)
-
-  const teamBTournamentPoints =
-    parseNumber(standingsByTeam.get(normalizeId(match.teamB))?.tournamentPoints)
+  const teamAMatchPoints = pointsA
+  const teamBMatchPoints = pointsB
 
   return `
     <div
@@ -1202,8 +1199,8 @@ function renderMatchCenterStage(match, players) {
             <div class="mc-team-name">${teamA.name}</div>
             <div class="mc-team-unit">${teamAPlayers[0]?.unit || ""}</div>
             <div class="mc-team-points">
-              Tournament Points
-              <strong>${formatNumber(teamATournamentPoints)}</strong>
+              Points
+              <strong>${formatNumber(teamAMatchPoints)}</strong>
             </div>
           </div>
 
@@ -1229,8 +1226,8 @@ function renderMatchCenterStage(match, players) {
             <div class="mc-team-name">${teamB.name}</div>
             <div class="mc-team-unit">${teamBPlayers[0]?.unit || ""}</div>
             <div class="mc-team-points">
-              Tournament Points
-              <strong>${formatNumber(teamBTournamentPoints)}</strong>
+              Points
+              <strong>${formatNumber(teamBMatchPoints)}</strong>
             </div>
           </div>
         </div>
