@@ -6077,3 +6077,26 @@ display: none;
     radial-gradient(circle at 50% 0%, rgba(93, 168, 255, 0.08), transparent 42%);
   pointer-events: none;
 }
+
+.mc-stage.finals-stage .mc-team-points {
+  display: none !important;
+}
+
+.mc-player-stat-stack.single {
+  grid-template-columns: 58px;
+  width: auto;
+}
+
+.mc-player-stat-stack.single .mc-player-stat {
+  min-width: 58px;
+  padding: 6px 7px;
+}
+
+.mc-player-stat-stack.single .mc-player-stat span {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.mc-player-stat-stack.single .mc-player-stat strong {
+  font-size: 18px;
+}

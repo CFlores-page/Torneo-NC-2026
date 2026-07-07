@@ -580,7 +580,6 @@ function buildRosterList(teamId, players) {
     const photo = driveImage(player.headshotUrl || player.photoUrl || player.fullBodyUrl)
     const unitStyle = getUnitStyle(player.unit)
     const matchPoints = parseNumber(player.matchPoints)
-    const tournamentPoints = parseNumber(player.points)
 
     const avatar = photo
       ? `<img class="mc-player-avatar" src="${photo}" alt="${player.displayName}">`
@@ -606,15 +605,10 @@ function buildRosterList(teamId, players) {
           </div>
         </div>
 
-        <div class="mc-player-stat-stack">
+        <div class="mc-player-stat-stack single">
           <div class="mc-player-stat">
-            <span>Partido</span>
+            <span>Points</span>
             <strong>${formatNumber(matchPoints)}</strong>
-          </div>
-
-          <div class="mc-player-stat">
-            <span>Torneo</span>
-            <strong>${formatNumber(tournamentPoints)}</strong>
           </div>
         </div>
       </div>
@@ -1171,9 +1165,6 @@ function renderMatchCenterStage(match, players) {
     ])
   )
 
-  const teamAMatchPoints = pointsA
-  const teamBMatchPoints = pointsB
-
   return `
     <div
       <div
@@ -1198,10 +1189,6 @@ function renderMatchCenterStage(match, players) {
             ${teamAFlag ? `<img class="mc-team-flag" src="${teamAFlag}" alt="${teamA.name}">` : ""}
             <div class="mc-team-name">${teamA.name}</div>
             <div class="mc-team-unit">${teamAPlayers[0]?.unit || ""}</div>
-            <div class="mc-team-points">
-              Points
-              <strong>${formatNumber(teamAMatchPoints)}</strong>
-            </div>
           </div>
 
           <div class="mc-score-center">
@@ -1224,18 +1211,14 @@ function renderMatchCenterStage(match, players) {
           <div class="mc-team-hero right">
             ${teamBFlag ? `<img class="mc-team-flag" src="${teamBFlag}" alt="${teamB.name}">` : ""}
             <div class="mc-team-name">${teamB.name}</div>
-            <div class="mc-team-unit">${teamBPlayers[0]?.unit || ""}</div>
-            <div class="mc-team-points">
-              Points
-              <strong>${formatNumber(teamBMatchPoints)}</strong>
-            </div>
+            <div class="mc-team-unit">${teamBPlayers[0]?.unit || ""}</div>            
           </div>
         </div>
 
         <div class="mc-progress-wrap">
           <div class="mc-progress-head">
             <span>${teamA.name} ${formatNumber(pointsA)}</span>
-            <span>Points Progress</span>
+            <span>Match Points</span>
             <span>${teamB.name} ${formatNumber(pointsB)}</span>
           </div>
 
