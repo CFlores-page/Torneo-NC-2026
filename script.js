@@ -412,6 +412,17 @@ async function getSheetFrom(sheetName, range) {
   )
 }
 
+function getPlayerMatchPoints(player) {
+  return parseNumber(
+    player.matchPoints ??
+    player.currentMatchPoints ??
+    player.pts_partido_act ??
+    player.Pts_partido_act ??
+    player.partidoPoints ??
+    0
+  );
+}
+
 function setupMobileMenu() {
   const button = document.getElementById("mobileMenuButton")
   const overlay = document.getElementById("mobileMenuOverlay")
@@ -991,6 +1002,7 @@ function renderTopContributorShowcase(player, teamName, sideClass) {
   }
 
   const image = driveImage(player.fullBodyUrl || player.photoUrl || player.headshotUrl || "")
+  const matchPoints = getPlayerMatchPoints(player)
 
   return `
     <div class="mc-showcase-card ${sideClass}">
@@ -1013,7 +1025,7 @@ function renderTopContributorShowcase(player, teamName, sideClass) {
           <span class="mc-showcase-label">Top Contributor</span>
           <strong class="mc-showcase-name">${player.displayName}</strong>
           <div class="mc-showcase-points">
-            <strong>${formatNumber(player.points)}</strong>
+            <strong>${formatNumber(matchPoints)}</strong>
             <span>pts</span>
           </div>
         </div>
@@ -1137,20 +1149,28 @@ function renderMatchCenterStage(match, players) {
   const shareB = clamp((pointsB / total) * 100, 0, 100)
 
   const topA = [...teamAPlayers]
-    .filter(player => parseNumber(player.matchPoints) > 0)
+    .filter(player => getPlayerMatchPoints(player) > 0)
     .sort((a, b) => {
-      if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints
-      if (b.points !== a.points) return b.points - a.points
+      const matchPointsA = getPlayerMatchPoints(a)
+      const matchPointsB = getPlayerMatchPoints(b)
+
+      if (matchPointsB !== matchPointsA) return matchPointsB - matchPointsA
+      if (b.sales !== a.sales) return b.sales - a.sales
+
       return String(a.displayName || "").localeCompare(String(b.displayName || ""))
-    })[0] || null
+  })[0] || null
 
   const topB = [...teamBPlayers]
-    .filter(player => parseNumber(player.matchPoints) > 0)
+    .filter(player => getPlayerMatchPoints(player) > 0)
     .sort((a, b) => {
-      if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints
-      if (b.points !== a.points) return b.points - a.points
+      const matchPointsA = getPlayerMatchPoints(a)
+      const matchPointsB = getPlayerMatchPoints(b)
+
+      if (matchPointsB !== matchPointsA) return matchPointsB - matchPointsA
+      if (b.sales !== a.sales) return b.sales - a.sales
+
       return String(a.displayName || "").localeCompare(String(b.displayName || ""))
-    })[0] || null
+  })[0] || null
 
   const teamAFlag = driveImage(teamA.flagUrl)
   const teamBFlag = driveImage(teamB.flagUrl)
@@ -1166,9 +1186,8 @@ function renderMatchCenterStage(match, players) {
   )
 
   return `
-    <div
       <div
-        class="mc-stage ${finalsStageClass}"class="mc-stage"
+        class="mc-stage ${finalsStageClass}"
         style="
           --team-a-primary: ${teamAColors.primary};
           --team-b-primary: ${teamBColors.primary};
